@@ -1,0 +1,67 @@
+{
+  "info": {
+    "name": "Ministore ERP - Audit Module",
+    "description": "Colección completa para Auditoría y Trazabilidad Forense: Consulta de trazas, filtros de seguridad, snapshots diferenciales y métricas.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Query Audit Logs",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/audit?action=&model=&userEmail=&startDate=&endDate=&page=1&limit=20",
+          "host": ["{{baseUrl}}"],
+          "path": ["audit"],
+          "query": [
+            { "key": "action", "value": "" },
+            { "key": "model", "value": "" },
+            { "key": "userEmail", "value": "" },
+            { "key": "startDate", "value": "" },
+            { "key": "endDate", "value": "" },
+            { "key": "page", "value": "1" },
+            { "key": "limit", "value": "20" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Audit Statistics Summary",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/audit/stats/summary",
+          "host": ["{{baseUrl}}"],
+          "path": ["audit", "stats", "summary"]
+        }
+      }
+    },
+    {
+      "name": "Get Audit Log Trace By ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/audit/:id",
+          "host": ["{{baseUrl}}"],
+          "path": ["audit", ":id"],
+          "variable": [
+            { "key": "id", "value": "AUDIT_LOG_ID" }
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000", "type": "string" },
+    { "key": "token", "value": "", "type": "string" }
+  ]
+}

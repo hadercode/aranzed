@@ -1,0 +1,122 @@
+{
+  "info": {
+    "name": "Ministore ERP - Purchases Module",
+    "description": "Colección completa para Órdenes de Compra de Materias Primas, conversión multimoneda, máquina de estados y eventos de recepción física.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get Next Correlative Number",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": { "raw": "{{baseUrl}}/purchases/next-number", "host": ["{{baseUrl}}"], "path": ["purchases", "next-number"] }
+      }
+    },
+    {
+      "name": "List Purchases",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": {
+          "raw": "{{baseUrl}}/purchases?status=&search=&page=1&limit=10",
+          "host": ["{{baseUrl}}"],
+          "path": ["purchases"],
+          "query": [
+            { "key": "status", "value": "" },
+            { "key": "search", "value": "" },
+            { "key": "page", "value": "1" },
+            { "key": "limit", "value": "10" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Purchase By ID",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": { "raw": "{{baseUrl}}/purchases/:id", "host": ["{{baseUrl}}"], "path": ["purchases", ":id"], "variable": [{ "key": "id", "value": "PURCHASE_ID" }] }
+      }
+    },
+    {
+      "name": "Create Purchase (Draft)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"purchaseNumber\": \"CMP-2026-0001\",\n  \"supplierName\": \"Molinos del Norte S.A.\",\n  \"supplierDocument\": \"J-12345678-9\",\n  \"documentType\": \"FACTURA\",\n  \"documentNumber\": \"FAC-99120\",\n  \"currencyCode\": \"USD\",\n  \"exchangeRate\": 1.0,\n  \"warehouseId\": \"WAREHOUSE_ID\",\n  \"notes\": \"Compra de harina e insumos base\",\n  \"items\": [\n    {\n      \"productId\": \"PRODUCT_ID\",\n      \"quantity\": 100,\n      \"unitPrice\": 1.25,\n      \"taxAmount\": 0.00,\n      \"batchNumber\": \"LOTE-001\",\n      \"expirationDate\": \"2027-04-30\"\n    }\n  ]\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/purchases", "host": ["{{baseUrl}}"], "path": ["purchases"] }
+      }
+    },
+    {
+      "name": "Update Purchase (Draft)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"supplierName\": \"Molinos del Norte S.A.S.\",\n  \"notes\": \"Entrega en horario matutino exclusivamente\"\n}"
+            },
+        "url": { "raw": "{{baseUrl}}/purchases/:id", "host": ["{{baseUrl}}"], "path": ["purchases", ":id"], "variable": [{ "key": "id", "value": "PURCHASE_ID" }] }
+      }
+    },
+    {
+      "name": "Transition Status (CONFIRMED)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"CONFIRMED\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/purchases/:id/status", "host": ["{{baseUrl}}"], "path": ["purchases", ":id", "status"], "variable": [{ "key": "id", "value": "PURCHASE_ID" }] }
+      }
+    },
+    {
+      "name": "Transition Status (RECEIVED - Receive & Stock)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"RECEIVED\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/purchases/:id/status", "host": ["{{baseUrl}}"], "path": ["purchases", ":id", "status"], "variable": [{ "key": "id", "value": "PURCHASE_ID" }] }
+      }
+    },
+    {
+      "name": "Cancel Purchase",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"CANCELLED\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/purchases/:id/status", "host": ["{{baseUrl}}"], "path": ["purchases", ":id", "status"], "variable": [{ "key": "id", "value": "PURCHASE_ID" }] }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000", "type": "string" },
+    { "key": "token", "value": "", "type": "string" }
+  ]
+}

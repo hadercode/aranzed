@@ -1,0 +1,89 @@
+{
+  "info": {
+    "name": "Ministore ERP - Company Module",
+    "description": "Colección completa para la configuración corporativa, datos fiscales, moneda base y branding de la empresa.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get Company Configuration",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/company",
+          "host": ["{{baseUrl}}"],
+          "path": ["company"]
+        }
+      }
+    },
+    {
+      "name": "Update General & Fiscal Data",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"identificationNumber\": \"J-12345678-0\",\n  \"legalName\": \"Nexus Global S.A.S.\",\n  \"tradeName\": \"Nexus ERP\",\n  \"slogan\": \"Innovación y eficiencia empresarial\",\n  \"phone\": \"+1 (555) 019-2834\",\n  \"secondaryPhone\": \"+1 (555) 019-2835\",\n  \"email\": \"contacto@nexus.com\",\n  \"website\": \"https://nexus.com\",\n  \"address\": \"Avenida Empresarial # 45-67\",\n  \"addressLine2\": \"Torre Nexus, Piso 10\",\n  \"city\": \"Bogotá D.C.\",\n  \"state\": \"Cundinamarca\",\n  \"zipCode\": \"110111\",\n  \"country\": \"Colombia\",\n  \"currencyCode\": \"USD\",\n  \"currencySymbol\": \"$\",\n  \"currencyPosition\": \"left\",\n  \"decimalPlaces\": 2,\n  \"timezone\": \"America/Bogota\",\n  \"dateFormat\": \"YYYY-MM-DD\",\n  \"taxRegime\": \"Régimen Común - Responsable de IVA\",\n  \"footerNotes\": \"Gracias por su preferencia. Documento electrónico emitido conforme a las regulaciones vigentes.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/company",
+          "host": ["{{baseUrl}}"],
+          "path": ["company"]
+        }
+      }
+    },
+    {
+      "name": "Update SMTP Email Config",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"smtpHost\": \"smtp.sendgrid.net\",\n  \"smtpPort\": 587,\n  \"smtpUser\": \"apikey\",\n  \"smtpPassword\": \"SG.claveSecreta123456\",\n  \"smtpSecure\": false,\n  \"smtpFromName\": \"Nexus ERP Facturación\",\n  \"smtpFromEmail\": \"facturacion@nexus.com\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/company",
+          "host": ["{{baseUrl}}"],
+          "path": ["company"]
+        }
+      }
+    },
+    {
+      "name": "Upload Company Logo",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": []
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/company/logo",
+          "host": ["{{baseUrl}}"],
+          "path": ["company", "logo"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000", "type": "string" },
+    { "key": "token", "value": "", "type": "string" }
+  ]
+}

@@ -1,0 +1,171 @@
+{
+  "info": {
+    "name": "Ministore ERP - Sales Module",
+    "description": "Colección completa para Ventas, Cotizaciones, Conversión de presupuestos, Gestión de Pagos/Abonos y Generación de Reportes PDF/Excel.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Sales & Quotations",
+      "item": [
+        {
+          "name": "List Sales & Quotations",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/sales?search=&saleType=&status=&paidStatus=&paymentTerm=",
+              "host": ["{{baseUrl}}"],
+              "path": ["sales"],
+              "query": [
+                { "key": "search", "value": "" },
+                { "key": "saleType", "value": "" },
+                { "key": "status", "value": "" },
+                { "key": "paidStatus", "value": "" },
+                { "key": "paymentTerm", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Sales Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/sales/stats", "host": ["{{baseUrl}}"], "path": ["sales", "stats"] }
+          }
+        },
+        {
+          "name": "Get Sale By ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/sales/:id", "host": ["{{baseUrl}}"], "path": ["sales", ":id"], "variable": [{ "key": "id", "value": "SALE_ID" }] }
+          }
+        },
+        {
+          "name": "Create Quotation (Presupuesto)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"saleType\": \"QUOTATION\",\n  \"customerName\": \"Restaurante Gourmet S.A.\",\n  \"customerDocument\": \"NIT-900881122-3\",\n  \"customerEmail\": \"compras@gourmet.com\",\n  \"customerPhone\": \"+57 300 4455667\",\n  \"paymentTerm\": \"CREDIT_30\",\n  \"taxRate\": 19.0,\n  \"discountAmount\": 5.0,\n  \"notes\": \"Presupuesto válido por 15 días\",\n  \"items\": [\n    {\n      \"productId\": \"PRODUCT_ID\",\n      \"productName\": \"Croissant Francés (Pack x6)\",\n      \"quantity\": 10,\n      \"unitPrice\": 8.50,\n      \"discount\": 0.0\n    }\n  ]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/sales", "host": ["{{baseUrl}}"], "path": ["sales"] }
+          }
+        },
+        {
+          "name": "Convert Quotation to Formal Sale",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/sales/:id/convert", "host": ["{{baseUrl}}"], "path": ["sales", ":id", "convert"], "variable": [{ "key": "id", "value": "SALE_ID" }] }
+          }
+        },
+        {
+          "name": "Update Status (DELIVERED)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"DELIVERED\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/sales/:id/status", "host": ["{{baseUrl}}"], "path": ["sales", ":id", "status"], "variable": [{ "key": "id", "value": "SALE_ID" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments & Collections",
+      "item": [
+        {
+          "name": "List Payments by Sale ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/sales/payments/sale/:saleId", "host": ["{{baseUrl}}"], "path": ["sales", "payments", "sale", ":saleId"], "variable": [{ "key": "saleId", "value": "SALE_ID" }] }
+          }
+        },
+        {
+          "name": "Register Payment (Abono)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"saleId\": \"SALE_ID\",\n  \"amount\": 50.00,\n  \"paymentMethod\": \"TRANSFER\",\n  \"paymentDate\": \"2026-10-26\",\n  \"referenceNumber\": \"TRF-998811\",\n  \"notes\": \"Abono inicial 50%\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/sales/payments", "host": ["{{baseUrl}}"], "path": ["sales", "payments"] }
+          }
+        },
+        {
+          "name": "Upload Payment Receipt Voucher",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/sales/payments/upload-receipt", "host": ["{{baseUrl}}"], "path": ["sales", "payments", "upload-receipt"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reports & PDF Exports",
+      "item": [
+        {
+          "name": "Download Sale PDF Voucher",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/sales/:id/pdf", "host": ["{{baseUrl}}"], "path": ["sales", ":id", "pdf"], "variable": [{ "key": "id", "value": "SALE_ID" }] }
+          }
+        },
+        {
+          "name": "Export Sales to Excel (.xlsx)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/sales/export/excel", "host": ["{{baseUrl}}"], "path": ["sales", "export", "excel"] }
+          }
+        },
+        {
+          "name": "Export Consolidated Sales to PDF",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/sales/export/pdf", "host": ["{{baseUrl}}"], "path": ["sales", "export", "pdf"] }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000", "type": "string" },
+    { "key": "token", "value": "", "type": "string" }
+  ]
+}

@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+
+# User uploaded files
+uploads/avatars/*
+uploads/products/*
+uploads/payments/*
+uploads/invoices/*
+
+# Production output
+dist/
+
+# Environment and Secrets
+.env
+.env.local
+.env.*.local
+.env.production
+.env.staging
+!.env.example
+
+# User uploaded files
+uploads/*
+!uploads/**/.gitkeep
+
+# Logs and runtime data
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Test coverage
+coverage/
+
+# Temporary / Scaffold generation scripts
+scaffold*.js
+fix-postman.js
+
+# IDE and OS files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

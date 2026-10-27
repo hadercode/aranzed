@@ -1,0 +1,6 @@
+export enum SaleStatus {
+  DRAFT = 'DRAFT',
+  PENDING = 'PENDING',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED',
+}

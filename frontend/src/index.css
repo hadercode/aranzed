@@ -1,0 +1,309 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Inter', system-ui, sans-serif;
+  
+  /* =========================================================================
+     Base Surfaces & Cards (Light Mode)
+     ========================================================================= */
+  --color-surface-bg: #F8FAFB;
+  --color-surface-card: #FFFFFF;
+  --color-surface-hover: #F0F4F8;
+  --color-border: #E8EEF3;
+  
+  /* =========================================================================
+     Primary Theme: Aranzed Turquoise / Cyan (Base gift box in logo)
+     ========================================================================= */
+  --color-primary-50: #EDFAFA;
+  --color-primary-100: #D4F4F5;
+  --color-primary-200: #A8E8EA;
+  --color-primary-300: #74D9DC;
+  --color-primary-400: #3DC5CB;
+  --color-primary-500: #22B2B8;
+  --color-primary-600: #1A969C;
+  --color-primary-700: #15797E;
+  
+  /* Backward-compatible Sage alias mapped directly to Aranzed Cyan */
+  --color-sage-50: #EDFAFA;
+  --color-sage-100: #D4F4F5;
+  --color-sage-500: #22B2B8;
+  --color-sage-600: #1A969C;
+  
+  /* =========================================================================
+     Aranzed Rainbow Palette Tokens (from the Logo Illustration)
+     ========================================================================= */
+  --color-brand-cyan: #22B2B8;      /* Turquoise / Cyan gift box outline */
+  --color-brand-purple: #8B5CF6;    /* Violet gift box & vertical ribbon stem */
+  --color-brand-pink: #F43F5E;      /* Rose / Pink ribbon loops */
+  --color-brand-yellow: #F59E0B;    /* Neon Golden Yellow left gift box */
+  --color-brand-orange: #F97316;    /* Coral / Tangerine ribbon accents */
+
+  /* Light pastel tints for badges & cards */
+  --color-brand-cyan-light: #EDFAFA;
+  --color-brand-purple-light: #F5F3FF;
+  --color-brand-pink-light: #FFF1F2;
+  --color-brand-yellow-light: #FEF3C7;
+  --color-brand-orange-light: #FFF7ED;
+
+  /* =========================================================================
+     Text Colors (Aranzed Slate Charcoal from Logo Typography)
+     ========================================================================= */
+  --color-text-primary: #1E293B;
+  --color-text-secondary: #64748B;
+  --color-text-muted: #94A3B8;
+  
+  /* Shadows */
+  --shadow-organic: 0 10px 40px -10px rgba(0, 0, 0, 0.04);
+  --shadow-organic-sm: 0 4px 15px -5px rgba(0, 0, 0, 0.03);
+}
+
+.dark {
+  /* =========================================================================
+     Dark Mode Surfaces (Deep Slate & Obsidian)
+     ========================================================================= */
+  --color-surface-bg: #0B0F17;
+  --color-surface-card: #131926;
+  --color-surface-hover: #1A2234;
+  --color-border: #1E2A3F;
+  
+  /* Luminous Turquoise Primary in Dark Mode */
+  --color-primary-50: rgba(34, 178, 184, 0.12);
+  --color-primary-100: rgba(34, 178, 184, 0.22);
+  --color-primary-500: #26C6CC;
+  --color-primary-600: #38D5DB;
+
+  --color-sage-50: rgba(34, 178, 184, 0.12);
+  --color-sage-100: rgba(34, 178, 184, 0.22);
+  --color-sage-500: #26C6CC;
+  --color-sage-600: #38D5DB;
+
+  /* Luminous Neon Rainbow in Dark Mode */
+  --color-brand-cyan: #26C6CC;
+  --color-brand-purple: #A78BFA;
+  --color-brand-pink: #FB7185;
+  --color-brand-yellow: #FBBF24;
+  --color-brand-orange: #FB923C;
+
+  --color-brand-cyan-light: rgba(38, 198, 204, 0.15);
+  --color-brand-purple-light: rgba(167, 139, 250, 0.15);
+  --color-brand-pink-light: rgba(251, 113, 133, 0.15);
+  --color-brand-yellow-light: rgba(251, 191, 36, 0.15);
+  --color-brand-orange-light: rgba(251, 146, 60, 0.15);
+
+  --color-text-primary: #F1F5F9;
+  --color-text-secondary: #94A3B8;
+  --color-text-muted: #64748B;
+  
+  --shadow-organic: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
+  --shadow-organic-sm: 0 4px 15px -5px rgba(0, 0, 0, 0.4);
+}
+
+@layer base {
+  body {
+    @apply bg-[var(--color-surface-bg)] text-[var(--color-text-primary)] font-sans antialiased transition-colors duration-300;
+    background-image: 
+      radial-gradient(circle at 12% 8%, rgba(34, 178, 184, 0.045) 0%, transparent 40%),
+      radial-gradient(circle at 88% 12%, rgba(244, 63, 94, 0.045) 0%, transparent 42%),
+      radial-gradient(circle at 45% 90%, rgba(139, 92, 246, 0.04) 0%, transparent 45%),
+      radial-gradient(circle at 80% 85%, rgba(245, 158, 11, 0.035) 0%, transparent 35%);
+    background-attachment: fixed;
+  }
+
+  .dark body, body:where(.dark, .dark *) {
+    background-image: 
+      radial-gradient(circle at 12% 8%, rgba(34, 178, 184, 0.08) 0%, transparent 40%),
+      radial-gradient(circle at 88% 12%, rgba(244, 63, 94, 0.08) 0%, transparent 42%),
+      radial-gradient(circle at 45% 90%, rgba(139, 92, 246, 0.07) 0%, transparent 45%),
+      radial-gradient(circle at 80% 85%, rgba(245, 158, 11, 0.05) 0%, transparent 35%);
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    background-color: #F43F5E;
+    color: #FFFFFF;
+  }
+}
+
+/* =========================================================================
+   Aranzed 5-Color Rainbow Badges
+   ========================================================================= */
+.badge-cyan {
+  background-color: rgba(34, 178, 184, 0.12);
+  color: #1A969C;
+  border: 1px solid rgba(34, 178, 184, 0.25);
+}
+.dark .badge-cyan {
+  background-color: rgba(34, 178, 184, 0.2);
+  color: #38D5DB;
+}
+
+.badge-fuchsia {
+  background-color: rgba(244, 63, 94, 0.12);
+  color: #E11D48;
+  border: 1px solid rgba(244, 63, 94, 0.25);
+}
+.dark .badge-fuchsia {
+  background-color: rgba(244, 63, 94, 0.2);
+  color: #FB7185;
+}
+
+.badge-purple {
+  background-color: rgba(139, 92, 246, 0.12);
+  color: #7C3AED;
+  border: 1px solid rgba(139, 92, 246, 0.25);
+}
+.dark .badge-purple {
+  background-color: rgba(139, 92, 246, 0.2);
+  color: #A78BFA;
+}
+
+.badge-yellow {
+  background-color: rgba(245, 158, 11, 0.12);
+  color: #D97706;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+.dark .badge-yellow {
+  background-color: rgba(245, 158, 11, 0.2);
+  color: #FBBF24;
+}
+
+.badge-orange {
+  background-color: rgba(249, 115, 22, 0.12);
+  color: #EA580C;
+  border: 1px solid rgba(249, 115, 22, 0.25);
+}
+.dark .badge-orange {
+  background-color: rgba(249, 115, 22, 0.2);
+  color: #FB923C;
+}
+
+/* =========================================================================
+   Rainbow Gradients & Brand Accent Utilities (Turquoise + Fuchsia Hero Duo)
+   ========================================================================= */
+:root {
+  --gradient-rainbow: linear-gradient(135deg, #22B2B8 0%, #8B5CF6 28%, #F43F5E 55%, #F97316 78%, #F59E0B 100%);
+  --gradient-rainbow-subtle: linear-gradient(135deg, rgba(34, 178, 184, 0.12) 0%, rgba(139, 92, 246, 0.12) 28%, rgba(244, 63, 94, 0.12) 55%, rgba(249, 115, 22, 0.12) 78%, rgba(245, 158, 11, 0.12) 100%);
+  --gradient-duo: linear-gradient(135deg, #22B2B8 0%, #F43F5E 100%);
+  --gradient-aranzed: linear-gradient(135deg, #22B2B8 0%, #8B5CF6 50%, #F43F5E 100%);
+  --gradient-brand: linear-gradient(135deg, #22B2B8 0%, #8B5CF6 100%);
+  --gradient-fuchsia: linear-gradient(135deg, #E11D48 0%, #F43F5E 60%, #FB7185 100%);
+  --gradient-sunset: linear-gradient(135deg, #F43F5E 0%, #F97316 50%, #F59E0B 100%);
+}
+
+.bg-rainbow-gradient {
+  background: var(--gradient-rainbow);
+}
+
+.bg-rainbow-subtle {
+  background: var(--gradient-rainbow-subtle);
+}
+
+.bg-brand-gradient {
+  background: var(--gradient-brand);
+}
+
+.bg-duo-gradient {
+  background: var(--gradient-duo);
+}
+
+.bg-aranzed-gradient {
+  background: var(--gradient-aranzed);
+}
+
+.text-rainbow-gradient {
+  background: var(--gradient-rainbow);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-brand-gradient {
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-duo-gradient {
+  background: var(--gradient-duo);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-fuchsia-gradient {
+  background: var(--gradient-fuchsia);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.border-rainbow {
+  border-image: var(--gradient-rainbow) 1;
+}
+
+.shadow-neon-cyan {
+  box-shadow: 0 4px 20px -2px rgba(34, 178, 184, 0.35);
+}
+
+.shadow-neon-purple {
+  box-shadow: 0 4px 20px -2px rgba(139, 92, 246, 0.35);
+}
+
+.shadow-neon-pink {
+  box-shadow: 0 4px 20px -2px rgba(244, 63, 94, 0.35);
+}
+
+.shadow-rainbow {
+  box-shadow: 0 8px 25px -4px rgba(34, 178, 184, 0.25), 0 8px 25px -4px rgba(139, 92, 246, 0.25);
+}
+
+/* =========================================================================
+   Alert Component Standards (High contrast dark text in light mode & readable dark mode)
+   ========================================================================= */
+.alert-danger {
+  background-color: #fef2f2;
+  color: #450a0a;
+  border-color: #fecaca;
+  border-width: 1px;
+}
+.dark .alert-danger {
+  background-color: rgba(69, 10, 10, 0.35);
+  color: #fca5a5;
+  border-color: rgba(153, 27, 27, 0.5);
+}
+
+.alert-warning {
+  background-color: #fffbeb;
+  color: #451a03;
+  border-color: #fde68a;
+  border-width: 1px;
+}
+.dark .alert-warning {
+  background-color: rgba(69, 26, 3, 0.35);
+  color: #fcd34d;
+  border-color: rgba(180, 83, 9, 0.5);
+}
+
+.alert-success {
+  background-color: #ecfdf5;
+  color: #022c22;
+  border-color: #a7f3d0;
+  border-width: 1px;
+}
+.dark .alert-success {
+  background-color: rgba(2, 44, 34, 0.35);
+  color: #6ee7b7;
+  border-color: rgba(6, 95, 70, 0.5);
+}
+
+.alert-info {
+  background-color: #eff6ff;
+  color: #082f49;
+  border-color: #bfdbfe;
+  border-width: 1px;
+}
+.dark .alert-info {
+  background-color: rgba(8, 47, 73, 0.35);
+  color: #93c5fd;
+  border-color: rgba(30, 58, 138, 0.5);
+}
+

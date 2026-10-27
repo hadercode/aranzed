@@ -1,0 +1,148 @@
+{
+  "info": {
+    "name": "Ministore ERP - Inventory Module",
+    "description": "Colección completa para Almacenes, Motivos de Inventario, Existencias por Bodega y Movimientos Kardex (Entradas, Salidas, Ajustes y Transferencias).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Warehouses",
+      "item": [
+        {
+          "name": "List Warehouses",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/inventory/warehouses", "host": ["{{baseUrl}}"], "path": ["inventory", "warehouses"] }
+          }
+        },
+        {
+          "name": "Create Warehouse",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"ALM-PPAL\",\n  \"name\": \"Almacén Central\",\n  \"address\": \"Avenida Central # 100\",\n  \"isDefault\": true\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/inventory/warehouses", "host": ["{{baseUrl}}"], "path": ["inventory", "warehouses"] }
+          }
+        },
+        {
+          "name": "Update Warehouse",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Almacén Central y Despachos\",\n  \"isDefault\": true\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/inventory/warehouses/:id", "host": ["{{baseUrl}}"], "path": ["inventory", "warehouses", ":id"], "variable": [{ "key": "id", "value": "WAREHOUSE_ID" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reasons",
+      "item": [
+        {
+          "name": "List Reasons",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/inventory/reasons", "host": ["{{baseUrl}}"], "path": ["inventory", "reasons"] }
+          }
+        },
+        {
+          "name": "Create Reason",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"MOT-MERMA\",\n  \"name\": \"Merma Operativa\",\n  \"type\": \"OUTPUT\",\n  \"description\": \"Salida por daño en transporte o caducidad\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/inventory/reasons", "host": ["{{baseUrl}}"], "path": ["inventory", "reasons"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stocks",
+      "item": [
+        {
+          "name": "Get All Stocks",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/inventory/stocks", "host": ["{{baseUrl}}"], "path": ["inventory", "stocks"] }
+          }
+        },
+        {
+          "name": "Get Low Stock Alerts",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/inventory/stocks/low-stock", "host": ["{{baseUrl}}"], "path": ["inventory", "stocks", "low-stock"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transactions (Kardex)",
+      "item": [
+        {
+          "name": "List Transactions",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/inventory/transactions", "host": ["{{baseUrl}}"], "path": ["inventory", "transactions"] }
+          }
+        },
+        {
+          "name": "Create Input Movement (Entrada)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"INPUT\",\n  \"warehouseId\": \"WAREHOUSE_ID\",\n  \"reasonId\": \"REASON_ID\",\n  \"referenceDocument\": \"REM-9912\",\n  \"notes\": \"Recepción física de proveedores\",\n  \"date\": \"2026-10-26\",\n  \"items\": [\n    {\n      \"productId\": \"PRODUCT_ID\",\n      \"quantity\": 50,\n      \"unitCost\": 1.25,\n      \"totalCost\": 62.50,\n      \"batchNumber\": \"LOTE-001\",\n      \"expirationDate\": \"2027-01-31\"\n    }\n  ]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/inventory/transactions", "host": ["{{baseUrl}}"], "path": ["inventory", "transactions"] }
+          }
+        },
+        {
+          "name": "Create Inter-Warehouse Transfer",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"TRANSFER\",\n  \"warehouseId\": \"WAREHOUSE_ORIGIN_ID\",\n  \"targetWarehouseId\": \"WAREHOUSE_DEST_ID\",\n  \"referenceDocument\": \"TRF-001\",\n  \"notes\": \"Transferencia interna para despacho\",\n  \"date\": \"2026-10-26\",\n  \"items\": [\n    {\n      \"productId\": \"PRODUCT_ID\",\n      \"quantity\": 20,\n      \"unitCost\": 1.25,\n      \"totalCost\": 25.00\n    }\n  ]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/inventory/transactions", "host": ["{{baseUrl}}"], "path": ["inventory", "transactions"] }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000", "type": "string" },
+    { "key": "token", "value": "", "type": "string" }
+  ]
+}

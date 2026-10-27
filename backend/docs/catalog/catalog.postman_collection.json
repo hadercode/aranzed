@@ -1,0 +1,195 @@
+{
+  "info": {
+    "name": "Ministore ERP - Catalog Module",
+    "description": "Colección completa para Categorías, Unidades de Medida, Productos Simples/Compuestos y Recetas de Producción (BOM).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "List Categories",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/catalog/categories", "host": ["{{baseUrl}}"], "path": ["catalog", "categories"] }
+          }
+        },
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Panadería Dulce\",\n  \"code\": \"CAT-PAN\",\n  \"description\": \"Productos horneados dulces\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/catalog/categories", "host": ["{{baseUrl}}"], "path": ["catalog", "categories"] }
+          }
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Panadería & Pastelería\",\n  \"description\": \"Categoría ampliada\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/catalog/categories/:id", "host": ["{{baseUrl}}"], "path": ["catalog", "categories", ":id"], "variable": [{ "key": "id", "value": "CATEGORY_ID" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Units of Measure (UOFM)",
+      "item": [
+        {
+          "name": "List Units",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/catalog/uofm", "host": ["{{baseUrl}}"], "path": ["catalog", "uofm"] }
+          }
+        },
+        {
+          "name": "Create Unit",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Kilogramo\",\n  \"code\": \"KG\",\n  \"symbol\": \"kg\",\n  \"description\": \"Unidad estándar de masa\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/catalog/uofm", "host": ["{{baseUrl}}"], "path": ["catalog", "uofm"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "List Products",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/catalog/products?search=&type=&isActive=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["catalog", "products"],
+              "query": [
+                { "key": "search", "value": "" },
+                { "key": "type", "value": "" },
+                { "key": "isActive", "value": "true" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Product By ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/catalog/products/:id", "host": ["{{baseUrl}}"], "path": ["catalog", "products", ":id"], "variable": [{ "key": "id", "value": "PRODUCT_ID" }] }
+          }
+        },
+        {
+          "name": "Create Simple Product (Raw Material)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Harina de Trigo 000\",\n  \"sku\": \"RAW-HAR-001\",\n  \"barcode\": \"7701234567890\",\n  \"description\": \"Harina de trigo de alta fuerza\",\n  \"type\": \"SIMPLE\",\n  \"unitOfMeasureId\": \"UOFM_ID\",\n  \"costPrice\": 1.25,\n  \"salePrice\": 0.00,\n  \"minStock\": 50,\n  \"maxStock\": 500,\n  \"manageInventory\": true\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/catalog/products", "host": ["{{baseUrl}}"], "path": ["catalog", "products"] }
+          }
+        },
+        {
+          "name": "Create Compound Product (Final Good)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Croissant Francés (Pack x6)\",\n  \"sku\": \"COMP-CROISS-06\",\n  \"type\": \"COMPOUND\",\n  \"unitOfMeasureId\": \"UOFM_ID\",\n  \"costPrice\": 0.00,\n  \"salePrice\": 8.50,\n  \"minStock\": 10,\n  \"maxStock\": 100,\n  \"manageInventory\": true\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/catalog/products", "host": ["{{baseUrl}}"], "path": ["catalog", "products"] }
+          }
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"salePrice\": 9.00,\n  \"minStock\": 15\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/catalog/products/:id", "host": ["{{baseUrl}}"], "path": ["catalog", "products", ":id"], "variable": [{ "key": "id", "value": "PRODUCT_ID" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Recipes (BOM)",
+      "item": [
+        {
+          "name": "List Recipes",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/catalog/recipes", "host": ["{{baseUrl}}"], "path": ["catalog", "recipes"] }
+          }
+        },
+        {
+          "name": "Get Recipe by Product ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/catalog/recipes/by-product/:productId", "host": ["{{baseUrl}}"], "path": ["catalog", "recipes", "by-product", ":productId"], "variable": [{ "key": "productId", "value": "PRODUCT_ID" }] }
+          }
+        },
+        {
+          "name": "Create Recipe (Formula)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"PRODUCT_ID\",\n  \"instructions\": \"Mezclar ingredientes y laminar masa\",\n  \"yieldQuantity\": 1,\n  \"items\": [\n    {\n      \"componentProductId\": \"RAW_MATERIAL_ID\",\n      \"unitOfMeasureId\": \"UOFM_ID\",\n      \"quantity\": 1.5,\n      \"unitCost\": 1.25,\n      \"totalCost\": 1.875\n    }\n  ]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/catalog/recipes", "host": ["{{baseUrl}}"], "path": ["catalog", "recipes"] }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000", "type": "string" },
+    { "key": "token", "value": "", "type": "string" }
+  ]
+}
