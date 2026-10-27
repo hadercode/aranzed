@@ -26,6 +26,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         migrations: [__dirname + '/database/migrations/*{.ts,.js}'],
         migrationsRun: true,
         synchronize: false,
+        ssl: {
+          rejectUnauthorized: false,
+        },
         logging: config.get<string>('DB_LOGGING') === 'true',
       }),
     }),
