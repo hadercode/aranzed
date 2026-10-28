@@ -12,6 +12,7 @@
   --color-surface-card: #FFFFFF;
   --color-surface-hover: #F0F4F8;
   --color-border: #E8EEF3;
+  --color-sidebar-bg: rgb(34 178 184 / 16%);
   
   /* =========================================================================
      Primary Theme: Aranzed Turquoise / Cyan (Base gift box in logo)
@@ -67,6 +68,7 @@
   --color-surface-card: #131926;
   --color-surface-hover: #1A2234;
   --color-border: #1E2A3F;
+  --color-sidebar-bg: rgb(34 178 184 / 16%);
   
   /* Luminous Turquoise Primary in Dark Mode */
   --color-primary-50: rgba(34, 178, 184, 0.12);

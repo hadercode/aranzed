@@ -41,7 +41,8 @@ export const Sidebar = ({
     <aside
       className={`${
         isCollapsed ? "w-20" : "w-64"
-      } transition-all duration-300 border-r border-[var(--color-border)] flex flex-col py-6 h-screen sticky top-0 bg-[var(--color-surface-card)] shadow-sm z-20`}
+      } hidden md:flex transition-all duration-300 border-r border-[var(--color-border)] flex-col py-6 h-screen sticky top-0 shadow-sm z-20 backdrop-blur-md shrink-0`}
+      style={{ backgroundColor: "rgb(34 178 184 / 16%)" }}
     >
       {/* Brand Header */}
       <div className="flex items-center justify-between px-6 mb-8">

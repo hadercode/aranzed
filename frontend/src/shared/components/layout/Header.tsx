@@ -53,12 +53,27 @@ export const Header = ({ onOpenSearch }: HeaderProps) => {
     <div className="flex flex-col">
       {/* Rainbow Spectrum Accent Top Line */}
       <div className="h-[3px] w-full bg-gradient-to-r from-[#22B2B8] via-[#8B5CF6] via-[#F43F5E] via-[#F97316] to-[#F59E0B] shadow-xs" />
-      <header className="flex justify-end items-center gap-4 p-6 md:px-10 md:py-6 bg-[var(--color-surface-bg)]">
-        <div className="flex items-center gap-4">
+      <header className="flex justify-between md:justify-end items-center gap-3 sm:gap-4 px-4 py-3 sm:px-6 md:px-10 md:py-6 bg-[var(--color-surface-bg)] transition-colors">
+        {/* Mobile Brand Logo (visible only on mobile where sidebar is hidden) */}
+        <Link to="/" className="flex md:hidden items-center gap-2 group shrink-0">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#22B2B8] via-[#8B5CF6] to-[#F43F5E] flex items-center justify-center shrink-0 shadow-md shadow-pink-500/20 group-hover:scale-105 transition-transform">
+            <span className="text-white font-extrabold text-xs tracking-wider">A</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="font-extrabold text-sm tracking-tight bg-gradient-to-r from-[#22B2B8] via-[#8B5CF6] to-[#F43F5E] bg-clip-text text-transparent">
+              ARANZED
+            </span>
+            <span className="text-[9px] tracking-wider uppercase font-semibold text-[#F43F5E] dark:text-[#FB7185] -mt-1">
+              Detalles
+            </span>
+          </div>
+        </Link>
+
+        <div className="flex items-center gap-2 sm:gap-4">
           {/* Search Trigger */}
           <button
             onClick={onOpenSearch}
-            className="flex items-center gap-2 pl-4 pr-3 py-2 bg-[var(--color-surface-card)] border border-[var(--color-border)] rounded-full text-sm text-[var(--color-text-secondary)] hover:border-[#22B2B8] transition-all w-48 md:w-64 text-left shadow-sm"
+            className="flex items-center gap-2 pl-3.5 pr-2.5 py-1.5 sm:py-2 bg-[var(--color-surface-card)] border border-[var(--color-border)] rounded-full text-xs sm:text-sm text-[var(--color-text-secondary)] hover:border-[#22B2B8] transition-all w-32 sm:w-48 md:w-64 text-left shadow-xs"
           >
           <SearchIcon className="w-4 h-4 text-gray-400 shrink-0" />
           <span className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">

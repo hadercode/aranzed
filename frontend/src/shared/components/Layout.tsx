@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import { Sidebar } from "./layout/Sidebar";
 import { Header } from "./layout/Header";
 import { SearchModal } from "./layout/SearchModal";
+import { MobileBottomBar } from "./layout/MobileBottomBar";
 
 import { GlobalFeedbackBanner } from "./feedback";
 
@@ -36,7 +37,7 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen flex text-[var(--color-text-primary)] transition-colors duration-300">
-      {/* Sidebar */}
+      {/* Sidebar (visible on md: and desktop, hidden on mobile) */}
       <Sidebar
         isCollapsed={isSidebarCollapsed}
         onToggleCollapse={() => setIsSidebarCollapsed((prev) => !prev)}
@@ -50,11 +51,18 @@ export default function Layout() {
         <Header onOpenSearch={() => setIsSearchOpen(true)} />
 
         {/* Page Content */}
-        <div className="flex-1 bg-[var(--color-surface-bg)] px-6 md:px-10 pb-10">
+        <div className="flex-1 bg-[var(--color-surface-bg)] px-4 sm:px-6 md:px-10 pb-28 md:pb-10">
           <GlobalFeedbackBanner />
           <Outlet />
         </div>
       </main>
+
+      {/* Mobile Dynamic Bottom Navigation Bar */}
+      <MobileBottomBar
+        onOpenSearch={() => setIsSearchOpen(true)}
+        isDarkMode={isDarkMode}
+        onToggleDarkMode={() => setIsDarkMode((prev) => !prev)}
+      />
 
       {/* Search Modal */}
       <SearchModal
