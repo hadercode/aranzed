@@ -88,16 +88,17 @@ export const Header = ({ onOpenSearch }: HeaderProps) => {
           {/* Search Trigger */}
           <button
             onClick={onOpenSearch}
-            className="flex items-center gap-2 pl-3.5 pr-2.5 py-1.5 sm:py-2 bg-[var(--color-surface-card)] border border-[var(--color-border)] rounded-full text-xs sm:text-sm text-[var(--color-text-secondary)] hover:border-[#22B2B8] transition-all w-32 sm:w-48 md:w-64 text-left shadow-xs"
+            className="flex items-center gap-2 pl-3.5 pr-2.5 py-1.5 sm:py-2 bg-[var(--color-surface-card)] border border-[var(--color-border)] rounded-full text-xs sm:text-sm text-[var(--color-text-secondary)] hover:border-[#22B2B8] transition-all w-36 sm:w-56 md:w-72 text-left shadow-xs cursor-pointer group"
+            title="Buscar menús y accesos rápidos (Ctrl+K o ⌘K)"
           >
-          <SearchIcon className="w-4 h-4 text-gray-400 shrink-0" />
-          <span className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
-            Search data...
-          </span>
-          <kbd className="hidden md:inline-block px-2 py-0.5 text-xs font-mono bg-[var(--color-surface-hover)] rounded border border-[var(--color-border)]">
-            ⌘K
-          </kbd>
-        </button>
+            <SearchIcon className="w-4 h-4 text-gray-400 group-hover:text-[#22B2B8] shrink-0 transition-colors" />
+            <span className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
+              Buscar menús y accesos...
+            </span>
+            <kbd className="hidden md:inline-flex items-center gap-0.5 px-2 py-0.5 text-[11px] font-mono text-[var(--color-text-secondary)] bg-[var(--color-surface-hover)] rounded border border-[var(--color-border)] shrink-0">
+              ⌘K
+            </kbd>
+          </button>
 
         {/* User Profile Dropdown */}
         <div className="relative" ref={profileRef}>
