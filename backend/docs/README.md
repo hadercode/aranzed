@@ -17,6 +17,7 @@ Cada módulo cuenta con su carpeta dedicada con especificaciones, diagramas ERD 
 | **[Purchases (Compras)](./purchases/README.md)** | Órdenes de materias primas, Multimoneda, Conversión cambiaría y Eventos de stock. | [Ver ERD](./purchases/erd-diagram.md) | [Ver Flujo](./purchases/flow-diagram.md) | [Ver Casos](./purchases/use-cases.md) | [Postman](./purchases/purchases.postman_collection.json) |
 | **[Sales (Ventas)](./sales/README.md)** | Cotizaciones, Ventas a crédito, Abonos/Pagos, Comprobantes y Reportes PDF/Excel. | [Ver ERD](./sales/erd-diagram.md) | [Ver Flujo](./sales/flow-diagram.md) | [Ver Casos](./sales/use-cases.md) | [Postman](./sales/sales.postman_collection.json) |
 | **[Audit (Auditoría)](./audit/README.md)** | Trazabilidad forense, Snapshots diferenciales (diff), Métricas y Sanitización. | [Ver ERD](./audit/erd-diagram.md) | [Ver Flujo](./audit/flow-diagram.md) | [Ver Casos](./audit/use-cases.md) | [Postman](./audit/audit.postman_collection.json) |
+| **[Storage (Almacenamiento)](./storage/README.md)** | Almacenamiento en nube Neon S3 por carpetas, Presigned URLs y visualización segura. | N/A (S3 Cloud) | [Ver Flujo](./storage/flow-diagram.md) | [Ver Casos](./storage/use-cases.md) | [Postman](./storage/storage.postman_collection.json) |
 
 ---
 

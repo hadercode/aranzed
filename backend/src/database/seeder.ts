@@ -259,6 +259,45 @@ async function seed() {
     await permissionRepo.save(manageSalesPerm);
   }
 
+  let readStoragePerm = await permissionRepo.findOneBy({
+    resource: 'storage',
+    action: 'read',
+  });
+  if (!readStoragePerm) {
+    readStoragePerm = permissionRepo.create({
+      id: randomUUID(),
+      resource: 'storage',
+      action: 'read',
+    });
+    await permissionRepo.save(readStoragePerm);
+  }
+
+  let uploadStoragePerm = await permissionRepo.findOneBy({
+    resource: 'storage',
+    action: 'upload',
+  });
+  if (!uploadStoragePerm) {
+    uploadStoragePerm = permissionRepo.create({
+      id: randomUUID(),
+      resource: 'storage',
+      action: 'upload',
+    });
+    await permissionRepo.save(uploadStoragePerm);
+  }
+
+  let manageStoragePerm = await permissionRepo.findOneBy({
+    resource: 'storage',
+    action: 'manage',
+  });
+  if (!manageStoragePerm) {
+    manageStoragePerm = permissionRepo.create({
+      id: randomUUID(),
+      resource: 'storage',
+      action: 'manage',
+    });
+    await permissionRepo.save(manageStoragePerm);
+  }
+
   const allAdminPerms = [
     manageUsersPerm,
     manageRolesPerm,
@@ -278,6 +317,9 @@ async function seed() {
     managePurchasesPerm,
     readSalesPerm,
     manageSalesPerm,
+    readStoragePerm,
+    uploadStoragePerm,
+    manageStoragePerm,
   ];
 
   console.log('Seeding roles...');
@@ -298,24 +340,30 @@ async function seed() {
   }
 
   let userRole = await roleRepo.findOneBy({ name: 'USER_ROLE' });
+  const userPerms = [
+    readCompanyPerm,
+    readCategoriesPerm,
+    readUofmPerm,
+    readProductsPerm,
+    readSalesPerm,
+    manageSalesPerm,
+    readStoragePerm,
+    uploadStoragePerm,
+  ];
+
   if (!userRole) {
     userRole = roleRepo.create({
       id: randomUUID(),
       name: 'USER_ROLE',
       description: 'Standard user role',
-      permissions: [
-        readCompanyPerm,
-        readCategoriesPerm,
-        readUofmPerm,
-        readProductsPerm,
-        readSalesPerm,
-        manageSalesPerm,
-      ],
+      permissions: userPerms,
     });
     await roleRepo.save(userRole);
     console.log('Created USER_ROLE with operational permissions');
   } else {
-    console.log('USER_ROLE already exists');
+    userRole.permissions = userPerms;
+    await roleRepo.save(userRole);
+    console.log('USER_ROLE already exists, updated permissions');
   }
 
   console.log('Seeding users...');
