@@ -83,6 +83,9 @@ export class DashboardActivityItemDto {
   @ApiProperty({ example: 'Venta #VENTA-0042 confirmada' })
   action: string;
 
+  @ApiProperty({ example: 'CREATE', enum: ['CREATE', 'UPDATE'] })
+  operationType: 'CREATE' | 'UPDATE';
+
   @ApiProperty({ example: '2026-10-28T14:30:00.000Z' })
   date: string;
 

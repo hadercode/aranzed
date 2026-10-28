@@ -164,22 +164,55 @@ export class GetDashboardSummaryUseCase
       this.logger.error(`Error calculando métricas de compras: ${err.message}`);
     }
 
-    // 5. Actividad reciente de auditoría / operaciones reales
+    // 5. Actividad reciente: Exclusivamente operaciones de Escritura (CREATE) y Actualización (UPDATE)
     const recentActivity: DashboardActivityItemDto[] = [];
     try {
-      const auditResult = await this.auditService.findAll({ page: 1, limit: 6 });
+      const auditResult = await this.auditService.findAll({ page: 1, limit: 40 });
       const items = auditResult.items || [];
 
-      for (const item of items) {
+      const WRITE_AND_UPDATE_ACTIONS = new Set([
+        'CREATE',
+        'UPDATE',
+        'STATUS_CHANGE',
+        'CONFIRM',
+        'CONVERT',
+        'CLOSE',
+        'PAYMENT',
+        'SAVE',
+        'SYNC_COST',
+      ]);
+
+      const WRITE_AND_UPDATE_METHODS = new Set(['POST', 'PUT', 'PATCH']);
+
+      // Filtrar solo operaciones de escritura y actualización (descartar DELETE, READ, GET y login)
+      const filteredAudit = items.filter((item) => {
+        const actionUpper = (item.action || '').toUpperCase();
+        const methodUpper = (item.method || '').toUpperCase();
+
+        if (actionUpper === 'DELETE' || actionUpper === 'READ') return false;
+        if (methodUpper === 'DELETE' || methodUpper === 'GET') return false;
+        if (item.model === 'Auth' || item.endpoint?.includes('/auth/login')) return false;
+
+        return (
+          WRITE_AND_UPDATE_ACTIONS.has(actionUpper) ||
+          WRITE_AND_UPDATE_METHODS.has(methodUpper)
+        );
+      });
+
+      for (const item of filteredAudit) {
+        const actionUpper = (item.action || '').toUpperCase();
+        const methodUpper = (item.method || '').toUpperCase();
+
+        const isCreate =
+          actionUpper === 'CREATE' ||
+          actionUpper === 'SAVE' ||
+          (methodUpper === 'POST' && actionUpper !== 'UPDATE' && actionUpper !== 'STATUS_CHANGE');
+
+        const operationType: 'CREATE' | 'UPDATE' = isCreate ? 'CREATE' : 'UPDATE';
+
         let actionDesc = item.description;
         if (!actionDesc) {
-          const actionMap: Record<string, string> = {
-            CREATE: 'creado(a)',
-            UPDATE: 'actualizado(a)',
-            DELETE: 'eliminado(a)',
-            STATUS_CHANGE: 'cambio de estado',
-          };
-          const friendlyVerb = actionMap[item.action] || item.action;
+          const friendlyVerb = isCreate ? 'creado(a)' : 'actualizado(a)';
           actionDesc = `${item.model} ${friendlyVerb}`;
         }
 
@@ -191,10 +224,41 @@ export class GetDashboardSummaryUseCase
           id: item.id,
           user: userName,
           action: actionDesc,
+          operationType,
           date: item.createdAt ? new Date(item.createdAt).toISOString() : new Date().toISOString(),
           status: item.status === 'SUCCESS' ? 'Success' : 'Failed',
           module: item.model || 'general',
         });
+
+        if (recentActivity.length >= 6) break;
+      }
+
+      // Si hay pocos registros en auditoría, complementar con las ventas y compras registradas en la DB
+      if (recentActivity.length < 4) {
+        try {
+          const salesResult = await this.saleRepo.findAll({ limit: 4 });
+          for (const s of salesResult.sales || []) {
+            if (!recentActivity.some((a) => a.action.includes(s.saleNumber))) {
+              recentActivity.push({
+                id: `sale-${s.id}`,
+                user: 'Ventas Aranzed',
+                action: `Venta #${s.saleNumber} registrada ($${s.total})`,
+                operationType: 'CREATE',
+                date: s.saleDate ? new Date(s.saleDate).toISOString() : new Date().toISOString(),
+                status: 'Success',
+                module: 'Sale',
+              });
+            }
+          }
+        } catch {
+          // No romper si la consulta auxiliar falla
+        }
+      }
+
+      // Ordenar cronológicamente descendente y limitar a los 6 más recientes
+      recentActivity.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      if (recentActivity.length > 6) {
+        recentActivity.length = 6;
       }
     } catch (err: any) {
       this.logger.error(`Error obteniendo registros de actividad: ${err.message}`);

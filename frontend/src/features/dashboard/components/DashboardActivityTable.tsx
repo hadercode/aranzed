@@ -3,6 +3,7 @@ import { Activity, RefreshCw } from 'lucide-react';
 export interface ActivityLogItem {
   user: string;
   action: string;
+  operationType?: 'CREATE' | 'UPDATE';
   date: string;
   status: 'Success' | 'Failed' | 'Pending';
 }
@@ -19,14 +20,19 @@ export function DashboardActivityTable({
   onRefresh,
 }: DashboardActivityTableProps) {
   return (
-    <div className="lg:col-span-2 bg-[var(--color-surface-card)] rounded-2xl p-6 shadow-[var(--shadow-organic)] border border-[var(--color-border)]">
-      <div className="flex justify-between items-center mb-6">
+    <div className="w-full bg-[var(--color-surface-card)] rounded-2xl p-6 shadow-[var(--shadow-organic)] border border-[var(--color-border)]">
+      <div className="flex justify-between items-start mb-6">
         <div>
-          <h2 className="font-semibold text-lg text-[var(--color-text-primary)]">
-            Registro de Actividad Reciente
-          </h2>
-          <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">
-            Eventos y operaciones registradas en la base de datos
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <h2 className="font-semibold text-lg text-[var(--color-text-primary)]">
+              Registro de Operaciones
+            </h2>
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+              Escritura y Edición
+            </span>
+          </div>
+          <p className="text-xs text-[var(--color-text-secondary)] mt-1">
+            Solo creaciones y actualizaciones registradas en la base de datos
           </p>
         </div>
 
@@ -35,7 +41,7 @@ export function DashboardActivityTable({
             onClick={onRefresh}
             disabled={loading}
             className="p-2 rounded-xl text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-hover)] transition-colors disabled:opacity-50"
-            title="Refrescar actividad"
+            title="Refrescar operaciones"
             type="button"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -48,7 +54,7 @@ export function DashboardActivityTable({
           <thead className="text-xs text-[var(--color-text-secondary)] uppercase bg-transparent border-b border-[var(--color-border)]">
             <tr>
               <th className="px-4 py-3 font-medium">Usuario</th>
-              <th className="px-4 py-3 font-medium">Operación</th>
+              <th className="px-4 py-3 font-medium">Tipo / Operación</th>
               <th className="px-4 py-3 font-medium">Fecha</th>
               <th className="px-4 py-3 font-medium text-right">Estado</th>
             </tr>
@@ -83,10 +89,10 @@ export function DashboardActivityTable({
                   <div className="flex flex-col items-center justify-center">
                     <Activity className="w-10 h-10 text-[var(--color-text-muted)] mb-2.5 opacity-40" />
                     <p className="font-semibold text-sm text-[var(--color-text-primary)]">
-                      Aún no hay transacciones registradas
+                      Aún no hay operaciones registradas
                     </p>
                     <p className="text-xs text-[var(--color-text-secondary)] mt-1 max-w-sm">
-                      Al realizar ventas, compras, recetas o ajustes de inventario, tus operaciones aparecerán aquí en tiempo real.
+                      Al crear o actualizar ventas, compras, recetas o ajustes de inventario, se reflejarán aquí automáticamente.
                     </p>
                   </div>
                 </td>
@@ -107,8 +113,19 @@ export function DashboardActivityTable({
                       </span>
                     </div>
                   </td>
-                  <td className="px-4 py-3.5 text-xs text-[var(--color-text-secondary)] font-medium max-w-xs truncate">
-                    {item.action}
+                  <td className="px-4 py-3.5 text-xs text-[var(--color-text-secondary)] font-medium max-w-sm">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {item.operationType === 'CREATE' ? (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
+                          + Registro
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 shrink-0">
+                          ↻ Edición
+                        </span>
+                      )}
+                      <span className="truncate">{item.action}</span>
+                    </div>
                   </td>
                   <td className="px-4 py-3.5 whitespace-nowrap text-xs text-[var(--color-text-secondary)]">
                     {item.date}

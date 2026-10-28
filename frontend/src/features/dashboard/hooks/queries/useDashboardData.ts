@@ -116,6 +116,7 @@ export function useDashboardData() {
       return {
         user: act.user,
         action: act.action,
+        operationType: act.operationType,
         date: formattedDate,
         status: act.status,
       };

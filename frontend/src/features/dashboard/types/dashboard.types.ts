@@ -38,6 +38,7 @@ export interface DashboardActivityItem {
   id: string;
   user: string;
   action: string;
+  operationType?: 'CREATE' | 'UPDATE';
   date: string;
   status: 'Success' | 'Failed' | 'Pending';
   module: string;
