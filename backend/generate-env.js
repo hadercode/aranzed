@@ -39,7 +39,7 @@ function generateKeys() {
   if (envContent) {
     if (envContent.includes('JWT_PRIVATE_KEY=')) {
       envContent = envContent.replace(
-        /JWT_PRIVATE_KEY=.*/,
+        /JWT_PRIVATE_KEY=("[\s\S]*?"|'.*?'|[^\r\n]*)/,
         `JWT_PRIVATE_KEY="${escapedPrivate}"`
       );
     } else {
@@ -48,7 +48,7 @@ function generateKeys() {
 
     if (envContent.includes('JWT_PUBLIC_KEY=')) {
       envContent = envContent.replace(
-        /JWT_PUBLIC_KEY=.*/,
+        /JWT_PUBLIC_KEY=("[\s\S]*?"|'.*?'|[^\r\n]*)/,
         `JWT_PUBLIC_KEY="${escapedPublic}"`
       );
     } else {
@@ -71,7 +71,7 @@ function generateKeys() {
   if (rootEnvContent) {
     if (rootEnvContent.includes('JWT_PRIVATE_KEY=')) {
       rootEnvContent = rootEnvContent.replace(
-        /JWT_PRIVATE_KEY=.*/,
+        /JWT_PRIVATE_KEY=("[\s\S]*?"|'.*?'|[^\r\n]*)/,
         `JWT_PRIVATE_KEY="${escapedPrivate}"`
       );
     } else {
@@ -80,7 +80,7 @@ function generateKeys() {
 
     if (rootEnvContent.includes('JWT_PUBLIC_KEY=')) {
       rootEnvContent = rootEnvContent.replace(
-        /JWT_PUBLIC_KEY=.*/,
+        /JWT_PUBLIC_KEY=("[\s\S]*?"|'.*?'|[^\r\n]*)/,
         `JWT_PUBLIC_KEY="${escapedPublic}"`
       );
     } else {
