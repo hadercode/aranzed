@@ -14,6 +14,7 @@ import { RecoverPasswordHandler } from './application/commands/recover-password/
 import { BcryptService } from './infrastructure/security/bcrypt.service';
 import { AppJwtService } from './infrastructure/security/jwt.service';
 import { JwtStrategy } from './infrastructure/security/jwt.strategy';
+import { getJwtKeys } from './infrastructure/security/jwt-keys.util';
 import { DummyEmailService } from './infrastructure/external/dummy-email.service';
 import { UserRepository } from './infrastructure/persistence/typeorm/repositories/user.repository';
 import { RoleRepository } from './infrastructure/persistence/typeorm/repositories/role.repository';
@@ -74,17 +75,14 @@ const QueryHandlers = [
       RoleOrmEntity,
       PermissionOrmEntity,
     ]),
-    ConfigModule.forRoot(),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
-        const privateKey = (
-          config.get<string>('JWT_PRIVATE_KEY') || 'defaultSecretForDevOnly'
-        ).replace(/\\n/g, '\n');
-        const publicKey = (
-          config.get<string>('JWT_PUBLIC_KEY') || 'defaultSecretForDevOnly'
-        ).replace(/\\n/g, '\n');
+        const { privateKey, publicKey } = getJwtKeys(
+          config.get<string>('JWT_PRIVATE_KEY'),
+          config.get<string>('JWT_PUBLIC_KEY'),
+        );
         return {
           privateKey,
           publicKey,
