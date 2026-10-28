@@ -1,0 +1,62 @@
+{
+  "id": "/",
+  "name": "Aranzed - Detalles Maracaibo",
+  "short_name": "Aranzed",
+  "description": "Plataforma empresarial de gestión integral (Ventas, Compras, Inventario, Catálogos, IAM y Auditoría)",
+  "theme_color": "#22B2B8",
+  "background_color": "#0B0F17",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "start_url": "/",
+  "categories": ["business", "finance", "productivity"],
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Ventas",
+      "short_name": "Ventas",
+      "description": "Gestión y registro de ventas",
+      "url": "/sales",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Catálogo de Productos",
+      "short_name": "Catálogo",
+      "description": "Gestión de productos y recetas",
+      "url": "/catalog/products",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Inventario",
+      "short_name": "Stock",
+      "description": "Existencias y movimientos de almacén",
+      "url": "/inventory/stocks",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ]
+}

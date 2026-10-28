@@ -2,7 +2,9 @@ import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "@/shared/hooks/store/useAuthStore";
 import { SearchIcon, UserIcon, ChevronDownIcon } from "./icons";
+import { Download } from "lucide-react";
 import { getAssetUrl } from "@/lib/api-client";
+import { usePwaInstall } from "@/shared/hooks/ui";
 
 interface HeaderProps {
   onOpenSearch: () => void;
@@ -14,6 +16,7 @@ export const Header = ({ onOpenSearch }: HeaderProps) => {
 
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
+  const { isInstallable, promptInstall } = usePwaInstall();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -70,6 +73,18 @@ export const Header = ({ onOpenSearch }: HeaderProps) => {
         </Link>
 
         <div className="flex items-center gap-2 sm:gap-4">
+          {/* PWA Install Button (visible when browser allows installing) */}
+          {isInstallable && (
+            <button
+              onClick={promptInstall}
+              className="flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-full text-xs font-semibold text-white bg-gradient-to-r from-[#22B2B8] to-[#8B5CF6] hover:opacity-90 transition-all shadow-xs cursor-pointer shrink-0"
+              title="Instalar aplicación en tu dispositivo"
+            >
+              <Download className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden sm:inline">Instalar App</span>
+            </button>
+          )}
+
           {/* Search Trigger */}
           <button
             onClick={onOpenSearch}
