@@ -8,8 +8,10 @@ import {
   Moon,
   LogOut,
   User,
+  Download,
 } from "lucide-react";
 import { useAuthStore } from "@/shared/hooks/store/useAuthStore";
+import { usePwaInstall } from "@/shared/hooks/ui";
 import { getAssetUrl } from "@/lib/api-client";
 import {
   navigationConfig,
@@ -48,6 +50,7 @@ export function MobileMenuDrawer({
   const location = useLocation();
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
+  const { isInstallable, promptInstall } = usePwaInstall();
 
   // User manual overrides for accordion expansion (defaults reactively to whether a child is active)
   const [manualToggle, setManualToggle] = useState<Record<string, boolean>>({});
@@ -186,6 +189,22 @@ export function MobileMenuDrawer({
             )}
           </button>
         </div>
+
+        {/* PWA Install Button (visible if device supports app installation) */}
+        {isInstallable && (
+          <div className="px-6 pt-3 shrink-0">
+            <button
+              onClick={() => {
+                promptInstall();
+                onClose();
+              }}
+              className="w-full flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-semibold text-white bg-gradient-to-r from-[#22B2B8] via-[#8B5CF6] to-[#F43F5E] shadow-md shadow-cyan-500/15 hover:opacity-95 transition-all cursor-pointer"
+            >
+              <Download className="w-4 h-4 shrink-0" />
+              <span>Instalar Aplicación en este Dispositivo</span>
+            </button>
+          </div>
+        )}
 
         {/* Navigation Tree Content */}
         <div className="flex-1 overflow-y-auto px-4 py-3 space-y-1">

@@ -5,7 +5,7 @@ import { Header } from "./layout/Header";
 import { SearchModal } from "./layout/SearchModal";
 import { MobileBottomBar } from "./layout/MobileBottomBar";
 
-import { GlobalFeedbackBanner } from "./feedback";
+import { GlobalFeedbackBanner, PwaReloadPrompt } from "./feedback";
 
 export default function Layout() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -63,6 +63,9 @@ export default function Layout() {
         isDarkMode={isDarkMode}
         onToggleDarkMode={() => setIsDarkMode((prev) => !prev)}
       />
+
+      {/* PWA Update & Offline Notification Toast */}
+      <PwaReloadPrompt />
 
       {/* Search Modal */}
       <SearchModal
