@@ -5,23 +5,57 @@ import type { TeamUpdateItemProps } from '../../components/TeamUpdateItem';
 
 export function useDashboardData() {
   const [metrics] = useState<MetricCardProps[]>([
-    { title: 'Total Users', value: '1,845', change: '+8.1%', trend: 'up' },
-    { title: 'Active Roles', value: '12', change: 'Stable', trend: 'neutral' },
-    { title: 'Security Alerts', value: '0', change: '-2.5%', trend: 'down' },
+    {
+      title: 'Ventas del Período',
+      value: '$4,280.00',
+      change: '+14.2% vs mes anterior',
+      trend: 'up',
+    },
+    {
+      title: 'Productos en Catálogo',
+      value: '48 activos',
+      change: '8 materias primas',
+      trend: 'up',
+    },
+    {
+      title: 'Fichas Técnicas (BOM)',
+      value: '16 recetas',
+      change: 'Costeo en tiempo real',
+      trend: 'neutral',
+    },
   ]);
 
   const [recentLogs] = useState<ActivityLogItem[]>([
-    { user: 'Elon Hwarm', action: 'Login Successful', date: 'Apr 28, 2023', status: 'Success' },
-    { user: 'Brio Niren', action: 'Password Reset', date: 'Jan 28, 2023', status: 'Success' },
-    { user: 'Rick Dranin', action: 'Invalid Credentials', date: 'Jun 26, 2023', status: 'Failed' },
-    { user: 'Lam Drohert', action: 'Role Assigned', date: 'Jun 25, 2023', status: 'Success' },
-    { user: 'Ama Plenna', action: 'Logout', date: 'Jun 28, 2023', status: 'Success' },
+    {
+      user: 'Administrador Aranzed',
+      action: 'Venta #VENTA-0042 confirmada',
+      date: 'Hoy, 11:20 AM',
+      status: 'Success',
+    },
+    {
+      user: 'Taller de Diseños',
+      action: 'Receta "Box San Valentín" actualizada',
+      date: 'Hoy, 09:45 AM',
+      status: 'Success',
+    },
+    {
+      user: 'Almacén Central',
+      action: 'Entrada de compra #CMP-0018 registrada',
+      date: 'Ayer, 04:30 PM',
+      status: 'Success',
+    },
+    {
+      user: 'Control de Stock',
+      action: 'Ajuste de inventario físico completado',
+      date: 'Ayer, 02:15 PM',
+      status: 'Success',
+    },
   ]);
 
   const [teamUpdates] = useState<TeamUpdateItemProps[]>([
-    { name: 'A. Chen', action: "Modified Role 'Editor'" },
-    { name: 'Mark Omarter', action: "Created User 'r.doe@nexus.com'" },
-    { name: 'Joan Joson', action: 'Revoked Token #892' },
+    { name: 'Aranzed Taller', action: 'Producción de 12 arreglos en curso' },
+    { name: 'Compras & Proveedores', action: 'Factura de rosas ecuatorianas recibida' },
+    { name: 'Caja Principal', action: 'Cierre de cobros en punto de venta OK' },
   ]);
 
   return {

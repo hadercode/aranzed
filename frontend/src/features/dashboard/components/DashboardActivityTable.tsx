@@ -13,25 +13,17 @@ export function DashboardActivityTable({ logs }: DashboardActivityTableProps) {
   return (
     <div className="lg:col-span-2 bg-[var(--color-surface-card)] rounded-2xl p-6 shadow-[var(--shadow-organic)] border border-[var(--color-border)]">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="font-semibold text-lg text-[var(--color-text-primary)]">Recent Access Logs</h2>
-        <button
-          className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
-          aria-label="Options"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
-          </svg>
-        </button>
+        <h2 className="font-semibold text-lg text-[var(--color-text-primary)]">Registro de Actividad Reciente</h2>
       </div>
 
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
           <thead className="text-xs text-[var(--color-text-secondary)] uppercase bg-transparent border-b border-[var(--color-border)]">
             <tr>
-              <th className="px-4 py-3 font-medium">User</th>
-              <th className="px-4 py-3 font-medium">Event</th>
-              <th className="px-4 py-3 font-medium">Date</th>
-              <th className="px-4 py-3 font-medium text-right">Status</th>
+              <th className="px-4 py-3 font-medium">Usuario</th>
+              <th className="px-4 py-3 font-medium">Operación</th>
+              <th className="px-4 py-3 font-medium">Fecha</th>
+              <th className="px-4 py-3 font-medium text-right">Estado</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[var(--color-border)]">
