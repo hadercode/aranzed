@@ -3,12 +3,25 @@ import { useFeedbackStore } from '../shared/hooks/store';
 export const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
 /**
- * Normaliza y construye URLs completas para recursos estáticos (logos, avatares, comprobantes).
+ * Normaliza y construye URLs completas para recursos estáticos y archivos en Neon S3.
  */
 export function getAssetUrl(path?: string | null): string {
   if (!path) return '';
   if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('blob:')) {
     return path;
+  }
+  if (path.startsWith('/storage/view') || path.startsWith('storage/view')) {
+    const clean = path.startsWith('/') ? path : `/${path}`;
+    return `${API_BASE_URL}${clean}`;
+  }
+  if (
+    path.startsWith('users/') ||
+    path.startsWith('products/') ||
+    path.startsWith('company/') ||
+    path.startsWith('invoices/') ||
+    path.startsWith('avatars/')
+  ) {
+    return `${API_BASE_URL}/storage/view?key=${encodeURIComponent(path)}`;
   }
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
   return `${API_BASE_URL}${cleanPath}`;

@@ -85,12 +85,62 @@ export function useProductsMutations(
     [options]
   );
 
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+
+  const clearUploadError = useCallback(() => setUploadError(''), []);
+
+  const uploadProductImage = useCallback(
+    async (file: File): Promise<string> => {
+      try {
+        setIsUploading(true);
+        setUploadError('');
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('folder', 'products');
+        formData.append('type', 'products');
+
+        const storageRes = await ApiClient.post<{
+          id: string;
+          key: string;
+          bucket: string;
+          folder: string;
+          originalName: string;
+          fileName: string;
+          mimeType: string;
+          size: number;
+          url: string;
+          createdAt: string;
+        }>('/storage/upload', formData);
+
+        return `/storage/view?key=${encodeURIComponent(storageRes.key)}`;
+      } catch (err: unknown) {
+        const message =
+          err instanceof Error
+            ? err.message
+            : typeof err === 'string'
+            ? err
+            : 'Error al subir la imagen del producto';
+        setUploadError(message);
+        throw new Error(message);
+      } finally {
+        setIsUploading(false);
+      }
+    },
+    []
+  );
+
   return {
     createProduct,
     updateProduct,
     deleteProduct,
+    uploadProductImage,
     isMutating,
+    isUploading,
     error,
+    uploadError,
     clearError,
+    clearUploadError,
   };
 }

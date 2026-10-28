@@ -1,5 +1,5 @@
-import { useParams } from 'react-router-dom';
-import { RecipeFormProvider, useRecipeFormContext } from '../context';
+import { useParams } from "react-router-dom";
+import { RecipeFormProvider, useRecipeFormContext } from "../context";
 import {
   RecipeFormHeader,
   RecipeHeaderSection,
@@ -10,7 +10,7 @@ import {
   RecipeFormFeedback,
   RecipeFormLoadingState,
   RecipeFormErrorState,
-} from '../components';
+} from "../components";
 
 function RecipeFormPageContent() {
   const { loadingInitial, loadError, handleSave } = useRecipeFormContext();
@@ -28,7 +28,7 @@ function RecipeFormPageContent() {
       id="recipe-form-page"
       onSubmit={handleSave}
       noValidate
-      className="max-w-7xl mx-auto pb-28 animate-in fade-in duration-300 space-y-6"
+      className="max-w-8xl mx-auto pb-28 animate-in fade-in duration-300 space-y-6"
     >
       {/* Top Header & Actions */}
       <RecipeFormHeader />
