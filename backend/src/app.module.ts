@@ -7,6 +7,7 @@ import { PurchasesModule } from './purchases/purchases.module';
 import { SalesModule } from './sales/sales.module';
 import { InventoryModule } from './inventory/inventory.module';
 import { StorageModule } from './storage/storage.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -64,6 +65,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     SalesModule,
     InventoryModule,
     StorageModule,
+    DashboardModule,
   ],
 })
 export class AppModule {}
