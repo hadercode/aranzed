@@ -32,4 +32,12 @@ export class UpdateProfileDto {
   @IsOptional()
   @IsString()
   bio?: string;
+
+  @ApiPropertyOptional({
+    description: 'Ruta o URL del avatar del usuario',
+    example: '/storage/view?key=users/17299000-abcd-avatar.png',
+  })
+  @IsOptional()
+  @IsString()
+  avatarUrl?: string | null;
 }

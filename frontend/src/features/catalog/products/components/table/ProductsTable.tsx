@@ -13,6 +13,7 @@ import {
   Percent,
 } from 'lucide-react';
 import { Button } from '@/shared/components/ui';
+import { getAssetUrl } from '@/lib/api-client';
 import { useProductsContext } from '../../context';
 import type { Product, ProductType } from '../../types';
 
@@ -143,7 +144,7 @@ export function ProductsTable() {
                   <div className="flex items-center gap-3">
                     {product.imageUrl ? (
                       <img
-                        src={product.imageUrl}
+                        src={getAssetUrl(product.imageUrl)}
                         alt={product.name}
                         className="w-10 h-10 rounded-xl object-cover border border-[var(--color-border)] shrink-0 bg-[var(--color-surface-bg)]"
                         onError={(e) => {

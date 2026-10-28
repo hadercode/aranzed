@@ -119,6 +119,144 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Storage Module",
+      "description": "Endpoints para gestión y almacenamiento de archivos en Neon S3 organizados por carpetas (folder/type)",
+      "item": [
+        {
+          "name": "Upload File to Folder",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": [],
+                  "description": "Archivo binario a subir al bucket S3"
+                },
+                {
+                  "key": "folder",
+                  "value": "products",
+                  "type": "text",
+                  "description": "Carpeta de destino (products, company, invoices, avatars)"
+                },
+                {
+                  "key": "type",
+                  "value": "products",
+                  "type": "text",
+                  "description": "Alias opcional de folder"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/storage/upload",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "storage",
+                "upload"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Presigned URL",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/storage/url?key=products/sample.png&expiresIn=3600",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "storage",
+                "url"
+              ],
+              "query": [
+                {
+                  "key": "key",
+                  "value": "products/sample.png"
+                },
+                {
+                  "key": "expiresIn",
+                  "value": "3600"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "View File (Redirect)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/storage/view?key=products/sample.png",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "storage",
+                "view"
+              ],
+              "query": [
+                {
+                  "key": "key",
+                  "value": "products/sample.png"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete File",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/storage?key=products/sample.png",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "storage"
+              ],
+              "query": [
+                {
+                  "key": "key",
+                  "value": "products/sample.png"
+                }
+              ]
+            }
+          }
+        }
+      ]
     }
   ],
   "variable": [

@@ -16,11 +16,19 @@ export const productSchema = z.object({
     .or(z.literal('')),
   imageUrl: z
     .string()
-    .max(500, 'La URL no puede superar los 500 caracteres')
+    .max(1000, 'La URL o ruta no puede superar los 1000 caracteres')
     .refine(
-      (val) => !val || val.startsWith('http://') || val.startsWith('https://'),
+      (val) =>
+        !val ||
+        val.startsWith('http://') ||
+        val.startsWith('https://') ||
+        val.startsWith('/storage/view') ||
+        val.startsWith('storage/view') ||
+        val.startsWith('products/') ||
+        val.startsWith('blob:') ||
+        val.startsWith('data:image/'),
       {
-        message: 'Debe ser una URL válida (iniciando con http:// o https://)',
+        message: 'Debe ser una URL válida (http/https) o una ruta de almacenamiento válida',
       }
     )
     .optional()

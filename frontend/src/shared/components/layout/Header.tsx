@@ -2,7 +2,9 @@ import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "@/shared/hooks/store/useAuthStore";
 import { SearchIcon, UserIcon, ChevronDownIcon } from "./icons";
+import { Download } from "lucide-react";
 import { getAssetUrl } from "@/lib/api-client";
+import { usePwaInstall } from "@/shared/hooks/ui";
 
 interface HeaderProps {
   onOpenSearch: () => void;
@@ -14,6 +16,7 @@ export const Header = ({ onOpenSearch }: HeaderProps) => {
 
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
+  const { isInstallable, promptInstall } = usePwaInstall();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -53,21 +56,49 @@ export const Header = ({ onOpenSearch }: HeaderProps) => {
     <div className="flex flex-col">
       {/* Rainbow Spectrum Accent Top Line */}
       <div className="h-[3px] w-full bg-gradient-to-r from-[#22B2B8] via-[#8B5CF6] via-[#F43F5E] via-[#F97316] to-[#F59E0B] shadow-xs" />
-      <header className="flex justify-end items-center gap-4 p-6 md:px-10 md:py-6 bg-[var(--color-surface-bg)]">
-        <div className="flex items-center gap-4">
+      <header className="flex justify-between md:justify-end items-center gap-3 sm:gap-4 px-4 py-3 sm:px-6 md:px-10 md:py-6 bg-[var(--color-surface-bg)] transition-colors">
+        {/* Mobile Brand Logo (visible only on mobile where sidebar is hidden) */}
+        <Link to="/" className="flex md:hidden items-center gap-2 group shrink-0">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#22B2B8] via-[#8B5CF6] to-[#F43F5E] flex items-center justify-center shrink-0 shadow-md shadow-pink-500/20 group-hover:scale-105 transition-transform">
+            <span className="text-white font-extrabold text-xs tracking-wider">A</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="font-extrabold text-sm tracking-tight bg-gradient-to-r from-[#22B2B8] via-[#8B5CF6] to-[#F43F5E] bg-clip-text text-transparent">
+              ARANZED
+            </span>
+            <span className="text-[9px] tracking-wider uppercase font-semibold text-[#F43F5E] dark:text-[#FB7185] -mt-1">
+              Detalles
+            </span>
+          </div>
+        </Link>
+
+        <div className="flex items-center gap-2 sm:gap-4">
+          {/* PWA Install Button (visible when browser allows installing) */}
+          {isInstallable && (
+            <button
+              onClick={promptInstall}
+              className="flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-full text-xs font-semibold text-white bg-gradient-to-r from-[#22B2B8] to-[#8B5CF6] hover:opacity-90 transition-all shadow-xs cursor-pointer shrink-0"
+              title="Instalar aplicación en tu dispositivo"
+            >
+              <Download className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden sm:inline">Instalar App</span>
+            </button>
+          )}
+
           {/* Search Trigger */}
           <button
             onClick={onOpenSearch}
-            className="flex items-center gap-2 pl-4 pr-3 py-2 bg-[var(--color-surface-card)] border border-[var(--color-border)] rounded-full text-sm text-[var(--color-text-secondary)] hover:border-[#22B2B8] transition-all w-48 md:w-64 text-left shadow-sm"
+            className="flex items-center gap-2 pl-3.5 pr-2.5 py-1.5 sm:py-2 bg-[var(--color-surface-card)] border border-[var(--color-border)] rounded-full text-xs sm:text-sm text-[var(--color-text-secondary)] hover:border-[#22B2B8] transition-all w-36 sm:w-56 md:w-72 text-left shadow-xs cursor-pointer group"
+            title="Buscar menús y accesos rápidos (Ctrl+K o ⌘K)"
           >
-          <SearchIcon className="w-4 h-4 text-gray-400 shrink-0" />
-          <span className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
-            Search data...
-          </span>
-          <kbd className="hidden md:inline-block px-2 py-0.5 text-xs font-mono bg-[var(--color-surface-hover)] rounded border border-[var(--color-border)]">
-            ⌘K
-          </kbd>
-        </button>
+            <SearchIcon className="w-4 h-4 text-gray-400 group-hover:text-[#22B2B8] shrink-0 transition-colors" />
+            <span className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
+              Buscar menús y accesos...
+            </span>
+            <kbd className="hidden md:inline-flex items-center gap-0.5 px-2 py-0.5 text-[11px] font-mono text-[var(--color-text-secondary)] bg-[var(--color-surface-hover)] rounded border border-[var(--color-border)] shrink-0">
+              ⌘K
+            </kbd>
+          </button>
 
         {/* User Profile Dropdown */}
         <div className="relative" ref={profileRef}>

@@ -1,58 +1,65 @@
-import { MetricCard } from '../components/MetricCard';
-import { DashboardActivityTable } from '../components/DashboardActivityTable';
-import { TeamUpdateItem } from '../components/TeamUpdateItem';
-import { useDashboardData } from '../hooks/queries/useDashboardData';
+import { AlertCircle, RefreshCw } from "lucide-react";
+import {
+  DashboardHeader,
+  DashboardQuickActions,
+  MetricCard,
+  TutorialSection,
+  DashboardActivityTable,
+} from "../components";
+import { useDashboardData } from "../hooks/queries/useDashboardData";
 
 export default function DashboardPage() {
-  const { metrics, recentLogs, teamUpdates } = useDashboardData();
+  const { metrics, recentLogs, loading, isFetching, error, refetch } =
+    useDashboardData();
 
   return (
-    <>
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10 pt-4">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-[var(--color-text-primary)]">
-            Executive Overview
-          </h1>
-          <p className="text-sm text-[var(--color-text-secondary)] mt-1">
-            Welcome back. Here is what's happening today.
-          </p>
-        </div>
-      </header>
+    <div className="space-y-6 animate-in fade-in duration-300 pb-12">
+      {/* 1. Header con saludo personalizado, fecha y estado PWA */}
+      <DashboardHeader />
 
-      {/* Dashboard Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      {/* 2. Banner de Error si falla la conexión */}
+      {error && (
+        <div className="bg-rose-500/10 border border-rose-500/20 text-rose-700 dark:text-rose-300 p-4 rounded-2xl flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 shrink-0 text-rose-500" />
+            <div>
+              <p className="font-semibold text-sm">
+                Error cargando métricas en tiempo real
+              </p>
+              <p className="text-xs opacity-90">{error}</p>
+            </div>
+          </div>
+          <button
+            onClick={() => refetch()}
+            className="px-3 py-1.5 rounded-xl bg-rose-500 text-white text-xs font-semibold hover:bg-rose-600 transition-colors flex items-center gap-1.5 shrink-0"
+            type="button"
+          >
+            <RefreshCw className="w-3.5 h-3.5" /> Reintentar
+          </button>
+        </div>
+      )}
+
+      {/* 3. Acciones Rápidas (1-Click Shortcuts) */}
+      <DashboardQuickActions />
+
+      {/* 4. Métricas Operativas Clave en Tiempo Real */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
         {metrics.map((metric, idx) => (
           <MetricCard key={idx} {...metric} colorIndex={idx} />
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Table Area */}
-        <DashboardActivityTable logs={recentLogs} />
+      {/* 5. Sección de Tutoriales Interactivos Paso a Paso */}
+      <TutorialSection />
 
-        {/* Side Panels */}
-        <div className="space-y-6">
-          <div className="bg-[var(--color-surface-card)] rounded-2xl p-6 shadow-[var(--shadow-organic)] border border-[var(--color-border)]">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="font-semibold text-base text-[var(--color-text-primary)]">System Health</h2>
-            </div>
-            <div className="h-40 bg-gradient-to-br from-cyan-500/10 via-purple-500/5 to-pink-500/10 rounded-xl flex items-center justify-center border border-pink-500/20">
-              <span className="font-semibold text-sm bg-gradient-to-r from-[#22B2B8] to-[#F43F5E] bg-clip-text text-transparent">99.9% Uptime</span>
-            </div>
-          </div>
-
-          <div className="bg-[var(--color-surface-card)] rounded-2xl p-6 shadow-[var(--shadow-organic)] border border-[var(--color-border)]">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="font-semibold text-base text-[var(--color-text-primary)]">Admin Activity</h2>
-            </div>
-            <div className="space-y-4">
-              {teamUpdates.map((update, idx) => (
-                <TeamUpdateItem key={idx} {...update} />
-              ))}
-            </div>
-          </div>
-        </div>
+      {/* 6. Registro de Actividad y Estado de la Plataforma */}
+      <div className="grid grid-cols-1 gap-12">
+        <DashboardActivityTable
+          logs={recentLogs}
+          loading={loading || isFetching}
+          onRefresh={refetch}
+        />
       </div>
-    </>
+    </div>
   );
 }

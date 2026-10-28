@@ -1,0 +1,161 @@
+{
+  "info": {
+    "name": "Ministore ERP - Storage Module",
+    "description": "Colección completa para la gestión de archivos en almacenamiento en la nube (Neon S3-compatible). Permite la subida binaria multipart organizada por carpetas (folder/type) sin almacenamiento en el servidor local, generación de URLs firmadas temporales para acceso seguro y redirección directa.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Upload File to Folder",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": [],
+              "description": "Archivo binario (imagen, PDF, documento) a subir a Neon S3"
+            },
+            {
+              "key": "folder",
+              "value": "products",
+              "type": "text",
+              "description": "Carpeta o subdirectorio de destino (ej: products, company, invoices, avatars)"
+            },
+            {
+              "key": "type",
+              "value": "products",
+              "type": "text",
+              "description": "Alias opcional de folder para clasificar el archivo"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/storage/upload",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "storage",
+            "upload"
+          ]
+        },
+        "description": "Sube un archivo binario mediante multipart/form-data. El archivo va directo a la memoria y se transfiere al bucket de Neon S3 en la carpeta especificada, retornando la Key permanente y una URL firmada de 1 hora."
+      }
+    },
+    {
+      "name": "Get Presigned URL (Secure View/Download)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/storage/url?key=products/17299000-abcd-sample.png&expiresIn=3600",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "storage",
+            "url"
+          ],
+          "query": [
+            {
+              "key": "key",
+              "value": "products/17299000-abcd-sample.png",
+              "description": "Clave (Key) del archivo en el bucket S3"
+            },
+            {
+              "key": "expiresIn",
+              "value": "3600",
+              "description": "Duración en segundos de validez de la URL firmada (default: 3600)"
+            }
+          ]
+        },
+        "description": "Genera una URL firmada segura utilizando @aws-sdk/s3-request-presigner con expiración temporal para consultar o descargar archivos privados."
+      }
+    },
+    {
+      "name": "View / Direct Redirect File",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/storage/view?key=products/17299000-abcd-sample.png",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "storage",
+            "view"
+          ],
+          "query": [
+            {
+              "key": "key",
+              "value": "products/17299000-abcd-sample.png",
+              "description": "Clave (Key) del archivo en el bucket S3"
+            }
+          ]
+        },
+        "description": "Redirige automáticamente (HTTP 302) a la URL firmada de S3. Puede usarse en etiquetas <img src=...> o links directos."
+      }
+    },
+    {
+      "name": "Delete File from S3",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/storage?key=products/17299000-abcd-sample.png",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "storage"
+          ],
+          "query": [
+            {
+              "key": "key",
+              "value": "products/17299000-abcd-sample.png",
+              "description": "Clave del archivo a eliminar en el bucket"
+            }
+          ]
+        },
+        "description": "Elimina de forma permanente el objeto del bucket de Neon S3."
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "tu_token_jwt_aqui",
+      "type": "string"
+    }
+  ]
+}

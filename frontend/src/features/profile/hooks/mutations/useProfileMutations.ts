@@ -54,30 +54,63 @@ export function useProfileMutations(options?: UseProfileMutationsOptions) {
 
   const uploadAvatar = async (file: File): Promise<string> => {
     return execute(async () => {
+      // 1. Subir archivo a Neon S3 mediante /storage/upload indicando la carpeta "users"
       const formData = new FormData();
       formData.append('file', file);
-      const res = await ApiClient.post<{ message: string; avatarUrl: string; user: UserProfile }>(
-        '/profile/avatar',
-        formData,
-      );
-      setSuccessMessage('Foto de perfil actualizada con éxito');
-      if (res.user) {
-        updateUser(res.user);
-        if (options?.onSuccess) {
-          options.onSuccess(res.user);
-        }
-      } else {
-        updateUser({ avatarUrl: res.avatarUrl });
+      formData.append('folder', 'users');
+      formData.append('type', 'users');
+
+      const storageRes = await ApiClient.post<{
+        id: string;
+        key: string;
+        bucket: string;
+        folder: string;
+        originalName: string;
+        fileName: string;
+        mimeType: string;
+        size: number;
+        url: string;
+        createdAt: string;
+      }>('/storage/upload', formData);
+
+      // Endpoint seguro que genera URLs firmadas bajo demanda para visualización
+      const avatarUrl = `/storage/view?key=${encodeURIComponent(storageRes.key)}`;
+
+      // 2. Persistir el nuevo avatar en el perfil del usuario
+      const res = await ApiClient.put<{ message: string; user: UserProfile }>('/profile', {
+        avatarUrl,
+      });
+
+      setSuccessMessage('Foto de perfil actualizada con éxito en la nube');
+      const updatedUser = res.user || { avatarUrl };
+      updateUser(updatedUser);
+      if (options?.onSuccess && res.user) {
+        options.onSuccess(res.user);
       }
-      return res.avatarUrl;
+
+      return storageRes.url || avatarUrl;
     });
   };
 
   const removeAvatar = async (): Promise<void> => {
     return execute(async () => {
-      const res = await ApiClient.delete<{ message: string; avatarUrl: null; user: UserProfile }>(
-        '/profile/avatar',
-      );
+      // Si el avatar actual estaba en S3, eliminarlo del bucket de storage
+      const currentUser = useAuthStore.getState().user;
+      if (currentUser?.avatarUrl?.includes('key=')) {
+        try {
+          const match = currentUser.avatarUrl.match(/key=([^&]+)/);
+          if (match && match[1]) {
+            const key = decodeURIComponent(match[1]);
+            await ApiClient.delete(`/storage?key=${encodeURIComponent(key)}`);
+          }
+        } catch {
+          // Continuar aunque falle el borrado del storage
+        }
+      }
+
+      const res = await ApiClient.put<{ message: string; user: UserProfile }>('/profile', {
+        avatarUrl: null,
+      });
       setSuccessMessage('Foto de perfil eliminada');
       if (res.user) {
         updateUser(res.user);

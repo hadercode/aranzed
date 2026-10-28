@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B0F17"/>
+      <stop offset="100%" stop-color="#131926"/>
+    </linearGradient>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22B2B8"/>
+      <stop offset="45%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#F43F5E"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#F43F5E" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="url(#bg)"/>
+  <rect x="96" y="96" width="320" height="320" rx="80" fill="url(#brandGrad)" filter="url(#shadow)"/>
+  <text x="256" y="325" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="220" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="-2">A</text>
+  <circle cx="340" cy="165" r="16" fill="#FBBF24"/>
+</svg>

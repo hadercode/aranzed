@@ -42,6 +42,10 @@ export function useProductsPage() {
     createProduct,
     updateProduct,
     deleteProduct,
+    uploadProductImage,
+    isUploading,
+    uploadError,
+    clearUploadError,
     isMutating,
     error: mutationError,
     clearError: clearMutationError,
@@ -266,9 +270,13 @@ export function useProductsPage() {
     closeFormModal,
     editingProduct,
 
-    // Form
+    // Form & Upload
     handleSaveProduct,
+    uploadProductImage,
     isMutating,
+    isUploading,
+    uploadError,
+    clearUploadError,
 
     // Delete
     isDeleteConfirmOpen,

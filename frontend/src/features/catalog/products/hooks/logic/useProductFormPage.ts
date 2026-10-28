@@ -27,9 +27,13 @@ export function useProductFormPage(productId?: string) {
   const {
     createProduct,
     updateProduct,
+    uploadProductImage,
     isMutating,
+    isUploading,
     error: mutationError,
+    uploadError,
     clearError: clearMutationError,
+    clearUploadError,
   } = useProductsMutations();
 
   // 4. Form Submission Handler
@@ -143,6 +147,10 @@ export function useProductFormPage(productId?: string) {
     isMutating,
     mutationError,
     clearMutationError,
+    uploadProductImage,
+    isUploading,
+    uploadError,
+    clearUploadError,
     handleSave: form.handleSubmit,
     handleCancel,
 
