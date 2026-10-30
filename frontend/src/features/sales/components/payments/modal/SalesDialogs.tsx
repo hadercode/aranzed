@@ -4,6 +4,7 @@ import { SalePreviewModal } from "./SalePreviewModal";
 import { QuickPaymentModal } from "./QuickPaymentModal";
 import { CloseSaleManualModal } from "./CloseSaleManualModal";
 import { SalePaymentsHistoryModal } from "./SalePaymentsHistoryModal";
+import { SaleWhatsAppReminderModal } from "./SaleWhatsAppReminderModal";
 
 export function SalesDialogs() {
   const {
@@ -35,6 +36,8 @@ export function SalesDialogs() {
     setCloseManualTarget,
     paymentsHistoryTarget,
     setPaymentsHistoryTarget,
+    whatsAppSaleTarget,
+    setWhatsAppSaleTarget,
     handlePaymentSuccess,
   } = useSalesContext();
 
@@ -45,6 +48,7 @@ export function SalesDialogs() {
         sale={previewSaleTarget}
         onClose={() => setPreviewSaleTarget(null)}
         onPrint={(sale) => handlePrintSale(sale)}
+        onWhatsAppReminder={(sale) => setWhatsAppSaleTarget(sale)}
       />
 
       {/* 2. Diálogo Confirmar Venta -> COMPLETED */}
@@ -180,6 +184,13 @@ export function SalesDialogs() {
         sale={paymentsHistoryTarget}
         onClose={() => setPaymentsHistoryTarget(null)}
         onOpenQuickPayment={(sale) => setQuickPaymentTarget(sale)}
+      />
+
+      {/* 9. Modal de Notificación de Cobro por WhatsApp */}
+      <SaleWhatsAppReminderModal
+        isOpen={Boolean(whatsAppSaleTarget)}
+        sale={whatsAppSaleTarget}
+        onClose={() => setWhatsAppSaleTarget(null)}
       />
 
       {/* Banner de Error en Acción */}

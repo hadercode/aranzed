@@ -4,3 +4,4 @@ export * from './ReceiptViewerModal';
 export * from './QuickPaymentModal';
 export * from './CloseSaleManualModal';
 export * from './SalePaymentsHistoryModal';
+export * from './SaleWhatsAppReminderModal';
