@@ -99,6 +99,18 @@ export class ProductImportController {
       limits: {
         fileSize: 10 * 1024 * 1024, // 10MB
       },
+      fileFilter: (_req, file, callback) => {
+        const ext = file.originalname.toLowerCase();
+        if (!ext.endsWith('.xlsx') && !ext.endsWith('.xls')) {
+          return callback(
+            new BadRequestException(
+              'Extensión de archivo no permitida. Solo se aceptan archivos Excel (.xlsx o .xls).',
+            ),
+            false,
+          );
+        }
+        callback(null, true);
+      },
     }),
   )
   async validateImportFile(

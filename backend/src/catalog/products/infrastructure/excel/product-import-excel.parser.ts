@@ -1,16 +1,24 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import * as ExcelJS from 'exceljs';
 import type { RawProductImportRow } from '@/catalog/products/application/models/bulk-import.models';
+import {
+  validateMagicBytes,
+  sanitizeFormulaInjection,
+  MAX_EXCEL_IMPORT_ROWS,
+} from '@/core/security/file-security.util';
 
 @Injectable()
 export class ProductImportExcelParser {
   async parse(fileBuffer: Buffer): Promise<RawProductImportRow[]> {
+    // 1. Verificación obligatoria de Magic Bytes (firma binaria real de archivo Excel)
+    validateMagicBytes(fileBuffer, 'excel');
+
     const workbook = new ExcelJS.Workbook();
     try {
       await workbook.xlsx.load(fileBuffer as any);
     } catch {
       throw new BadRequestException(
-        'El archivo subido no es un archivo Excel válido (.xlsx).',
+        'El archivo subido no es un archivo Excel válido o está corrupto (.xlsx).',
       );
     }
 
@@ -19,9 +27,16 @@ export class ProductImportExcelParser {
       throw new BadRequestException('El archivo Excel no contiene ninguna hoja de cálculo.');
     }
 
+    // 2. Control de denegación de servicio (DoS) por número excesivo de filas
+    const rowCount = worksheet.rowCount;
+    if (rowCount > MAX_EXCEL_IMPORT_ROWS) {
+      throw new BadRequestException(
+        `El archivo contiene ${rowCount} filas, superando el límite máximo de ${MAX_EXCEL_IMPORT_ROWS} filas por importación.`,
+      );
+    }
+
     const colIndexMap = this.mapHeaderColumns(worksheet.getRow(1));
     const rawRows: RawProductImportRow[] = [];
-    const rowCount = worksheet.rowCount;
 
     for (let rowNumber = 2; rowNumber <= rowCount; rowNumber++) {
       const row = worksheet.getRow(rowNumber);
@@ -61,11 +76,14 @@ export class ProductImportExcelParser {
 
   private getCellValueAsString(cell: ExcelJS.Cell): string {
     if (!cell || cell.value === null || cell.value === undefined) return '';
+    let raw = '';
     if (typeof cell.value === 'object') {
-      if ('text' in cell.value) return String((cell.value as any).text).trim();
-      if ('result' in cell.value) return String((cell.value as any).result).trim();
+      if ('text' in cell.value) raw = String((cell.value as any).text).trim();
+      else if ('result' in cell.value) raw = String((cell.value as any).result).trim();
+    } else {
+      raw = String(cell.value).trim();
     }
-    return String(cell.value).trim();
+    return sanitizeFormulaInjection(raw);
   }
 
   private getCellValueAsNumber(cell: ExcelJS.Cell, defaultValue = 0): number {
