@@ -16,5 +16,6 @@ export interface IProductRepository {
   findByName(name: string): Promise<Product | null>;
   findAll(filters?: ProductFilters): Promise<Product[]>;
   save(product: Product): Promise<Product>;
+  saveMany(products: Product[]): Promise<Product[]>;
   delete(id: string): Promise<void>;
 }

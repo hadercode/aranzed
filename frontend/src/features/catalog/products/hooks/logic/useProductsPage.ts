@@ -21,6 +21,7 @@ export function useProductsPage() {
 
   // Dialog and Modal states
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [isBulkImportOpen, setIsBulkImportOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
@@ -156,6 +157,14 @@ export function useProductsPage() {
     setEditingProduct(null);
   }, []);
 
+  const openBulkImportModal = useCallback(() => {
+    setIsBulkImportOpen(true);
+  }, []);
+
+  const closeBulkImportModal = useCallback(() => {
+    setIsBulkImportOpen(false);
+  }, []);
+
   const handleSaveProduct = useCallback(
     async (data: {
       name: string;
@@ -269,6 +278,9 @@ export function useProductsPage() {
     openEditModal,
     closeFormModal,
     editingProduct,
+    isBulkImportOpen,
+    openBulkImportModal,
+    closeBulkImportModal,
 
     // Form & Upload
     handleSaveProduct,
