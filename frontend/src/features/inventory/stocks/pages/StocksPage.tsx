@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Layers } from "lucide-react";
-import { PageHeader } from "@/shared/components/ui";
+import { Layers, RefreshCw, UploadCloud } from "lucide-react";
+import { Button, PageHeader } from "@/shared/components/ui";
 import { useStocksQuery } from "../hooks";
 import { useWarehousesQuery } from "../../warehouses/hooks";
 import { stocksService } from "../services";
@@ -9,6 +9,7 @@ import {
   StockFilterBar,
   StockTable,
   StockLedgerModal,
+  StockBulkImportModal,
 } from "../components";
 import type { StockLedgerEntry } from "../types";
 
@@ -16,9 +17,10 @@ export function StocksPage() {
   const [selectedWarehouseId, setSelectedWarehouseId] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [excludeDepleted, setExcludeDepleted] = useState<boolean>(true);
+  const [isBulkImportOpen, setIsBulkImportOpen] = useState<boolean>(false);
 
   const { warehouses } = useWarehousesQuery();
-  const { stocks, stats, isLoading } = useStocksQuery({
+  const { stocks, stats, isLoading, refetch } = useStocksQuery({
     warehouseId: selectedWarehouseId || undefined,
     search: searchTerm || undefined,
     excludeDepleted,
@@ -48,7 +50,26 @@ export function StocksPage() {
         title="Existencias y Saldos de Inventario"
         description="Consulte el stock físico, apartado y disponible en tiempo real con valuación PEPS (FIFO)."
         icon={<Layers className="w-6 h-6 text-[var(--color-sage-600)]" />}
-      />
+      >
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={() => void refetch()}
+          loading={isLoading}
+          leftIcon={<RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />}
+        >
+          Actualizar
+        </Button>
+
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={() => setIsBulkImportOpen(true)}
+          leftIcon={<UploadCloud className="w-4 h-4" />}
+        >
+          Carga Masiva de Saldos
+        </Button>
+      </PageHeader>
 
       <StockStatsCards stats={stats} />
 
@@ -73,6 +94,12 @@ export function StocksPage() {
         onClose={() => setIsLedgerOpen(false)}
         entries={ledgerEntries}
         loading={loadingLedger}
+      />
+
+      <StockBulkImportModal
+        isOpen={isBulkImportOpen}
+        onClose={() => setIsBulkImportOpen(false)}
+        onImportSuccess={() => void refetch()}
       />
     </div>
   );

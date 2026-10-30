@@ -80,6 +80,13 @@ export class ProductRepository implements IProductRepository {
     return refreshed || product;
   }
 
+  async saveMany(products: Product[]): Promise<Product[]> {
+    if (!products.length) return [];
+    const orms = products.map((p) => this.toOrm(p));
+    const saved = await this.repository.save(orms, { chunk: 100 });
+    return saved.map((o) => this.toDomain(o));
+  }
+
   async delete(id: string): Promise<void> {
     await this.repository.softDelete(id);
   }

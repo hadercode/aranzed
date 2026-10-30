@@ -14,22 +14,21 @@ export function SalesTable() {
     setConvertQuotationTarget,
     setCancelSaleTarget,
     setDeleteSaleTarget,
-    handleUpdatePaidStatus,
     setQuickPaymentTarget,
     setCloseManualTarget,
     setPaymentsHistoryTarget,
+    setWhatsAppSaleTarget,
   } = useSalesContext();
 
   const columns = useSalesTableColumns({
     onPreview: (sale: Sale) => setPreviewSaleTarget(sale),
     onPrint: (sale: Sale) => handlePrintSale(sale),
+    onWhatsAppReminder: (sale: Sale) => setWhatsAppSaleTarget(sale),
     onEdit: (id: string) => handleEditSale(id),
     onConfirm: (sale: Sale) => setConfirmSaleTarget(sale),
     onConvert: (sale: Sale) => setConvertQuotationTarget(sale),
     onCancel: (sale: Sale) => setCancelSaleTarget(sale),
     onDelete: (sale: Sale) => setDeleteSaleTarget(sale),
-    onUpdatePaidStatus: (sale: Sale, newStatus) =>
-      handleUpdatePaidStatus(sale, newStatus),
     onOpenQuickPayment: (sale: Sale) => setQuickPaymentTarget(sale),
     onOpenCloseManual: (sale: Sale) => setCloseManualTarget(sale),
     onOpenPaymentsHistory: (sale: Sale) => setPaymentsHistoryTarget(sale),

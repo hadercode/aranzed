@@ -46,6 +46,13 @@ import {
   FileUrlResponseDto,
 } from '../dto';
 import { StorageResponseMapper } from '../mappers/storage-response.mapper';
+import { extname } from 'path';
+import {
+  validateMagicBytes,
+  ALLOWED_STORAGE_EXTENSIONS,
+  ALLOWED_STORAGE_MIMES,
+  ALLOWED_STORAGE_FOLDERS,
+} from '@/core/security/file-security.util';
 
 @ApiTags('storage')
 @Controller('storage')
@@ -100,6 +107,21 @@ export class StorageController {
       limits: {
         fileSize: 25 * 1024 * 1024, // 25 MB
       },
+      fileFilter: (_req, file, callback) => {
+        const ext = extname(file.originalname).toLowerCase();
+        const isAllowedExt = (ALLOWED_STORAGE_EXTENSIONS as readonly string[]).includes(ext);
+        const isAllowedMime = (ALLOWED_STORAGE_MIMES as readonly string[]).includes(file.mimetype as any);
+
+        if (!isAllowedExt || !isAllowedMime) {
+          return callback(
+            new BadRequestException(
+              `Tipo de archivo no permitido (${ext} / ${file.mimetype}). Solo se admiten imágenes (JPEG, PNG, WEBP, GIF) y documentos PDF.`,
+            ),
+            false,
+          );
+        }
+        callback(null, true);
+      },
     }),
   )
   async uploadFile(
@@ -111,7 +133,14 @@ export class StorageController {
       throw new BadRequestException('Debe proporcionar un archivo en el campo "file"');
     }
 
-    const folder = dto.folder || dto.type || 'general';
+    // 1. Verificación obligatoria de Magic Bytes (firma binaria real para evitar spoofing)
+    validateMagicBytes(file.buffer, 'storage');
+
+    // 2. Validación de lista blanca de carpetas autorizadas
+    const requestedFolder = (dto.folder || dto.type || 'general').trim().toLowerCase();
+    const folder = (ALLOWED_STORAGE_FOLDERS as readonly string[]).includes(requestedFolder as any)
+      ? requestedFolder
+      : 'general';
     const command = UploadFileCommand.from(file, folder, userId);
     const storedFile = await this.uploadFileUseCase.execute(command);
     return StorageResponseMapper.toUploadDto(storedFile);
@@ -152,6 +181,12 @@ export class StorageController {
   ) {
     if (!key || !key.trim()) {
       throw new BadRequestException('El parámetro "key" es requerido');
+    }
+
+    // Prevención de path traversal o caracteres de control en la key
+    const validKeyPattern = /^[a-zA-Z0-9_\-\/.]+$/;
+    if (!validKeyPattern.test(key) || key.includes('..')) {
+      throw new BadRequestException('Formato de clave de archivo no válido');
     }
 
     const result = await this.getFileUrlUseCase.execute(

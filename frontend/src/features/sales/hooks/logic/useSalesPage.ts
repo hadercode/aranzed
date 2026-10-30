@@ -40,6 +40,7 @@ export function useSalesPage() {
   const [quickPaymentTarget, setQuickPaymentTarget] = useState<Sale | null>(null);
   const [closeManualTarget, setCloseManualTarget] = useState<Sale | null>(null);
   const [paymentsHistoryTarget, setPaymentsHistoryTarget] = useState<Sale | null>(null);
+  const [whatsAppSaleTarget, setWhatsAppSaleTarget] = useState<Sale | null>(null);
   const [cancelReason, setCancelReason] = useState('');
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -226,6 +227,8 @@ export function useSalesPage() {
     setCloseManualTarget,
     paymentsHistoryTarget,
     setPaymentsHistoryTarget,
+    whatsAppSaleTarget,
+    setWhatsAppSaleTarget,
     handleUpdatePaidStatus: async (sale: Sale, newStatus: SalePaidStatus) => {
       try {
         await updatePaidStatus({ id: sale.id, paidStatus: newStatus });

@@ -1,5 +1,6 @@
 import { ConfirmDialog, SuccessDialog } from '@/shared/components/ui';
 import { useProductsContext } from '../../context';
+import { ProductsBulkImportModal } from '../modal/ProductsBulkImportModal';
 
 export function ProductsDialogs() {
   const {
@@ -11,10 +12,22 @@ export function ProductsDialogs() {
     isSuccessOpen,
     successMessage,
     closeSuccessDialog,
+    isBulkImportOpen,
+    closeBulkImportModal,
+    refetch,
   } = useProductsContext();
 
   return (
     <>
+      {/* Modal de Carga Masiva de Artículos */}
+      <ProductsBulkImportModal
+        isOpen={isBulkImportOpen}
+        onClose={closeBulkImportModal}
+        onImportSuccess={() => {
+          void refetch();
+        }}
+      />
+
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog
         isOpen={isDeleteConfirmOpen}

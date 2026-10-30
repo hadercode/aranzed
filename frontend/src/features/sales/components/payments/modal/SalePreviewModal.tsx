@@ -4,21 +4,30 @@ import { SaleTypeBadge } from "../../table/SaleTypeBadge";
 import { SalesStatusBadge } from "../../table/SalesStatusBadge";
 import { SalesPaidBadge } from "../../table/SalesPaidBadge";
 import type { Sale } from "../../../types";
+import { WhatsAppIcon } from "./SaleWhatsAppReminderModal";
 
 export interface SalePreviewModalProps {
   sale: Sale | null;
   onClose: () => void;
   onPrint: (sale: Sale) => void;
+  onWhatsAppReminder?: (sale: Sale) => void;
 }
 
 export function SalePreviewModal({
   sale,
   onClose,
   onPrint,
+  onWhatsAppReminder,
 }: SalePreviewModalProps) {
   if (!sale) return null;
 
   const isQuotation = sale.saleType === "QUOTATION";
+  const isCancelled = sale.status === "CANCELLED";
+  const hasPendingBalance =
+    !isQuotation &&
+    !isCancelled &&
+    (sale.paidStatus !== "PAGADO" ||
+      (sale.balance !== undefined && sale.balance > 0));
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
@@ -49,6 +58,20 @@ export function SalePreviewModal({
           </div>
 
           <div className="flex items-center gap-2">
+            {hasPendingBalance && onWhatsAppReminder && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  onClose();
+                  onWhatsAppReminder(sale);
+                }}
+                className="text-emerald-600 hover:bg-emerald-500/10 border-emerald-500/30"
+                leftIcon={<WhatsAppIcon className="w-4 h-4 text-emerald-600" />}
+              >
+                Cobro WhatsApp
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"

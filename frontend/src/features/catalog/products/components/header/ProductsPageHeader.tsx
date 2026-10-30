@@ -1,23 +1,26 @@
 import { useNavigate } from 'react-router-dom';
-import { Package, Plus, RefreshCw } from 'lucide-react';
+import { Package, Plus, RefreshCw, UploadCloud } from 'lucide-react';
 import { Button, PageHeader } from '@/shared/components/ui';
 import { useProductsContext } from '../../context';
 
 export interface ProductsPageHeaderProps {
   onNewProduct?: () => void;
   onRefresh?: () => void;
+  onBulkImport?: () => void;
   loading?: boolean;
 }
 
 export function ProductsPageHeader({
   onNewProduct: propOnNewProduct,
   onRefresh: propOnRefresh,
+  onBulkImport: propOnBulkImport,
   loading: propLoading,
 }: ProductsPageHeaderProps) {
   const navigate = useNavigate();
   const context = useProductsContext();
   const onNewProduct = propOnNewProduct ?? (() => navigate('/catalog/products/new'));
   const onRefresh = propOnRefresh ?? context.refetch;
+  const onBulkImport = propOnBulkImport ?? context.openBulkImportModal;
   const loading = propLoading ?? context.loading;
 
   return (
@@ -34,6 +37,15 @@ export function ProductsPageHeader({
         leftIcon={<RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />}
       >
         Actualizar
+      </Button>
+
+      <Button
+        type="button"
+        variant="secondary"
+        onClick={onBulkImport}
+        leftIcon={<UploadCloud className="w-4 h-4" />}
+      >
+        Carga Masiva
       </Button>
 
       <Button
