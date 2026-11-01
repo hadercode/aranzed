@@ -72,9 +72,8 @@ export class SaleResponseMapper {
     dto.totalLocal = sale.totalLocal;
     dto.paidAmount = Number(sale.paidAmount || 0);
     dto.paidAmountLocal = Number(sale.paidAmountLocal || 0);
-    const { balance, balanceLocal } = sale.getBalance();
-    dto.balance = balance;
-    dto.balanceLocal = balanceLocal;
+    dto.balance = sale.balance ?? 0;
+    dto.balanceLocal = sale.balanceLocal ?? 0;
     dto.warehouseId = sale.warehouseId || null;
     dto.convertedFromQuotationId = sale.convertedFromQuotationId || null;
     dto.createdById = sale.createdById || null;

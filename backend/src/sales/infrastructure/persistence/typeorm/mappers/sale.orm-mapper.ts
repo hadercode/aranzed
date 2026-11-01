@@ -39,6 +39,8 @@ export class SaleOrmMapper {
       totalLocal: Number(orm.totalLocal),
       paidAmount: Number(orm.paidAmount || 0),
       paidAmountLocal: Number(orm.paidAmountLocal || 0),
+      balance: Number(orm.balance ?? 0),
+      balanceLocal: Number(orm.balanceLocal ?? 0),
       convertedFromQuotationId: orm.convertedFromQuotationId,
       createdById: orm.createdById,
       items,
@@ -90,6 +92,8 @@ export class SaleOrmMapper {
       totalLocal: domain.totalLocal,
       paidAmount: domain.paidAmount,
       paidAmountLocal: domain.paidAmountLocal,
+      balance: domain.balance,
+      balanceLocal: domain.balanceLocal,
       convertedFromQuotationId: domain.convertedFromQuotationId || null,
       createdById: domain.createdById || null,
       items: domain.items?.length

@@ -7,7 +7,9 @@ import {
   SaleNumberCell,
   SalePaymentTermCell,
   SaleDateCell,
+  SaleCustomerCell,
   SaleTotalAmountCell,
+  SaleBalanceCell,
 } from '../../components/table/SaleDatePaymentCells';
 
 export interface UseSalesTableColumnsProps {
@@ -62,16 +64,7 @@ export function useSalesTableColumns({
       {
         key: 'customerName',
         title: 'Cliente',
-        render: (sale: Sale) => (
-          <div className="flex flex-col max-w-[180px] truncate">
-            <span className="font-medium text-xs text-[var(--color-text-primary)] truncate">
-              {sale.customerName}
-            </span>
-            {sale.customerTaxId && (
-              <span className="text-[11px] text-[var(--color-text-muted)]">{sale.customerTaxId}</span>
-            )}
-          </div>
-        ),
+        render: (sale: Sale) => <SaleCustomerCell sale={sale} />,
       },
       {
         key: 'total',
@@ -80,19 +73,21 @@ export function useSalesTableColumns({
         render: (sale: Sale) => <SaleTotalAmountCell sale={sale} />,
       },
       {
+        key: 'balance',
+        title: 'Saldo Actual',
+        align: 'right',
+        render: (sale: Sale) => <SaleBalanceCell sale={sale} />,
+      },
+      {
         key: 'paidStatus',
         title: 'Estado Pago',
         align: 'center',
-        render: (sale: Sale) => {
-          if (sale.saleType === 'QUOTATION') {
-            return <span className="text-xs text-[var(--color-text-muted)] italic">N/A</span>;
-          }
-          return (
-            <div className="flex items-center justify-center gap-1.5">
-              <SalesPaidBadge paidStatus={sale.paidStatus} />
-            </div>
-          );
-        },
+        render: (sale: Sale) =>
+          sale.saleType === 'QUOTATION' ? (
+            <span className="text-xs text-[var(--color-text-muted)] italic">N/A</span>
+          ) : (
+            <SalesPaidBadge paidStatus={sale.paidStatus} />
+          ),
       },
       {
         key: 'status',
