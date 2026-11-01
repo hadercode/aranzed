@@ -1,65 +1,28 @@
-import { useState, useCallback, useEffect } from 'react';
-import { ApiClient } from '@/lib/api-client';
+import { useQuery } from '@tanstack/react-query';
+import { unitsOfMeasureService } from '../../services';
 import type { UnitOfMeasure } from '../../types';
 
+export const UOMS_QUERY_KEY = ['catalog', 'uofm'] as const;
+
 export function useUnitsOfMeasureQuery() {
-  const [data, setData] = useState<UnitOfMeasure[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const query = useQuery<UnitOfMeasure[], Error>({
+    queryKey: UOMS_QUERY_KEY,
+    queryFn: () => unitsOfMeasureService.getAll(),
+    staleTime: 1000 * 60 * 5,
+  });
 
-  const refetch = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError('');
-      const uoms = await ApiClient.get<UnitOfMeasure[]>('/catalog/uofm');
-      setData(uoms || []);
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : typeof err === 'string'
-          ? err
-          : 'Error al cargar las unidades de medida';
-      setError(message);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const error = query.error
+    ? query.error.message || 'Error al cargar las unidades de medida'
+    : '';
 
-  useEffect(() => {
-    let isMounted = true;
-
-    async function load() {
-      try {
-        setLoading(true);
-        setError('');
-        const uoms = await ApiClient.get<UnitOfMeasure[]>('/catalog/uofm');
-        if (isMounted) {
-          setData(uoms || []);
-        }
-      } catch (err: unknown) {
-        if (isMounted) {
-          const message =
-            err instanceof Error
-              ? err.message
-              : typeof err === 'string'
-              ? err
-              : 'Error al cargar las unidades de medida';
-          setError(message);
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    }
-
-    void load();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  return { data, loading, error, refetch, setData };
+  return {
+    data: query.data ?? [],
+    loading: query.isLoading,
+    error,
+    refetch: async () => {
+      await query.refetch();
+    },
+    isFetching: query.isFetching,
+    query,
+  };
 }

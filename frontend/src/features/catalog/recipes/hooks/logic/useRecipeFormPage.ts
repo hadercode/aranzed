@@ -84,7 +84,7 @@ export function useRecipeFormPage(recipeId?: string) {
   // Parent product can be FINISHED_GOOD or TRADITIONAL
   const parentProductOptions = useMemo(() => {
     return products.filter(
-      (p) => p.type === 'FINISHED_GOOD' || p.type === 'TRADITIONAL'
+      (p) => (p.type === 'FINISHED_GOOD' || p.type === 'TRADITIONAL') && p.isActive !== false
     );
   }, [products]);
 
@@ -94,9 +94,14 @@ export function useRecipeFormPage(recipeId?: string) {
     return formManager.productsMap.get(formManager.watchedProductId) || null;
   }, [formManager.watchedProductId, formManager.productsMap]);
 
-  // Component products (Raw materials, services, and other products except the current parent product)
+  // Component products (Active products suitable for internal production, excluding current parent)
   const componentProductOptions = useMemo(() => {
-    return products.filter((p) => p.id !== formManager.watchedProductId);
+    return products.filter(
+      (p) =>
+        p.id !== formManager.watchedProductId &&
+        p.isActive !== false &&
+        p.isForInternalUse !== false
+    );
   }, [products, formManager.watchedProductId]);
 
   // 7. Navigation & Helpers
