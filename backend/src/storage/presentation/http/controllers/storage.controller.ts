@@ -52,6 +52,8 @@ import {
   ALLOWED_STORAGE_EXTENSIONS,
   ALLOWED_STORAGE_MIMES,
   ALLOWED_STORAGE_FOLDERS,
+  isAllowedFileTypeForFolder,
+  getAllowedExtensionsForFolder,
 } from '@/core/security/file-security.util';
 
 @ApiTags('storage')
@@ -80,18 +82,18 @@ export class StorageController {
         file: {
           type: 'string',
           format: 'binary',
-          description: 'Archivo binario a subir (imágenes, documentos, etc.)',
+          description: 'Archivo binario a subir (imágenes: JPG, PNG, WEBP)',
         },
         folder: {
           type: 'string',
           description:
-            'Carpeta de destino dentro del bucket (ej: products, company, avatars, documents)',
-          example: 'products',
+            'Carpeta de destino dentro del bucket (ej: products, company, avatars, documents, payments)',
+          example: 'payments',
         },
         type: {
           type: 'string',
           description: 'Alias alternativo para indicar la carpeta/categoría de destino',
-          example: 'products',
+          example: 'payments',
         },
       },
     },
@@ -115,7 +117,7 @@ export class StorageController {
         if (!isAllowedExt || !isAllowedMime) {
           return callback(
             new BadRequestException(
-              `Tipo de archivo no permitido (${ext} / ${file.mimetype}). Solo se admiten imágenes (JPEG, PNG, WEBP, GIF) y documentos PDF.`,
+              `Tipo de archivo no permitido (${ext} / ${file.mimetype}). Actualmente solo se admiten imágenes (JPEG, PNG, WEBP).`,
             ),
             false,
           );
@@ -133,14 +135,24 @@ export class StorageController {
       throw new BadRequestException('Debe proporcionar un archivo en el campo "file"');
     }
 
-    // 1. Verificación obligatoria de Magic Bytes (firma binaria real para evitar spoofing)
-    validateMagicBytes(file.buffer, 'storage');
-
-    // 2. Validación de lista blanca de carpetas autorizadas
+    // 1. Validación de lista blanca de carpetas autorizadas
     const requestedFolder = (dto.folder || dto.type || 'general').trim().toLowerCase();
     const folder = (ALLOWED_STORAGE_FOLDERS as readonly string[]).includes(requestedFolder as any)
       ? requestedFolder
       : 'general';
+
+    // 2. Validación de tipos de archivo permitidos para la carpeta de destino
+    const ext = extname(file.originalname).toLowerCase();
+    if (!isAllowedFileTypeForFolder(folder, ext, file.mimetype)) {
+      const allowedExts = getAllowedExtensionsForFolder(folder).join(', ');
+      throw new BadRequestException(
+        `Tipo de archivo no permitido (${ext} / ${file.mimetype}) para la carpeta "${folder}". Solo se admiten: ${allowedExts}`,
+      );
+    }
+
+    // 3. Verificación obligatoria de Magic Bytes (firma binaria real para evitar spoofing)
+    validateMagicBytes(file.buffer, 'storage');
+
     const command = UploadFileCommand.from(file, folder, userId);
     const storedFile = await this.uploadFileUseCase.execute(command);
     return StorageResponseMapper.toUploadDto(storedFile);

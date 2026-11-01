@@ -19,7 +19,10 @@ export function getAssetUrl(path?: string | null): string {
     path.startsWith('products/') ||
     path.startsWith('company/') ||
     path.startsWith('invoices/') ||
-    path.startsWith('avatars/')
+    path.startsWith('avatars/') ||
+    path.startsWith('documents/') ||
+    path.startsWith('payments/') ||
+    path.startsWith('general/')
   ) {
     return `${API_BASE_URL}/storage/view?key=${encodeURIComponent(path)}`;
   }

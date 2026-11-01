@@ -1,5 +1,6 @@
 import React, { useId } from 'react';
-import { Upload, X, FileText, CheckCircle2 } from 'lucide-react';
+import { Upload, X, CheckCircle2 } from 'lucide-react';
+import { getAssetUrl } from '@/lib/api-client';
 
 export interface PaymentReceiptSectionProps {
   receiptUrl: string;
@@ -17,6 +18,7 @@ export function PaymentReceiptSection({
   onRemoveReceipt,
 }: PaymentReceiptSectionProps) {
   const inputId = useId();
+  const fullAssetUrl = getAssetUrl(receiptUrl);
 
   return (
     <div className="bg-[var(--color-surface-card)] rounded-2xl p-5 border border-[var(--color-border)] shadow-sm space-y-4">
@@ -30,7 +32,7 @@ export function PaymentReceiptSection({
               Comprobante de Pago Digital
             </h2>
             <p className="text-xs text-[var(--color-text-muted)]">
-              Adjunta el capture bancario o comprobante emitido (JPG, PNG, WEBP, PDF)
+              Almacenamiento seguro en la nube (Neon S3)
             </p>
           </div>
         </div>
@@ -38,7 +40,7 @@ export function PaymentReceiptSection({
         {receiptUrl && (
           <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 font-medium">
             <CheckCircle2 className="w-3.5 h-3.5" />
-            Adjunto guardado
+            Neon S3
           </span>
         )}
       </div>
@@ -48,7 +50,7 @@ export function PaymentReceiptSection({
           <input
             id={inputId}
             type="file"
-            accept="image/png,image/jpeg,image/webp,application/pdf"
+            accept="image/png,image/jpeg,image/webp"
             onChange={onFileUpload}
             disabled={isUploading}
             className="hidden"
@@ -62,10 +64,10 @@ export function PaymentReceiptSection({
             </div>
             <div>
               <p className="text-sm font-semibold text-[var(--color-text-primary)]">
-                {isUploading ? 'Subiendo comprobante al servidor...' : 'Haz clic para seleccionar o arrastra el comprobante'}
+                {isUploading ? 'Subiendo comprobante a Neon S3...' : 'Haz clic para seleccionar o arrastra el comprobante'}
               </p>
               <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
-                Formatos permitidos: JPG, PNG, WEBP, PDF (Máximo 10MB)
+                Formatos permitidos: JPG, PNG, WEBP (Hasta 10MB en Neon S3)
               </p>
             </div>
           </label>
@@ -73,23 +75,17 @@ export function PaymentReceiptSection({
       ) : (
         <div className="flex items-center justify-between p-3.5 rounded-xl bg-[var(--color-surface-bg)] border border-[var(--color-border)]">
           <div className="flex items-center gap-3 min-w-0">
-            {receiptUrl.toLowerCase().endsWith('.pdf') ? (
-              <div className="w-10 h-10 rounded-lg bg-rose-500/10 text-rose-600 flex items-center justify-center shrink-0">
-                <FileText className="w-5 h-5" />
-              </div>
-            ) : (
-              <img
-                src={receiptUrl}
-                alt="Comprobante"
-                className="w-12 h-12 object-cover rounded-lg border border-[var(--color-border)] shrink-0"
-              />
-            )}
+            <img
+              src={fullAssetUrl}
+              alt="Comprobante"
+              className="w-12 h-12 object-cover rounded-lg border border-[var(--color-border)] shrink-0"
+            />
             <div className="min-w-0">
               <p className="text-xs font-semibold text-[var(--color-text-primary)] truncate">
                 {receiptFileName || 'comprobante-pago.jpg'}
               </p>
               <a
-                href={receiptUrl}
+                href={fullAssetUrl}
                 target="_blank"
                 rel="noreferrer"
                 className="text-[11px] text-sage-600 hover:underline"

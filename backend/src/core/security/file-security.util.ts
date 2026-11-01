@@ -13,6 +13,7 @@ export const ALLOWED_STORAGE_FOLDERS = [
   'company',
   'avatars',
   'documents',
+  'payments',
   'general',
 ] as const;
 
@@ -20,13 +21,12 @@ export type AllowedStorageFolder = (typeof ALLOWED_STORAGE_FOLDERS)[number];
 
 /**
  * Tipos de archivo permitidos para almacenamiento general en S3.
+ * Actualmente restringido exclusivamente a imágenes (JPEG, PNG, WEBP).
  */
 export const ALLOWED_STORAGE_MIMES = [
   'image/jpeg',
   'image/png',
   'image/webp',
-  'image/gif',
-  'application/pdf',
 ] as const;
 
 export const ALLOWED_STORAGE_EXTENSIONS = [
@@ -34,9 +34,68 @@ export const ALLOWED_STORAGE_EXTENSIONS = [
   '.jpeg',
   '.png',
   '.webp',
-  '.gif',
-  '.pdf',
 ] as const;
+
+/**
+ * Configuración de tipos y extensiones permitidas según la carpeta de destino en S3.
+ * Actualmente todas las carpetas admiten exclusivamente imágenes.
+ */
+export const FOLDER_ALLOWED_MIMES: Record<AllowedStorageFolder, readonly string[]> = {
+  products: ['image/jpeg', 'image/png', 'image/webp'],
+  company: ['image/jpeg', 'image/png', 'image/webp'],
+  avatars: ['image/jpeg', 'image/png', 'image/webp'],
+  documents: ['image/jpeg', 'image/png', 'image/webp'],
+  payments: ['image/jpeg', 'image/png', 'image/webp'],
+  general: ['image/jpeg', 'image/png', 'image/webp'],
+};
+
+export const FOLDER_ALLOWED_EXTENSIONS: Record<AllowedStorageFolder, readonly string[]> = {
+  products: ['.jpg', '.jpeg', '.png', '.webp'],
+  company: ['.jpg', '.jpeg', '.png', '.webp'],
+  avatars: ['.jpg', '.jpeg', '.png', '.webp'],
+  documents: ['.jpg', '.jpeg', '.png', '.webp'],
+  payments: ['.jpg', '.jpeg', '.png', '.webp'],
+  general: ['.jpg', '.jpeg', '.png', '.webp'],
+};
+
+/**
+ * Valida si una extensión y tipo MIME están permitidos para una carpeta específica.
+ */
+export function isAllowedFileTypeForFolder(
+  folder: string,
+  extension: string,
+  mimetype: string,
+): boolean {
+  const targetFolder: AllowedStorageFolder = (
+    ALLOWED_STORAGE_FOLDERS as readonly string[]
+  ).includes(folder as any)
+    ? (folder as AllowedStorageFolder)
+    : 'general';
+
+  const allowedExts = FOLDER_ALLOWED_EXTENSIONS[targetFolder] || FOLDER_ALLOWED_EXTENSIONS.general;
+  const allowedMimes = FOLDER_ALLOWED_MIMES[targetFolder] || FOLDER_ALLOWED_MIMES.general;
+
+  const extNormalized = extension.toLowerCase();
+  const mimeNormalized = mimetype.toLowerCase();
+
+  return (
+    allowedExts.includes(extNormalized) &&
+    allowedMimes.includes(mimeNormalized)
+  );
+}
+
+/**
+ * Obtiene la lista de extensiones legibles permitidas para una carpeta dada.
+ */
+export function getAllowedExtensionsForFolder(folder: string): readonly string[] {
+  const targetFolder: AllowedStorageFolder = (
+    ALLOWED_STORAGE_FOLDERS as readonly string[]
+  ).includes(folder as any)
+    ? (folder as AllowedStorageFolder)
+    : 'general';
+
+  return FOLDER_ALLOWED_EXTENSIONS[targetFolder] || FOLDER_ALLOWED_EXTENSIONS.general;
+}
 
 /**
  * Valida la firma binaria real (Magic Bytes) de un buffer para evitar MIME Type spoofing.
@@ -83,13 +142,6 @@ export function validateMagicBytes(
       buffer[2] === 0x4e &&
       buffer[3] === 0x47;
 
-    // GIF: 47 49 46 38
-    const isGif =
-      buffer[0] === 0x47 &&
-      buffer[1] === 0x49 &&
-      buffer[2] === 0x46 &&
-      buffer[3] === 0x38;
-
     // WEBP: 'RIFF' en [0..3] y 'WEBP' en [8..11]
     const isWebp =
       buffer.length >= 12 &&
@@ -102,16 +154,11 @@ export function validateMagicBytes(
       buffer[10] === 0x42 &&
       buffer[11] === 0x50;
 
-    // PDF: %PDF (25 50 44 46)
-    const isPdf =
-      buffer[0] === 0x25 &&
-      buffer[1] === 0x50 &&
-      buffer[2] === 0x44 &&
-      buffer[3] === 0x46;
+    const isImage = isJpeg || isPng || isWebp;
 
-    if (!isJpeg && !isPng && !isGif && !isWebp && !isPdf) {
+    if (!isImage) {
       throw new BadRequestException(
-        'Firma binaria de archivo no permitida. Solo se admiten imágenes legítimas (JPEG, PNG, WEBP, GIF) y documentos PDF.',
+        'Firma binaria de archivo no permitida. Actualmente solo se admiten imágenes legítimas (JPEG, PNG, WEBP).',
       );
     }
   }
@@ -139,4 +186,3 @@ export function sanitizeFormulaInjection(value: string): string {
 
   return trimmed;
 }
-
