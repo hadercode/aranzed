@@ -1,6 +1,6 @@
-import { ConfirmDialog } from '@/shared/components/ui';
-import { TransactionDetailModal } from './TransactionDetailModal';
-import type { InventoryTransaction } from '../types';
+import { ConfirmDialog } from "@/shared/components/ui";
+import TransactionDetailModal from "../details/TransactionDetailModal";
+import type { InventoryTransaction } from "../../types";
 
 export interface TransactionDialogsProps {
   selectedTx: InventoryTransaction | null;

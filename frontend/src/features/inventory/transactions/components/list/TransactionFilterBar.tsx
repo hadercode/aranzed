@@ -1,6 +1,11 @@
-import { Layers, FileCheck2, Warehouse as WarehouseIcon, RotateCcw } from 'lucide-react';
-import { SearchInput, Select, Button } from '@/shared/components/ui';
-import type { Warehouse } from '../../warehouses/types';
+import {
+  Layers,
+  FileCheck2,
+  Warehouse as WarehouseIcon,
+  RotateCcw,
+} from "lucide-react";
+import { SearchInput, Select, Button } from "@/shared/components/ui";
+import type { Warehouse } from "@/features/inventory/warehouses";
 
 export interface TransactionFilterBarProps {
   searchTerm: string;
@@ -28,7 +33,7 @@ export function TransactionFilterBar({
   onResetFilters,
 }: TransactionFilterBarProps) {
   const hasActiveFilters = Boolean(
-    searchTerm || typeFilter || statusFilter || warehouseFilter
+    searchTerm || typeFilter || statusFilter || warehouseFilter,
   );
 
   return (
@@ -37,7 +42,7 @@ export function TransactionFilterBar({
         <SearchInput
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
-          onClear={() => onSearchChange('')}
+          onClear={() => onSearchChange("")}
           placeholder="Buscar por Nº, referencia o motivo..."
           containerClassName="flex-1 min-w-[240px] max-w-md"
         />
@@ -45,14 +50,16 @@ export function TransactionFilterBar({
         <Select
           value={typeFilter}
           onChange={(e) => onTypeFilterChange(e.target.value)}
-          leftIcon={<Layers className="w-4 h-4 text-[var(--color-text-muted)]" />}
+          leftIcon={
+            <Layers className="w-4 h-4 text-[var(--color-text-muted)]" />
+          }
           containerClassName="w-full sm:w-48 shrink-0"
           options={[
-            { value: '', label: 'Todos los tipos' },
-            { value: 'RECEPTION', label: 'Recepción (+)' },
-            { value: 'ISSUE', label: 'Salida (-)' },
-            { value: 'TRANSFER', label: 'Transferencia' },
-            { value: 'ADJUSTMENT', label: 'Ajuste (+/-)' },
+            { value: "", label: "Todos los tipos" },
+            { value: "RECEPTION", label: "Recepción (+)" },
+            { value: "ISSUE", label: "Salida (-)" },
+            { value: "TRANSFER", label: "Transferencia" },
+            { value: "ADJUSTMENT", label: "Ajuste (+/-)" },
           ]}
           aria-label="Filtrar por tipo de movimiento"
         />
@@ -60,14 +67,16 @@ export function TransactionFilterBar({
         <Select
           value={statusFilter}
           onChange={(e) => onStatusFilterChange(e.target.value)}
-          leftIcon={<FileCheck2 className="w-4 h-4 text-[var(--color-text-muted)]" />}
+          leftIcon={
+            <FileCheck2 className="w-4 h-4 text-[var(--color-text-muted)]" />
+          }
           containerClassName="w-full sm:w-48 shrink-0"
           options={[
-            { value: '', label: 'Todos los estados' },
-            { value: 'COMPLETED', label: 'Completada' },
-            { value: 'DRAFT', label: 'Borrador' },
-            { value: 'IN_TRANSIT', label: 'En Tránsito' },
-            { value: 'CANCELLED', label: 'Anulada' },
+            { value: "", label: "Todos los estados" },
+            { value: "COMPLETED", label: "Completada" },
+            { value: "DRAFT", label: "Borrador" },
+            { value: "IN_TRANSIT", label: "En Tránsito" },
+            { value: "CANCELLED", label: "Anulada" },
           ]}
           aria-label="Filtrar por estado"
         />
@@ -75,10 +84,12 @@ export function TransactionFilterBar({
         <Select
           value={warehouseFilter}
           onChange={(e) => onWarehouseFilterChange(e.target.value)}
-          leftIcon={<WarehouseIcon className="w-4 h-4 text-[var(--color-text-muted)]" />}
+          leftIcon={
+            <WarehouseIcon className="w-4 h-4 text-[var(--color-text-muted)]" />
+          }
           containerClassName="w-full sm:w-56 shrink-0"
           options={[
-            { value: '', label: 'Todos los almacenes' },
+            { value: "", label: "Todos los almacenes" },
             ...warehouses.map((w) => ({
               value: w.id,
               label: `${w.code} - ${w.name}`,
@@ -105,4 +116,3 @@ export function TransactionFilterBar({
 }
 
 export default TransactionFilterBar;
-

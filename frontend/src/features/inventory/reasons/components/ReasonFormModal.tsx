@@ -1,6 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Modal, Button } from '@/shared/components/ui';
-import type { InventoryReason, InventoryReasonType, CreateInventoryReasonDto } from '../types';
+import type { InventoryReason, CreateInventoryReasonDto } from '../types';
+import { reasonSchema, type ReasonFormData } from '../schemas/reason.schema';
 
 interface ReasonFormModalProps {
   isOpen: boolean;
@@ -17,32 +20,38 @@ export function ReasonFormModal({
   onSubmit,
   loading = false,
 }: ReasonFormModalProps) {
-  const [formData, setFormData] = useState<CreateInventoryReasonDto>({
-    name: '',
-    type: 'OUTPUT',
-    description: '',
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<ReasonFormData>({
+    resolver: zodResolver(reasonSchema),
+    defaultValues: {
+      name: '',
+      type: 'OUTPUT',
+      description: '',
+    },
   });
 
   useEffect(() => {
     if (reason) {
-      setFormData({
+      reset({
         name: reason.name,
         type: reason.type,
         description: reason.description || '',
       });
     } else {
-      setFormData({
+      reset({
         name: '',
         type: 'OUTPUT',
         description: '',
       });
     }
-  }, [reason, isOpen]);
+  }, [reason, isOpen, reset]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.name) return;
-    await onSubmit(formData);
+  const onFormSubmit = async (data: ReasonFormData) => {
+    await onSubmit(data);
   };
 
   return (
@@ -51,36 +60,37 @@ export function ReasonFormModal({
       onClose={onClose}
       title={reason ? 'Editar Motivo de Inventario' : 'Nuevo Motivo de Inventario'}
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
         <div>
           <label className="block text-xs font-medium text-[var(--color-text-secondary)] mb-1">
             Nombre del Motivo *
           </label>
           <input
             type="text"
-            required
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            placeholder="Ej: Merma por Caducidad"
-            className="w-full px-3 py-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-sage-500)]"
+            {...register('name')}
+            className="w-full px-3 py-2 text-sm rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-card)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-sage-500)]"
+            placeholder="Ej: Ajuste por Merma, Devolución de Cliente..."
           />
+          {errors.name && (
+            <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>
+          )}
         </div>
 
         <div>
           <label className="block text-xs font-medium text-[var(--color-text-secondary)] mb-1">
-            Tipo de Movimiento Permitido *
+            Tipo de Flujo *
           </label>
           <select
-            value={formData.type}
-            onChange={(e) =>
-              setFormData({ ...formData, type: e.target.value as InventoryReasonType })
-            }
-            className="w-full px-3 py-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-sage-500)]"
+            {...register('type')}
+            className="w-full px-3 py-2 text-sm rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-card)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-sage-500)]"
           >
-            <option value="OUTPUT">Salida (-) : Mermas, bajas, autoconsumo</option>
-            <option value="INPUT">Entrada (+) : Ajuste inicial, donación, sobrante</option>
-            <option value="BOTH">Ambos (+/-) : Ajuste físico cíclico o general</option>
+            <option value="OUTPUT">SALIDA (Resta existencias)</option>
+            <option value="INPUT">ENTRADA (Suma existencias)</option>
+            <option value="BOTH">AMBOS (Entrada y Salida)</option>
           </select>
+          {errors.type && (
+            <p className="mt-1 text-xs text-red-500">{errors.type.message}</p>
+          )}
         </div>
 
         <div>
@@ -88,23 +98,24 @@ export function ReasonFormModal({
             Descripción / Observaciones
           </label>
           <textarea
+            {...register('description')}
             rows={3}
-            value={formData.description || ''}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            className="w-full px-3 py-2 text-sm rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-card)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-sage-500)]"
             placeholder="Detalles sobre cuándo debe utilizarse este motivo..."
-            className="w-full px-3 py-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-sage-500)] resize-none"
           />
         </div>
 
-        <div className="pt-4 flex justify-end gap-3 border-t border-[var(--color-border)]">
-          <Button variant="ghost" type="button" onClick={onClose}>
+        <div className="flex justify-end gap-3 pt-3">
+          <Button type="button" variant="ghost" onClick={onClose}>
             Cancelar
           </Button>
-          <Button type="submit" loading={loading}>
-            {reason ? 'Guardar Cambios' : 'Crear Motivo'}
+          <Button type="submit" variant="primary" loading={loading}>
+            {reason ? 'Actualizar Motivo' : 'Crear Motivo'}
           </Button>
         </div>
       </form>
     </Modal>
   );
 }
+
+export default ReasonFormModal;
