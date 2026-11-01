@@ -30,6 +30,7 @@ export function SalePaymentsHistoryTable({
             const thisAlloc = p.allocations?.find((a) => a.saleId === saleId);
             const allocatedAmount = thisAlloc ? thisAlloc.amountAllocated : p.amount;
             const isConfirmed = p.status === "CONFIRMED";
+            const isAdjustment = p.paymentMethod === "ADJUSTMENT";
 
             return (
               <tr
@@ -44,21 +45,35 @@ export function SalePaymentsHistoryTable({
                 </td>
                 <td className="py-2.5 px-3">
                   <p className="font-medium text-[var(--color-text-primary)]">
-                    {p.paymentMethod}
+                    {isAdjustment ? "Ajuste por Cierre Manual" : p.paymentMethod}
                   </p>
-                  {p.reference && (
+                  {isAdjustment && p.notes ? (
+                    <p className="text-[10px] text-amber-600 dark:text-amber-400 italic">
+                      {p.notes}
+                    </p>
+                  ) : p.reference ? (
                     <p className="text-[10px] text-[var(--color-text-muted)] font-mono">
                       Ref: {p.reference}
                     </p>
-                  )}
+                  ) : null}
                 </td>
                 <td className="py-2.5 px-3 text-right">
-                  <span className="font-bold text-emerald-600">
+                  <span
+                    className={`font-bold ${
+                      isAdjustment
+                        ? "text-amber-600 dark:text-amber-400"
+                        : "text-emerald-600 dark:text-emerald-400"
+                    }`}
+                  >
                     ${Number(allocatedAmount || 0).toFixed(2)}
                   </span>
                 </td>
                 <td className="py-2.5 px-3 text-center">
-                  {p.receiptUrl ? (
+                  {isAdjustment ? (
+                    <span className="text-[10px] text-amber-600 dark:text-amber-400 font-medium">
+                      Ajuste de saldo
+                    </span>
+                  ) : p.receiptUrl ? (
                     <button
                       type="button"
                       onClick={() => onOpenReceipt(p.receiptUrl!)}
@@ -101,4 +116,3 @@ export function SalePaymentsHistoryTable({
     </div>
   );
 }
-

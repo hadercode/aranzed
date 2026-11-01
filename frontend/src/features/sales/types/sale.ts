@@ -2,7 +2,18 @@ export type SaleType = 'QUOTATION' | 'DIRECT_SALE';
 export type SalePaymentTerm = 'CONTADO' | 'CREDITO';
 export type SalePaidStatus = 'PENDIENTE' | 'ABONADO' | 'PAGADO';
 export type SaleStatus = 'DRAFT' | 'PENDING' | 'COMPLETED' | 'CANCELLED';
-export type PaymentMethod = 'CASH' | 'TRANSFER' | 'CARD' | 'CREDIT' | 'OTHER';
+export type PaymentMethod =
+  | 'CASH'
+  | 'CASH_USD'
+  | 'CASH_VES'
+  | 'TRANSFER'
+  | 'MOBILE_PAY'
+  | 'POS'
+  | 'ZELLE'
+  | 'CARD'
+  | 'CREDIT'
+  | 'ADJUSTMENT'
+  | 'OTHER';
 export type PaymentStatus = 'CONFIRMED' | 'CANCELLED';
 
 export interface SaleItemProductSummary {

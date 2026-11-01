@@ -30,6 +30,10 @@ const methodLabels: Record<string, { label: string; color: string }> = {
     label: 'Tarjeta',
     color: 'bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-500/20',
   },
+  ADJUSTMENT: {
+    label: 'Ajuste Manual',
+    color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
+  },
   OTHER: {
     label: 'Otro',
     color: 'bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20',
@@ -114,4 +118,3 @@ export function SalePaymentAllocationsCell({ payment }: { payment: SalePayment }
     </div>
   );
 }
-
