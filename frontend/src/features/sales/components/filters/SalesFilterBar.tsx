@@ -1,6 +1,6 @@
 import { Search, X, RotateCcw } from 'lucide-react';
 import { useSalesStore } from '../../store';
-import type { SalePaidStatus, SalePaymentTerm, SaleStatus, SaleType } from '../../types';
+import { SalesFilterSelects } from './SalesFilterSelects';
 
 export function SalesFilterBar() {
   const {
@@ -42,7 +42,6 @@ export function SalesFilterBar() {
   return (
     <div className="bg-[var(--color-surface-card)] rounded-2xl p-4 shadow-[var(--shadow-organic)] border border-[var(--color-border)] mb-6 space-y-3">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-3">
-        {/* Búsqueda rápida */}
         <div className="lg:col-span-2 relative">
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
@@ -62,61 +61,17 @@ export function SalesFilterBar() {
           )}
         </div>
 
-        {/* Tipo de Documento */}
-        <div>
-          <select
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value as SaleType | 'ALL')}
-            className="w-full px-3 py-2 text-sm rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-bg)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-sage-500)]/20 focus:border-[var(--color-sage-500)]"
-          >
-            <option value="ALL">Tipo: Todos</option>
-            <option value="DIRECT_SALE">Ventas Directas</option>
-            <option value="QUOTATION">Cotizaciones</option>
-          </select>
-        </div>
+        <SalesFilterSelects
+          typeFilter={typeFilter}
+          setTypeFilter={setTypeFilter}
+          paymentTermFilter={paymentTermFilter}
+          setPaymentTermFilter={setPaymentTermFilter}
+          paidStatusFilter={paidStatusFilter}
+          setPaidStatusFilter={setPaidStatusFilter}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+        />
 
-        {/* Condición (Contado vs Crédito) */}
-        <div>
-          <select
-            value={paymentTermFilter}
-            onChange={(e) => setPaymentTermFilter(e.target.value as SalePaymentTerm | 'ALL')}
-            className="w-full px-3 py-2 text-sm rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-bg)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-sage-500)]/20 focus:border-[var(--color-sage-500)]"
-          >
-            <option value="ALL">Condición: Todas</option>
-            <option value="CONTADO">Contado</option>
-            <option value="CREDITO">Crédito</option>
-          </select>
-        </div>
-
-        {/* Estado de Pago */}
-        <div>
-          <select
-            value={paidStatusFilter}
-            onChange={(e) => setPaidStatusFilter(e.target.value as SalePaidStatus | 'ALL')}
-            className="w-full px-3 py-2 text-sm rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-bg)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-sage-500)]/20 focus:border-[var(--color-sage-500)]"
-          >
-            <option value="ALL">Pago: Todos</option>
-            <option value="PENDIENTE">Pendientes</option>
-            <option value="ABONADO">Abonados</option>
-            <option value="PAGADO">Pagados</option>
-          </select>
-        </div>
-
-        {/* Estado del Documento */}
-        <div>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as SaleStatus | 'ALL')}
-            className="w-full px-3 py-2 text-sm rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-bg)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-sage-500)]/20 focus:border-[var(--color-sage-500)]"
-          >
-            <option value="ALL">Doc: Todos</option>
-            <option value="COMPLETED">Completadas</option>
-            <option value="DRAFT">Borrador</option>
-            <option value="CANCELLED">Anuladas</option>
-          </select>
-        </div>
-
-        {/* Fechas / Reset */}
         <div className="flex items-center gap-1.5">
           <input
             type="date"

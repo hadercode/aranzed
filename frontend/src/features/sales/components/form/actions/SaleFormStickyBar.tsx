@@ -22,23 +22,25 @@ export function SaleFormStickyBar({
   const typeLabel = saleType === 'QUOTATION' ? 'Cotización' : 'Venta Directa';
 
   return (
-    <StickyBar
-      title={`${typeLabel}: ${customerName}`}
-      subtitle={`Total a Liquidar: $${financials.totalUSD.toFixed(2)} USD (Bs. ${financials.totalLocal.toFixed(2)})`}
-      indicators={[
-        {
-          label: 'Total USD',
-          value: `$${financials.totalUSD.toFixed(2)}`,
-          icon: <DollarSign className="w-3.5 h-3.5 text-emerald-600" />,
-          highlight: true,
-        },
-      ]}
-      onCancel={handleCancel}
-      cancelDisabled={isSaving}
-      submitText={isEditMode ? 'Actualizar Documento' : 'Guardar y Procesar'}
-      isSubmitting={isSaving}
-      submitFormId="sale-form-page"
-    />
+    <div id="tour-sale-sticky-bar">
+      <StickyBar
+        title={`${typeLabel}: ${customerName}`}
+        subtitle={`Total a Liquidar: $${financials.totalUSD.toFixed(2)} USD (Bs. ${financials.totalLocal.toFixed(2)})`}
+        indicators={[
+          {
+            label: 'Total USD',
+            value: `$${financials.totalUSD.toFixed(2)}`,
+            icon: <DollarSign className="w-3.5 h-3.5 text-emerald-600" />,
+            highlight: true,
+          },
+        ]}
+        onCancel={handleCancel}
+        cancelDisabled={isSaving}
+        submitText={isEditMode ? 'Actualizar Documento' : 'Guardar y Procesar'}
+        isSubmitting={isSaving}
+        submitFormId="sale-form-page"
+      />
+    </div>
   );
 }
 

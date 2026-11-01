@@ -1,0 +1,97 @@
+@import "driver.js/dist/driver.css";
+
+/* Ministore Custom Driver.js Theme */
+.driver-popover.ministore-tour-popover {
+  background-color: var(--color-surface-card, #ffffff);
+  color: var(--color-text-primary, #1e293b);
+  border: 1px solid var(--color-border, #e8eef3);
+  border-radius: 1rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  padding: 1.25rem;
+  max-width: 380px;
+  font-family: inherit;
+  transition: all 0.2s ease-in-out;
+}
+
+.driver-popover.ministore-tour-popover .driver-popover-title {
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--color-text-primary, #1e293b);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.driver-popover.ministore-tour-popover .driver-popover-description {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-text-secondary, #64748b);
+  margin-bottom: 1rem;
+}
+
+.driver-popover.ministore-tour-popover .driver-popover-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border, #e8eef3);
+}
+
+.driver-popover.ministore-tour-popover .driver-popover-progress-text {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-brand-cyan, #22b2b8);
+  background: var(--color-primary-50, #edfafa);
+  padding: 0.2rem 0.55rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(34, 178, 184, 0.2);
+}
+
+.driver-popover.ministore-tour-popover .driver-popover-btn {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0.45rem 0.85rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  border: 1px solid transparent;
+  text-shadow: none;
+}
+
+.driver-popover.ministore-tour-popover .driver-popover-next-btn {
+  background-color: var(--color-brand-cyan, #22b2b8);
+  color: #ffffff;
+}
+
+.driver-popover.ministore-tour-popover .driver-popover-next-btn:hover {
+  background-color: var(--color-primary-600, #1a969c);
+  transform: translateY(-1px);
+}
+
+.driver-popover.ministore-tour-popover .driver-popover-prev-btn {
+  background-color: transparent;
+  color: var(--color-text-secondary, #64748b);
+  border-color: var(--color-border, #e8eef3);
+}
+
+.driver-popover.ministore-tour-popover .driver-popover-prev-btn:hover {
+  background-color: var(--color-surface-hover, #f0f4f8);
+  color: var(--color-text-primary, #1e293b);
+}
+
+.driver-popover.ministore-tour-popover .driver-popover-close-btn {
+  color: var(--color-text-muted, #94a3b8);
+  padding: 4px;
+}
+
+.driver-popover.ministore-tour-popover .driver-popover-close-btn:hover {
+  color: var(--color-text-primary, #1e293b);
+}
+
+.driver-popover.ministore-tour-popover .driver-popover-arrow {
+  border-color: var(--color-surface-card, #ffffff);
+}
+

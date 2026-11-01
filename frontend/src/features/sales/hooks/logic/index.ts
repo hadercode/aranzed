@@ -10,3 +10,4 @@ export * from './useSalePaymentFormPage';
 export * from './useQuickPayment';
 export * from './useCloseSaleManual';
 export * from './useSalePaymentsHistory';
+export * from './useSaleTour';

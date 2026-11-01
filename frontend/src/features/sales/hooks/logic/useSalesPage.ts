@@ -2,9 +2,9 @@ import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSalesQuery } from '../queries/useSalesQuery';
 import { useSaleMutations } from '../mutations/useSaleMutations';
-import { salesService } from '../../services';
 import { useSalesStore } from '../../store';
 import type { Sale, SaleFilters, SalePaidStatus } from '../../types';
+import { useSalesPageOperations } from './useSalesPageOperations';
 
 export function useSalesPage() {
   const navigate = useNavigate();
@@ -33,31 +33,10 @@ export function useSalesPage() {
 
   const { sales, total, stats, isLoading, isError, error, refetch } = useSalesQuery(filters);
   const mutations = useSaleMutations();
-
-  const handleExportExcel = async () => {
-    try {
-      await salesService.exportExcel(filters);
-    } catch (err: any) {
-      store.setActionError('Error al exportar a Excel: ' + (err.message || String(err)));
-    }
-  };
-
-  const handleExportPdf = async () => {
-    try {
-      await salesService.exportPdf(filters);
-    } catch (err: any) {
-      store.setActionError('Error al exportar a PDF: ' + (err.message || String(err)));
-    }
-  };
-
-  const handlePrintSale = async (sale: Sale) => {
-    try {
-      const url = await salesService.getSalePdfBlobUrl(sale.id);
-      window.open(url, '_blank');
-    } catch (err: any) {
-      store.setActionError('Error al generar el comprobante PDF: ' + (err.message || String(err)));
-    }
-  };
+  const { handleExportExcel, handleExportPdf, handlePrintSale } = useSalesPageOperations({
+    filters,
+    setActionError: store.setActionError,
+  });
 
   const handleConfirmSale = async () => {
     if (!store.confirmSaleTarget) return;
@@ -65,8 +44,8 @@ export function useSalesPage() {
       await mutations.updateStatus({ id: store.confirmSaleTarget.id, status: 'COMPLETED' });
       store.setConfirmSaleTarget(null);
       await refetch();
-    } catch (err: any) {
-      store.setActionError(err.message || String(err));
+    } catch (err: unknown) {
+      store.setActionError(err instanceof Error ? err.message : String(err));
     }
   };
 
@@ -76,8 +55,8 @@ export function useSalesPage() {
       await mutations.convertQuotation(store.convertQuotationTarget.id);
       store.setConvertQuotationTarget(null);
       await refetch();
-    } catch (err: any) {
-      store.setActionError(err.message || String(err));
+    } catch (err: unknown) {
+      store.setActionError(err instanceof Error ? err.message : String(err));
     }
   };
 
@@ -92,8 +71,8 @@ export function useSalesPage() {
       store.setCancelSaleTarget(null);
       store.setCancelReason('');
       await refetch();
-    } catch (err: any) {
-      store.setActionError(err.message || String(err));
+    } catch (err: unknown) {
+      store.setActionError(err instanceof Error ? err.message : String(err));
     }
   };
 
@@ -103,8 +82,8 @@ export function useSalesPage() {
       await mutations.deleteSale(store.deleteSaleTarget.id);
       store.setDeleteSaleTarget(null);
       await refetch();
-    } catch (err: any) {
-      store.setActionError(err.message || String(err));
+    } catch (err: unknown) {
+      store.setActionError(err instanceof Error ? err.message : String(err));
     }
   };
 
@@ -144,8 +123,8 @@ export function useSalesPage() {
       try {
         await mutations.updatePaidStatus({ id: sale.id, paidStatus: newStatus });
         await refetch();
-      } catch (err: any) {
-        store.setActionError(err.message || String(err));
+      } catch (err: unknown) {
+        store.setActionError(err instanceof Error ? err.message : String(err));
       }
     },
     isChangingPaidStatus: mutations.isChangingPaidStatus,

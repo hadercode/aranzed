@@ -1,6 +1,7 @@
 import { ShoppingBag } from 'lucide-react';
 import { FormHeader } from '@/shared/components/ui/FormHeader';
 import type { SaleType } from '../../../types';
+import { SaleTourLauncher } from '../../tour';
 
 export interface SaleFormHeaderProps {
   isEditMode: boolean;
@@ -37,6 +38,11 @@ export function SaleFormHeader({
       cancelDisabled={isSaving}
       submitText={isEditMode ? 'Actualizar Documento' : 'Guardar y Procesar'}
       isSubmitting={isSaving}
+      actions={
+        <div className="flex items-center gap-2">
+          <SaleTourLauncher variant="button" />
+        </div>
+      }
     />
   );
 }

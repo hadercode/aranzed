@@ -4,6 +4,7 @@ import {
   SalesFilterBar,
   SalesTable,
   SalesDialogs,
+  SaleTourIntroModal,
 } from '../components';
 
 export function SalesPage() {
@@ -14,6 +15,7 @@ export function SalesPage() {
       <SalesFilterBar />
       <SalesTable />
       <SalesDialogs />
+      <SaleTourIntroModal />
     </div>
   );
 }

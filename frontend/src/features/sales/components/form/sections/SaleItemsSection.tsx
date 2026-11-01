@@ -28,7 +28,10 @@ export function SaleItemsSection({
       : null;
 
   return (
-    <div className="bg-[var(--color-surface-card)] rounded-2xl p-6 shadow-[var(--shadow-organic)] border border-[var(--color-border)] space-y-5">
+    <div
+      id="tour-sale-items"
+      className="bg-[var(--color-surface-card)] rounded-2xl p-6 shadow-[var(--shadow-organic)] border border-[var(--color-border)] space-y-5"
+    >
       <SectionHeader
         icon={<ShoppingBag className="w-4 h-4" />}
         title="Detalle de Productos y Servicios Vendidos"
