@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
-import { usePurchasesContext } from "../../context";
+import { usePurchasesPage } from "../../hooks";
 import { Button, DataTable } from "@/shared/components/ui";
 import { usePurchasesTableColumns } from "../../hooks/logic/usePurchasesTableColumns";
 
@@ -18,7 +18,7 @@ export function PurchasesTable() {
     handlePageChange,
     handlePageSizeChange,
     handleSortChange,
-  } = usePurchasesContext();
+  } = usePurchasesPage();
 
   const columns = usePurchasesTableColumns();
 

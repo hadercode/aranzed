@@ -1,6 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Modal, Button } from '@/shared/components/ui';
 import type { Warehouse, CreateWarehouseDto } from '../types';
+import { warehouseSchema, type WarehouseFormData } from '../schemas/warehouse.schema';
 
 interface WarehouseFormModalProps {
   isOpen: boolean;
@@ -17,25 +20,33 @@ export function WarehouseFormModal({
   onSubmit,
   loading = false,
 }: WarehouseFormModalProps) {
-  const [formData, setFormData] = useState<CreateWarehouseDto>({
-    code: '',
-    name: '',
-    location: '',
-    isActive: true,
-    isSalesWarehouse: false,
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<WarehouseFormData>({
+    resolver: zodResolver(warehouseSchema),
+    defaultValues: {
+      code: '',
+      name: '',
+      location: '',
+      isActive: true,
+      isSalesWarehouse: false,
+    },
   });
 
   useEffect(() => {
     if (warehouse) {
-      setFormData({
+      reset({
         code: warehouse.code,
         name: warehouse.name,
         location: warehouse.location || '',
-        isActive: warehouse.isActive,
-        isSalesWarehouse: warehouse.isSalesWarehouse,
+        isActive: Boolean(warehouse.isActive),
+        isSalesWarehouse: Boolean(warehouse.isSalesWarehouse),
       });
     } else {
-      setFormData({
+      reset({
         code: '',
         name: '',
         location: '',
@@ -43,12 +54,10 @@ export function WarehouseFormModal({
         isSalesWarehouse: false,
       });
     }
-  }, [warehouse, isOpen]);
+  }, [warehouse, isOpen, reset]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.code || !formData.name) return;
-    await onSubmit(formData);
+  const onFormSubmit = async (data: WarehouseFormData) => {
+    await onSubmit(data);
   };
 
   return (
@@ -57,19 +66,20 @@ export function WarehouseFormModal({
       onClose={onClose}
       title={warehouse ? 'Editar Almacén' : 'Nuevo Almacén'}
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
         <div>
           <label className="block text-xs font-medium text-[var(--color-text-secondary)] mb-1">
             Código *
           </label>
           <input
             type="text"
-            required
-            value={formData.code}
-            onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
-            placeholder="Ej: ALM-01"
-            className="w-full px-3 py-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-sage-500)]"
+            {...register('code')}
+            className="w-full px-3 py-2 text-sm rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-card)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-sage-500)] uppercase"
+            placeholder="ALM-01"
           />
+          {errors.code && (
+            <p className="mt-1 text-xs text-red-500">{errors.code.message}</p>
+          )}
         </div>
 
         <div>
@@ -78,58 +88,58 @@ export function WarehouseFormModal({
           </label>
           <input
             type="text"
-            required
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            placeholder="Ej: Depósito Central"
-            className="w-full px-3 py-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-sage-500)]"
+            {...register('name')}
+            className="w-full px-3 py-2 text-sm rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-card)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-sage-500)]"
+            placeholder="Almacén Principal"
           />
+          {errors.name && (
+            <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>
+          )}
         </div>
 
         <div>
           <label className="block text-xs font-medium text-[var(--color-text-secondary)] mb-1">
             Ubicación / Dirección
           </label>
-          <textarea
-            rows={2}
-            value={formData.location || ''}
-            onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-            placeholder="Dirección o referencia del depósito..."
-            className="w-full px-3 py-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-sage-500)] resize-none"
+          <input
+            type="text"
+            {...register('location')}
+            className="w-full px-3 py-2 text-sm rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-card)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-sage-500)]"
+            placeholder="Sede Central - Piso 1"
           />
         </div>
 
-        <div className="pt-2 space-y-3">
+        <div className="flex items-center gap-6 pt-2">
           <label className="flex items-center gap-2 cursor-pointer text-sm text-[var(--color-text-primary)]">
             <input
               type="checkbox"
-              checked={formData.isSalesWarehouse}
-              onChange={(e) => setFormData({ ...formData, isSalesWarehouse: e.target.checked })}
-              className="rounded border-[var(--color-border)] text-[var(--color-sage-600)] focus:ring-[var(--color-sage-500)]"
+              {...register('isActive')}
+              className="rounded text-[var(--color-sage-600)] focus:ring-[var(--color-sage-500)]"
             />
-            <span className="font-medium">Almacén Predeterminado para Ventas (POS)</span>
+            <span>Almacén Activo</span>
           </label>
 
           <label className="flex items-center gap-2 cursor-pointer text-sm text-[var(--color-text-primary)]">
             <input
               type="checkbox"
-              checked={formData.isActive}
-              onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-              className="rounded border-[var(--color-border)] text-[var(--color-sage-600)] focus:ring-[var(--color-sage-500)]"
+              {...register('isSalesWarehouse')}
+              className="rounded text-[var(--color-sage-600)] focus:ring-[var(--color-sage-500)]"
             />
-            <span>Almacén Activo y Operativo</span>
+            <span>Disponible para Ventas</span>
           </label>
         </div>
 
-        <div className="pt-4 flex justify-end gap-3 border-t border-[var(--color-border)]">
-          <Button variant="ghost" type="button" onClick={onClose}>
+        <div className="flex justify-end gap-3 pt-3">
+          <Button type="button" variant="ghost" onClick={onClose}>
             Cancelar
           </Button>
-          <Button type="submit" loading={loading}>
-            {warehouse ? 'Guardar Cambios' : 'Crear Almacén'}
+          <Button type="submit" variant="primary" loading={loading}>
+            {warehouse ? 'Actualizar' : 'Crear Almacén'}
           </Button>
         </div>
       </form>
     </Modal>
   );
 }
+
+export default WarehouseFormModal;

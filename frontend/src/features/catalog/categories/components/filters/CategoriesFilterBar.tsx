@@ -1,5 +1,5 @@
 import { Search, X, RotateCcw, Filter } from 'lucide-react';
-import { useCategoriesContext } from '../../context';
+import { useCategoriesPage } from '../../hooks';
 import type { CategoryStatusFilter } from '../../types';
 
 export interface CategoriesFilterBarProps {
@@ -21,20 +21,20 @@ export function CategoriesFilterBar({
   onParentFilterChange: propOnParentFilterChange,
   onResetFilters: propOnResetFilters,
 }: CategoriesFilterBarProps) {
-  const context = useCategoriesContext();
+  const page = useCategoriesPage();
 
-  const searchTerm = propSearchTerm ?? context.searchTerm;
-  const onSearchChange = propOnSearchChange ?? context.handleSearchChange;
+  const searchTerm = propSearchTerm ?? page.searchTerm;
+  const onSearchChange = propOnSearchChange ?? page.handleSearchChange;
 
-  const statusFilter = propStatusFilter ?? context.statusFilter;
-  const onStatusFilterChange = propOnStatusFilterChange ?? context.handleStatusFilterChange;
+  const statusFilter = propStatusFilter ?? page.statusFilter;
+  const onStatusFilterChange = propOnStatusFilterChange ?? page.handleStatusFilterChange;
 
-  const parentFilter = propParentFilter ?? context.parentFilter;
-  const onParentFilterChange = propOnParentFilterChange ?? context.handleParentFilterChange;
+  const parentFilter = propParentFilter ?? page.parentFilter;
+  const onParentFilterChange = propOnParentFilterChange ?? page.handleParentFilterChange;
 
-  const onResetFilters = propOnResetFilters ?? context.handleResetFilters;
+  const onResetFilters = propOnResetFilters ?? page.handleResetFilters;
 
-  const rootCategories = context.categories.filter((c) => !c.parentId);
+  const rootCategories = page.categories.filter((c) => !c.parentId);
   const isFiltered = searchTerm !== '' || statusFilter !== 'all' || parentFilter !== 'all';
 
   return (
@@ -111,8 +111,8 @@ export function CategoriesFilterBar({
       {/* Filter Result Counter */}
       <div className="flex items-center justify-between text-xs text-[var(--color-text-secondary)] pt-1 border-t border-[var(--color-border)]/50">
         <span>
-          Mostrando <strong className="text-[var(--color-text-primary)]">{context.filteredCategories.length}</strong> de{' '}
-          <strong className="text-[var(--color-text-primary)]">{context.categories.length}</strong> categorías
+          Mostrando <strong className="text-[var(--color-text-primary)]">{page.filteredCategories.length}</strong> de{' '}
+          <strong className="text-[var(--color-text-primary)]">{page.categories.length}</strong> categorías
         </span>
         {isFiltered && (
           <span className="italic text-[var(--color-sage-600)] dark:text-[var(--color-sage-400)]">

@@ -306,6 +306,34 @@ export class SaleOrmEntity {
   })
   paidAmountLocal: number;
 
+  @Column({
+    name: 'balance',
+    type: 'decimal',
+    precision: 14,
+    scale: 4,
+    default: 0,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string | number) =>
+        value !== null && value !== undefined ? parseFloat(String(value)) : 0,
+    },
+  })
+  balance: number;
+
+  @Column({
+    name: 'balance_local',
+    type: 'decimal',
+    precision: 14,
+    scale: 4,
+    default: 0,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string | number) =>
+        value !== null && value !== undefined ? parseFloat(String(value)) : 0,
+    },
+  })
+  balanceLocal: number;
+
   @Column({ name: 'converted_from_quotation_id', type: 'uuid', nullable: true })
   convertedFromQuotationId: string | null;
 

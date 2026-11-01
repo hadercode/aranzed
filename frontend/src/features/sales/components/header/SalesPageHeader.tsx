@@ -7,7 +7,8 @@ import {
 } from 'lucide-react';
 import { PageHeader } from '@/shared/components/ui/PageHeader';
 import { Button } from '@/shared/components/ui/Button';
-import { useSalesContext } from '../../context';
+import { useSalesPage } from '../../hooks';
+import { SaleTourLauncher } from '../tour';
 
 export function SalesPageHeader() {
   const {
@@ -17,7 +18,7 @@ export function SalesPageHeader() {
     handleExportPdf,
     handleGoToPayments,
     handleGoToNewPayment,
-  } = useSalesContext();
+  } = useSalesPage();
 
   return (
     <PageHeader
@@ -26,6 +27,9 @@ export function SalesPageHeader() {
       icon={<ShoppingBag className="w-6 h-6" />}
     >
       <div className="flex flex-wrap items-center gap-2">
+        {/* Guía Paso Cero */}
+        <SaleTourLauncher variant="badge" />
+
         {/* Ir a Cobros y Pagos */}
         <Button
           variant="outline"

@@ -1,9 +1,9 @@
 import { AlertCircle, RefreshCw } from 'lucide-react';
-import { useUnitsOfMeasureContext } from '../../context';
+import { useUnitsOfMeasurePage } from '../../hooks';
 import { Button } from '@/shared/components/ui';
 
 export function UnitsOfMeasureErrorBanner() {
-  const { fetchError, refetch, loading } = useUnitsOfMeasureContext();
+  const { fetchError, refetch, loading } = useUnitsOfMeasurePage();
 
   if (!fetchError) return null;
 

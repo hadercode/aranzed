@@ -1,5 +1,5 @@
 import { ConfirmDialog, SuccessDialog } from '@/shared/components/ui';
-import { useRecipesContext } from '../../context';
+import { useRecipesPage } from '../../hooks';
 
 export function RecipesDialogs() {
   const {
@@ -12,7 +12,7 @@ export function RecipesDialogs() {
     setIsSuccessOpen,
     successMessage,
     isMutating,
-  } = useRecipesContext();
+  } = useRecipesPage();
 
   return (
     <>

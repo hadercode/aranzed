@@ -1,31 +1,38 @@
-import { useState, useCallback } from "react";
-import { ApiClient } from "@/lib/api-client";
+import { useQuery } from '@tanstack/react-query';
+import { permissionsService, type Permission } from '../../services';
 
-export interface Permission {
-  id: string;
-  action: string;
-  resource: string;
-}
+export type { Permission };
+
+export const PERMISSIONS_QUERY_KEY = ['permissions'] as const;
 
 export function usePermissionsQuery() {
-  const [data, setData] = useState<Permission[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const {
+    data = [],
+    isLoading,
+    isFetching,
+    error: queryError,
+    refetch,
+  } = useQuery<Permission[], Error>({
+    queryKey: PERMISSIONS_QUERY_KEY,
+    queryFn: () => permissionsService.getAll(),
+    staleTime: 1000 * 60 * 10,
+  });
 
-  const refetch = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError("");
-      const permsData = await ApiClient.get<Permission[]>("/permissions");
-      setData(permsData);
-    } catch (err: any) {
-      const errMsg = err?.message || err || "Error al cargar los permisos";
-      setError(errMsg);
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const error = queryError
+    ? queryError instanceof Error
+      ? queryError.message
+      : typeof queryError === 'string'
+      ? queryError
+      : 'Error al cargar los permisos'
+    : '';
 
-  return { data, loading, error, refetch };
+  return {
+    data,
+    loading: isLoading,
+    isFetching,
+    error,
+    refetch: async () => {
+      await refetch();
+    },
+  };
 }

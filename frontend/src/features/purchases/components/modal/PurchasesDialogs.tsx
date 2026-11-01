@@ -1,5 +1,5 @@
 import { ConfirmDialog } from '@/shared/components/ui';
-import { usePurchasesContext } from '../../context';
+import { usePurchasesPage } from '../../hooks';
 
 export function PurchasesDialogs() {
   const {
@@ -10,7 +10,7 @@ export function PurchasesDialogs() {
     closeDeleteModal,
     handleConfirmDelete,
     isMutating,
-  } = usePurchasesContext();
+  } = usePurchasesPage();
 
   return (
     <>

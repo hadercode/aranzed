@@ -1,34 +1,34 @@
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { ApiClient } from "@/lib/api-client";
-import { useAuthStore } from "@/shared/hooks/store/useAuthStore";
-import { AuthCard } from "../components/AuthCard";
+import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useAuthStore } from '@/shared/hooks/store/useAuthStore';
+import { AuthCard } from '../components/AuthCard';
+import { loginSchema, type LoginFormData } from '../schemas/auth.schema';
+import { useAuthMutations } from '../hooks/mutations/useAuthMutations';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
   const setAuth = useAuthStore((state) => state.setAuth);
+  const { loginMutation } = useAuthMutations();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+  });
 
+  const onSubmit = async (data: LoginFormData) => {
+    setError('');
     try {
-      const data = await ApiClient.post<{ user: any; token: string }>(
-        "/auth/login",
-        { email, password },
-      );
-
-      setAuth(data.user, data.token);
-      navigate("/");
+      const res = await loginMutation.mutateAsync(data);
+      setAuth(res.user, res.token);
+      navigate('/');
     } catch (err: any) {
-      setError(err || "Ocurrió un error al iniciar sesión");
-    } finally {
-      setLoading(false);
+      setError(err?.message || (typeof err === 'string' ? err : 'Ocurrió un error al iniciar sesión'));
     }
   };
 
@@ -38,7 +38,7 @@ export default function LoginPage() {
       subtitle="Ingresa tus credenciales para continuar"
       footer={
         <p>
-          ¿No tienes una cuenta?{" "}
+          ¿No tienes una cuenta?{' '}
           <Link
             to="/register"
             className="text-[var(--color-sage-600)] hover:text-[var(--color-sage-500)] font-medium"
@@ -54,22 +54,24 @@ export default function LoginPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div>
           <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5">
             Correo Electrónico
           </label>
           <input
             type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            {...register('email')}
             className="w-full px-4 py-2.5 bg-transparent border border-[var(--color-border)] rounded-xl outline-none focus:border-[var(--color-sage-500)] focus:ring-1 focus:ring-[var(--color-sage-500)] transition-all text-[var(--color-text-primary)]"
             placeholder="admin@nexus.com"
           />
+          {errors.email && (
+            <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>
+          )}
         </div>
+
         <div>
-          <div className="flex justify-between items-center mb-1.5">
+          <div className="flex items-center justify-between mb-1.5">
             <label className="block text-sm font-medium text-[var(--color-text-primary)]">
               Contraseña
             </label>
@@ -82,20 +84,21 @@ export default function LoginPage() {
           </div>
           <input
             type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            {...register('password')}
             className="w-full px-4 py-2.5 bg-transparent border border-[var(--color-border)] rounded-xl outline-none focus:border-[var(--color-sage-500)] focus:ring-1 focus:ring-[var(--color-sage-500)] transition-all text-[var(--color-text-primary)]"
             placeholder="••••••••"
           />
+          {errors.password && (
+            <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>
+          )}
         </div>
 
         <button
           type="submit"
-          disabled={loading}
-          className="w-full py-2.5 px-4 bg-[var(--color-sage-500)] hover:bg-[var(--color-sage-600)] text-white rounded-xl font-medium transition-colors shadow-sm disabled:opacity-70 disabled:cursor-not-allowed mt-2"
+          disabled={loginMutation.isPending}
+          className="w-full py-3 px-4 bg-[var(--color-sage-600)] hover:bg-[var(--color-sage-700)] text-white font-medium rounded-xl shadow-xs transition-colors flex items-center justify-center cursor-pointer disabled:opacity-50"
         >
-          {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
+          {loginMutation.isPending ? 'Iniciando sesión...' : 'Iniciar Sesión'}
         </button>
       </form>
     </AuthCard>

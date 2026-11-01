@@ -3,11 +3,11 @@ import { ArrowLeftRight, Plus } from "lucide-react";
 import { PageHeader, Button } from "@/shared/components/ui";
 import { useTransactionsTableData, useTransactionDialogs } from "../hooks";
 import {
-  TransactionStatsCards,
-  TransactionFilterBar,
-  TransactionTable,
   TransactionDialogs,
-} from "../components";
+  TransactionFilterBar,
+  TransactionStatsCards,
+  TransactionTable,
+} from "../components/list";
 
 export function TransactionsPage() {
   const navigate = useNavigate();

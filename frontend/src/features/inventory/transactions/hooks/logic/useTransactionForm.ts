@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useFeedbackStore, useCurrencyStore } from '@/shared/hooks/store';
 import { useWarehousesQuery } from '../../../warehouses/hooks';
@@ -7,11 +7,9 @@ import { useTransactionFormDataQuery } from '../queries/useTransactionFormDataQu
 import { useTransactionFormItems } from './useTransactionFormItems';
 import { useTransactionCalculations } from './useTransactionCalculations';
 import { useTransactionMutations } from '../mutations/useTransactionMutations';
-import type {
-  InventoryTransactionType,
-  InventoryTransactionStatus,
-  CreateInventoryTransactionDto,
-} from '../../types';
+import { useTransactionHeaderState } from './useTransactionHeaderState';
+import { mapTransactionItemsToForm } from './hydrateTransactionForm';
+import type { CreateInventoryTransactionDto } from '../../types';
 
 export function useTransactionForm() {
   const { id } = useParams<{ id: string }>();
@@ -24,121 +22,52 @@ export function useTransactionForm() {
   const { warehouses } = useWarehousesQuery();
   const { reasons } = useReasonsQuery();
   const { createTransaction, updateTransaction, isMutating } = useTransactionMutations();
+  const { products, initialTransaction, isLoadingInitial, loadError } = useTransactionFormDataQuery(id);
 
-  // 1. Carga paralela de catálogos y datos iniciales (si es edición)
-  const {
-    products,
-    initialTransaction,
-    isLoadingInitial,
-    loadError,
-  } = useTransactionFormDataQuery(id);
-
-  // 2. Estado de cabecera
-  const [txType, setTxType] = useState<InventoryTransactionType>('RECEPTION');
-  const [movementDate, setMovementDate] = useState<string>(
-    new Date().toISOString().slice(0, 10),
-  );
-  const [originWarehouseId, setOriginWarehouseId] = useState<string>('');
-  const [destWarehouseId, setDestWarehouseId] = useState<string>('');
-  const [reasonId, setReasonId] = useState<string>('');
-  const [status, setStatus] = useState<InventoryTransactionStatus>('COMPLETED');
-  const [referenceEntityType, setReferenceEntityType] = useState<string>('');
-  const [referenceEntityId, setReferenceEntityId] = useState<string>('');
-  const [notes, setNotes] = useState<string>('');
-
-  // 3. Manejo de renglones dinámicos (Hook especializado)
-  const {
-    items,
-    setItems,
-    addItem,
-    removeItem,
-    updateItem,
-    selectProduct,
-  } = useTransactionFormItems(products);
-
-  // 4. Cálculos y métricas matemáticas aisladas (Hook especializado)
+  const header = useTransactionHeaderState(reasons);
+  const { items, setItems, addItem, removeItem, updateItem, selectProduct } = useTransactionFormItems(products);
   const metrics = useTransactionCalculations(items);
 
-  // 5. Sincronizar datos si estamos en modo edición
   useEffect(() => {
-    if (initialTransaction) {
-      setTxType(initialTransaction.type);
-      setMovementDate(
-        initialTransaction.movementDate
-          ? initialTransaction.movementDate.slice(0, 10)
-          : new Date().toISOString().slice(0, 10),
-      );
-      setOriginWarehouseId(initialTransaction.originWarehouseId || '');
-      setDestWarehouseId(initialTransaction.destWarehouseId || '');
-      setReasonId(initialTransaction.reasonId || '');
-      setStatus(initialTransaction.status);
-      setReferenceEntityType(initialTransaction.referenceEntityType || '');
-      setReferenceEntityId(initialTransaction.referenceEntityId || '');
-      setNotes(initialTransaction.notes || '');
+    if (!initialTransaction) return;
+    header.setTxType(initialTransaction.type);
+    header.setMovementDate(
+      initialTransaction.movementDate
+        ? initialTransaction.movementDate.slice(0, 10)
+        : new Date().toISOString().slice(0, 10)
+    );
+    header.setOriginWarehouseId(initialTransaction.originWarehouseId || '');
+    header.setDestWarehouseId(initialTransaction.destWarehouseId || '');
+    header.setReasonId(initialTransaction.reasonId || '');
+    header.setStatus(initialTransaction.status);
+    header.setReferenceEntityType(initialTransaction.referenceEntityType || '');
+    header.setReferenceEntityId(initialTransaction.referenceEntityId || '');
+    header.setNotes(initialTransaction.notes || '');
 
-      if (initialTransaction.items && initialTransaction.items.length > 0) {
-        setItems(
-          initialTransaction.items.map((it) => ({
-            id: it.id,
-            productId: it.productId,
-            skuSnapshot: it.skuSnapshot,
-            nameSnapshot: it.nameSnapshot,
-            uomSymbol: it.uomSymbol,
-            quantity: Number(it.quantity),
-            cost: Number(it.cost || 0),
-            secQuantity: it.secQuantity ? Number(it.secQuantity) : undefined,
-            secUomSymbol: it.secUomSymbol || undefined,
-            batchNumber: it.batchNumber || '',
-            expiryDate: it.expiryDate ? it.expiryDate.slice(0, 10) : '',
-            customComment: it.customComment || '',
-          })),
-        );
-      }
+    if (initialTransaction.items && initialTransaction.items.length > 0) {
+      setItems(mapTransactionItemsToForm(initialTransaction.items));
     }
   }, [initialTransaction, setItems]);
 
-  // 6. Motivos filtrados según tipo de transacción
-  const filteredReasons = useMemo(() => {
-    if (!reasons || reasons.length === 0) return [];
-    if (txType === 'RECEPTION') {
-      return reasons.filter((r) => r.type === 'INPUT' || r.type === 'BOTH');
-    }
-    if (txType === 'ISSUE') {
-      return reasons.filter((r) => r.type === 'OUTPUT' || r.type === 'BOTH');
-    }
-    return reasons;
-  }, [reasons, txType]);
-
-  // 7. Envío y validaciones de negocio
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
 
-    if ((txType === 'RECEPTION' || txType === 'TRANSFER') && !destWarehouseId) {
-      showError(new Error('Debe seleccionar el almacén de destino'), {
-        title: 'Almacén Destino Requerido',
-      });
+    if ((header.txType === 'RECEPTION' || header.txType === 'TRANSFER') && !header.destWarehouseId) {
+      showError(new Error('Debe seleccionar el almacén de destino'), { title: 'Almacén Destino Requerido' });
       return;
     }
-
-    if ((txType === 'ISSUE' || txType === 'TRANSFER') && !originWarehouseId) {
-      showError(new Error('Debe seleccionar el almacén de origen'), {
-        title: 'Almacén Origen Requerido',
-      });
+    if ((header.txType === 'ISSUE' || header.txType === 'TRANSFER') && !header.originWarehouseId) {
+      showError(new Error('Debe seleccionar el almacén de origen'), { title: 'Almacén Origen Requerido' });
       return;
     }
-
-    if (txType === 'TRANSFER' && originWarehouseId === destWarehouseId) {
-      showError(new Error('El almacén de origen y destino no pueden ser el mismo'), {
-        title: 'Transferencia Inválida',
-      });
+    if (header.txType === 'TRANSFER' && header.originWarehouseId === header.destWarehouseId) {
+      showError(new Error('El almacén de origen y destino no pueden ser el mismo'), { title: 'Transferencia Inválida' });
       return;
     }
 
     const validItems = items.filter((it) => it.productId && Number(it.quantity) > 0);
     if (validItems.length === 0) {
-      showError(new Error('Agregue al menos un producto con cantidad mayor a cero'), {
-        title: 'Ítems Incompletos',
-      });
+      showError(new Error('Agregue al menos un producto con cantidad mayor a cero'), { title: 'Ítems Incompletos' });
       return;
     }
 
@@ -147,23 +76,23 @@ export function useTransactionForm() {
         await updateTransaction({
           id,
           data: {
-            movementDate,
-            status,
-            notes: notes || undefined,
+            movementDate: header.movementDate,
+            status: header.status,
+            notes: header.notes || undefined,
           },
         });
         showSuccess('Transacción de inventario actualizada con éxito');
       } else {
         const payload: CreateInventoryTransactionDto = {
-          type: txType,
-          movementDate,
-          originWarehouseId: originWarehouseId || undefined,
-          destWarehouseId: destWarehouseId || undefined,
-          reasonId: reasonId || undefined,
-          status,
-          referenceEntityType: referenceEntityType || undefined,
-          referenceEntityId: referenceEntityId || undefined,
-          notes: notes || undefined,
+          type: header.txType,
+          movementDate: header.movementDate,
+          originWarehouseId: header.originWarehouseId || undefined,
+          destWarehouseId: header.destWarehouseId || undefined,
+          reasonId: header.reasonId || undefined,
+          status: header.status,
+          referenceEntityType: header.referenceEntityType || undefined,
+          referenceEntityId: header.referenceEntityId || undefined,
+          notes: header.notes || undefined,
           items: validItems.map((it) => ({
             productId: it.productId,
             skuSnapshot: it.skuSnapshot,
@@ -178,19 +107,13 @@ export function useTransactionForm() {
             customComment: it.customComment || undefined,
           })),
         };
-
         await createTransaction(payload);
         showSuccess('Movimiento de inventario registrado correctamente');
       }
-
       navigate('/inventory/transactions');
     } catch (err: any) {
       showError(err, { title: 'Error al procesar movimiento' });
     }
-  };
-
-  const handleCancel = () => {
-    navigate('/inventory/transactions');
   };
 
   return {
@@ -199,48 +122,20 @@ export function useTransactionForm() {
     loadingInitial: isLoadingInitial,
     loadError,
     isMutating,
-
-    // Header State
-    txType,
-    setTxType,
-    movementDate,
-    setMovementDate,
-    originWarehouseId,
-    setOriginWarehouseId,
-    destWarehouseId,
-    setDestWarehouseId,
-    reasonId,
-    setReasonId,
-    status,
-    setStatus,
-    referenceEntityType,
-    setReferenceEntityType,
-    referenceEntityId,
-    setReferenceEntityId,
-    notes,
-    setNotes,
-
-    // Items
+    ...header,
     items,
     addItem,
     removeItem,
     updateItem,
     selectProduct,
-
-    // Catalogs
     warehouses,
     reasons,
     products,
-    filteredReasons,
-
-    // Metrics & Currencies
     metrics,
     functionalSymbol,
     localSymbol,
-
-    // Actions
     handleSubmit,
-    handleCancel,
+    handleCancel: () => navigate('/inventory/transactions'),
   };
 }
 

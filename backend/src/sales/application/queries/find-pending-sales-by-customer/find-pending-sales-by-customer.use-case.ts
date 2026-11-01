@@ -44,26 +44,23 @@ export class FindPendingSalesByCustomerUseCase {
       (s) => s.paidStatus !== SalePaidStatus.PAGADO,
     );
 
-    return pendingSales.map((s) => {
-      const { balance, balanceLocal } = s.getBalance();
-      return {
-        id: s.id,
-        saleNumber: s.saleNumber,
-        customerName: s.customerName,
-        customerTaxId: s.customerTaxId,
-        saleDate: s.saleDate,
-        dueDate: s.dueDate,
-        paymentTerm: s.paymentTerm,
-        status: s.status,
-        paidStatus: s.paidStatus,
-        total: s.total,
-        totalLocal: s.totalLocal,
-        paidAmount: s.paidAmount,
-        paidAmountLocal: s.paidAmountLocal,
-        balance,
-        balanceLocal,
-        exchangeRate: s.exchangeRate,
-      };
-    });
+    return pendingSales.map((s) => ({
+      id: s.id,
+      saleNumber: s.saleNumber,
+      customerName: s.customerName,
+      customerTaxId: s.customerTaxId,
+      saleDate: s.saleDate,
+      dueDate: s.dueDate,
+      paymentTerm: s.paymentTerm,
+      status: s.status,
+      paidStatus: s.paidStatus,
+      total: s.total,
+      totalLocal: s.totalLocal,
+      paidAmount: s.paidAmount,
+      paidAmountLocal: s.paidAmountLocal,
+      balance: s.balance,
+      balanceLocal: s.balanceLocal,
+      exchangeRate: s.exchangeRate,
+    }));
   }
 }

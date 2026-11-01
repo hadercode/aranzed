@@ -5,3 +5,4 @@ export * from './payments/modal';
 export * from './stats';
 export * from './table';
 export * from './payments';
+export * from './tour';

@@ -149,6 +149,8 @@ export class ProductImportValidatorService {
         lastSalePrice: finalPrice,
         manageInventory,
         isActive,
+        isForSale: resolvedType !== ProductType.RAW_MATERIAL,
+        isForInternalUse: resolvedType === ProductType.RAW_MATERIAL || resolvedType === ProductType.SERVICE,
         status,
         errors,
         warnings,

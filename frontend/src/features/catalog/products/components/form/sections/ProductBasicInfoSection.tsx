@@ -1,10 +1,20 @@
-import { Package } from 'lucide-react';
-import { useProductFormContext } from '../../../context';
+import { Package } from "lucide-react";
+import type { UseFormRegister, FieldErrors } from "react-hook-form";
+import { TextInput, Textarea } from "@/shared/components/ui/form";
+import type { ProductFormData } from "../../../schemas/product.schema";
 
-export function ProductBasicInfoSection() {
-  const { register, errors, productNameValue } = useProductFormContext();
+export interface ProductBasicInfoSectionProps {
+  register: UseFormRegister<ProductFormData>;
+  errors: FieldErrors<ProductFormData>;
+  productNameValue?: string;
+}
 
-  const nameCharCount = (productNameValue || '').length;
+export function ProductBasicInfoSection({
+  register,
+  errors,
+  productNameValue = "",
+}: ProductBasicInfoSectionProps) {
+  const nameCharCount = productNameValue.length;
 
   return (
     <div className="p-6 rounded-3xl bg-[var(--color-surface-card)] border border-[var(--color-border)] shadow-xs space-y-4">
@@ -19,47 +29,31 @@ export function ProductBasicInfoSection() {
       </div>
 
       <div className="space-y-4">
-        {/* Name */}
-        <div>
-          <label className="block text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-1.5">
-            Nombre del Producto / Servicio <span className="text-rose-500">*</span>
-          </label>
-          <input
-            type="text"
-            {...register('name')}
-            placeholder="Ej. Laptop ThinkPad T14 Gen 3, Escritorio Modular Roble, Mantenimiento TI..."
-            maxLength={150}
-            className={`w-full px-4 py-3 rounded-2xl text-sm font-medium border bg-[var(--color-surface-bg)] text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] focus:outline-none focus:ring-2 transition-all ${
-              errors.name
-                ? 'border-rose-500 focus:ring-rose-500/30'
-                : 'border-[var(--color-border)] focus:ring-[var(--color-sage-500)]/30'
-            }`}
-          />
-          {errors.name ? (
-            <p className="text-xs text-rose-500 mt-1.5 font-medium">{errors.name.message}</p>
-          ) : (
-            <p className="text-xs text-[var(--color-text-muted)] mt-1">
-              Nombre descriptivo y claro para cotizaciones, compras e inventario (máx. 150 caracteres).
-            </p>
-          )}
-        </div>
+        {/* Name input using global TextInput */}
+        <TextInput
+          label="Nombre del Producto / Servicio"
+          required
+          {...register("name")}
+          placeholder="Ej. Laptop ThinkPad T14 Gen 3, Escritorio Modular Roble, Mantenimiento TI..."
+          maxLength={150}
+          error={errors.name?.message}
+          helperText={
+            !errors.name
+              ? "Nombre descriptivo y claro para cotizaciones, compras e inventario (máx. 150 caracteres)."
+              : undefined
+          }
+        />
 
-        {/* Description */}
-        <div>
-          <label className="block text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-1.5">
-            Descripción Detallada (Opcional)
-          </label>
-          <textarea
-            rows={3}
-            {...register('description')}
-            placeholder="Detalles técnicos, especificaciones de garantía, instrucciones de uso o alcance del servicio..."
-            maxLength={1000}
-            className="w-full px-4 py-3 rounded-2xl text-sm border border-[var(--color-border)] bg-[var(--color-surface-bg)] text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-sage-500)]/30 transition-all resize-y"
-          />
-          {errors.description && (
-            <p className="text-xs text-rose-500 mt-1 font-medium">{errors.description.message}</p>
-          )}
-        </div>
+        {/* Description textarea using global Textarea */}
+        <Textarea
+          label="Descripción Detallada (Opcional)"
+          rows={3}
+          {...register("description")}
+          placeholder="Detalles técnicos, especificaciones de garantía, instrucciones de uso o alcance del servicio..."
+          maxLength={1000}
+          error={errors.description?.message}
+          helperText="Detalles adicionales para presupuestos y fichas técnicas."
+        />
       </div>
     </div>
   );

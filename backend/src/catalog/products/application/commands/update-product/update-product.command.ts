@@ -11,6 +11,8 @@ export interface UpdateProductPayload {
   lastCost?: number;
   lastSalePrice?: number;
   isActive?: boolean;
+  isForSale?: boolean;
+  isForInternalUse?: boolean;
   manageInventory?: boolean;
 }
 

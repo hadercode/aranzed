@@ -1,244 +1,103 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
-import { useRolesQuery, type Role } from "@/features/roles/hooks/queries/useRolesQuery";
-import {
-  usePermissionsQuery,
-  type Permission,
-} from "../queries/usePermissionsQuery";
-import { useRolePermissionsMutations } from "../mutations/useRolePermissionsMutations";
+import { useState, useMemo, useCallback } from 'react';
+import { useRolesQuery, type Role } from '@/features/roles/hooks/queries/useRolesQuery';
+import { usePermissionsQuery } from '../queries/usePermissionsQuery';
+import { useRolePermissionsMutations } from '../mutations/useRolePermissionsMutations';
+import { usePermissionsSelection } from './usePermissionsSelection';
+import { usePermissionsFilter } from './usePermissionsFilter';
 
 export function useRolePermissionsPage() {
-  const {
-    data: roles,
-    loading: loadingRoles,
-    error: rolesError,
-    refetch: refetchRoles,
-  } = useRolesQuery();
-
-  const {
-    data: allPermissions,
-    loading: loadingPerms,
-    error: permsError,
-    refetch: refetchPerms,
-  } = usePermissionsQuery();
+  const { data: roles, loading: loadingRoles, error: rolesError, refetch: refetchRoles } = useRolesQuery();
+  const { data: allPermissions, loading: loadingPerms, error: permsError, refetch: refetchPerms } = usePermissionsQuery();
 
   const [selectedRoleId, setSelectedRoleId] = useState<string | null>(null);
-  const [customPerms, setCustomPerms] = useState<Set<string> | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-
-  // Dialog and confirmation states
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState('');
   const [isConfirmDiscardOpen, setIsConfirmDiscardOpen] = useState(false);
   const [pendingRoleId, setPendingRoleId] = useState<string | null>(null);
 
-  // Initial data loading on mount
-  useEffect(() => {
-    refetchRoles();
-    refetchPerms();
-  }, [refetchRoles, refetchPerms]);
-
-  // Determine effective selected role
   const effectiveRoleId = selectedRoleId ?? (roles.length > 0 ? roles[0].id : null);
-
-  const selectedRole = useMemo(
-    () => roles.find((r) => r.id === effectiveRoleId) || null,
-    [roles, effectiveRoleId]
-  );
+  const selectedRole = useMemo(() => roles.find((r) => r.id === effectiveRoleId) || null, [roles, effectiveRoleId]);
 
   const originalPermIds = useMemo(() => {
     if (!selectedRole || !selectedRole.permissions) return new Set<string>();
     return new Set<string>(selectedRole.permissions.map((p) => p.id));
   }, [selectedRole]);
 
-  // Derived current permissions for the active role
-  const localRolePerms = useMemo(
-    () => customPerms ?? originalPermIds,
-    [customPerms, originalPermIds]
-  );
+  const selection = usePermissionsSelection(originalPermIds, allPermissions);
+  const filter = usePermissionsFilter(allPermissions, selection.localRolePerms);
 
-  // Determine if there are uncommitted changes for the currently selected role
-  const hasChanges = useMemo(() => {
-    if (!customPerms) return false;
-    if (customPerms.size !== originalPermIds.size) return true;
-    for (const id of customPerms) {
-      if (!originalPermIds.has(id)) return true;
-    }
-    return false;
-  }, [customPerms, originalPermIds]);
-
-  const {
-    savePermissions,
-    isSaving,
-    isMutating,
-    error: mutationError,
-    clearError,
-  } = useRolePermissionsMutations({
+  const { savePermissions, isSaving, isMutating, error: mutationError, clearError } = useRolePermissionsMutations({
     onSuccess: async () => {
-      setCustomPerms(null);
+      selection.setCustomPerms(null);
       await refetchRoles();
-      setSuccessMessage(
-        `Los permisos para el rol "${selectedRole?.name || ""}" han sido guardados exitosamente.`
-      );
+      setSuccessMessage(`Los permisos para el rol "${selectedRole?.name || ''}" han sido guardados exitosamente.`);
       setIsSuccessOpen(true);
     },
   });
 
-  // Role selection with dirty check
   const requestSelectRole = useCallback(
     (role: Role) => {
       if (role.id === effectiveRoleId) return;
-      if (hasChanges) {
+      if (selection.hasChanges) {
         setPendingRoleId(role.id);
         setIsConfirmDiscardOpen(true);
       } else {
         setSelectedRoleId(role.id);
-        setCustomPerms(null);
+        selection.setCustomPerms(null);
       }
     },
-    [effectiveRoleId, hasChanges]
+    [effectiveRoleId, selection.hasChanges, selection.setCustomPerms]
   );
 
   const confirmDiscardAndSwitch = useCallback(() => {
-    if (pendingRoleId) {
-      setSelectedRoleId(pendingRoleId);
-    }
-    setCustomPerms(null);
+    if (pendingRoleId) setSelectedRoleId(pendingRoleId);
+    selection.setCustomPerms(null);
     setPendingRoleId(null);
     setIsConfirmDiscardOpen(false);
-  }, [pendingRoleId]);
+  }, [pendingRoleId, selection.setCustomPerms]);
 
   const cancelDiscardRoleSwitch = useCallback(() => {
     setPendingRoleId(null);
     setIsConfirmDiscardOpen(false);
   }, []);
 
-  // Filtered and grouped permissions
-  const groupedPermissions = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    const filtered = allPermissions.filter((p) => {
-      if (!query) return true;
-      return (
-        p.resource.toLowerCase().includes(query) ||
-        p.action.toLowerCase().includes(query)
-      );
-    });
-
-    const groups: Record<string, Permission[]> = {};
-    filtered.forEach((p) => {
-      if (!groups[p.resource]) {
-        groups[p.resource] = [];
-      }
-      groups[p.resource].push(p);
-    });
-
-    return groups;
-  }, [allPermissions, searchQuery]);
-
-  // Statistics
-  const stats = useMemo(() => {
-    const totalPermissions = allPermissions.length;
-    const activeInRole = localRolePerms.size;
-    const totalModules = new Set(allPermissions.map((p) => p.resource)).size;
-    const filteredCount = Object.values(groupedPermissions).reduce(
-      (acc, curr) => acc + curr.length,
-      0
-    );
-
-    return {
-      totalPermissions,
-      activeInRole,
-      totalModules,
-      filteredCount,
-    };
-  }, [allPermissions, localRolePerms, groupedPermissions]);
-
-  // Permission toggle actions
-  const handleTogglePermission = useCallback(
-    (permId: string) => {
-      setCustomPerms((prev) => {
-        const next = new Set(prev ?? originalPermIds);
-        if (next.has(permId)) {
-          next.delete(permId);
-        } else {
-          next.add(permId);
-        }
-        return next;
-      });
-    },
-    [originalPermIds]
-  );
-
-  const handleToggleModule = useCallback(
-    (_resource: string, perms: Permission[]) => {
-      setCustomPerms((prev) => {
-        const next = new Set(prev ?? originalPermIds);
-        const allSelected = perms.every((p) => next.has(p.id));
-
-        if (allSelected) {
-          perms.forEach((p) => next.delete(p.id));
-        } else {
-          perms.forEach((p) => next.add(p.id));
-        }
-        return next;
-      });
-    },
-    [originalPermIds]
-  );
-
-  const handleSelectAll = useCallback(() => {
-    setCustomPerms(new Set(allPermissions.map((p) => p.id)));
-  }, [allPermissions]);
-
-  const handleDeselectAll = useCallback(() => {
-    setCustomPerms(new Set());
-  }, []);
-
-  const handleResetChanges = useCallback(() => {
-    setCustomPerms(null);
-  }, []);
-
-  // Save operation
   const handleSave = async () => {
     if (!selectedRole || isSaving) return;
     try {
-      await savePermissions(selectedRole.id, originalPermIds, localRolePerms);
+      await savePermissions(selectedRole.id, originalPermIds, selection.localRolePerms);
     } catch {
-      // Error handled by mutation hook state
+      // Handled in mutation hook
     }
   };
 
   const closeSuccess = () => {
     setIsSuccessOpen(false);
-    setSuccessMessage("");
+    setSuccessMessage('');
   };
-
-  const loading = (loadingRoles || loadingPerms) && roles.length === 0;
-  const isRefreshing = loadingRoles || loadingPerms;
-  const fetchError = rolesError || permsError;
 
   return {
     roles,
     selectedRole,
     selectedRoleId: effectiveRoleId,
     requestSelectRole,
-    loading,
-    isRefreshing,
-    fetchError,
+    loading: (loadingRoles || loadingPerms) && roles.length === 0,
+    isRefreshing: loadingRoles || loadingPerms,
+    fetchError: rolesError || permsError,
     mutationError,
     clearError,
-    searchQuery,
-    setSearchQuery,
-    localRolePerms,
-    groupedPermissions,
-    stats,
-    hasChanges,
+    searchQuery: filter.searchQuery,
+    setSearchQuery: filter.setSearchQuery,
+    localRolePerms: selection.localRolePerms,
+    groupedPermissions: filter.groupedPermissions,
+    stats: filter.stats,
+    hasChanges: selection.hasChanges,
     isSaving,
     isMutating,
-    handleTogglePermission,
-    handleToggleModule,
-    handleSelectAll,
-    handleDeselectAll,
-    handleResetChanges,
+    handleTogglePermission: selection.handleTogglePermission,
+    handleToggleModule: selection.handleToggleModule,
+    handleSelectAll: selection.handleSelectAll,
+    handleDeselectAll: selection.handleDeselectAll,
+    handleResetChanges: selection.handleResetChanges,
     handleSave,
     isSuccessOpen,
     successMessage,

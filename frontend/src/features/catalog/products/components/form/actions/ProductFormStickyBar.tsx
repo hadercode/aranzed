@@ -1,14 +1,18 @@
-import { useProductFormContext } from '../../../context';
 import { StickyBar } from '@/shared/components/ui';
 
-export function ProductFormStickyBar() {
-  const {
-    isEditing,
-    productNameValue,
-    isMutating,
-    handleCancel,
-  } = useProductFormContext();
+export interface ProductFormStickyBarProps {
+  isEditing?: boolean;
+  productNameValue?: string;
+  isMutating?: boolean;
+  handleCancel?: () => void;
+}
 
+export function ProductFormStickyBar({
+  isEditing = false,
+  productNameValue = '',
+  isMutating = false,
+  handleCancel,
+}: ProductFormStickyBarProps) {
   return (
     <StickyBar
       subtitle="Editando:"

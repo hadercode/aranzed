@@ -13,6 +13,40 @@ function getAuthToken(): string | null {
   return ApiClient.getToken();
 }
 
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function sanitizeSalePayload(data: SaleFormData) {
+  return {
+    ...data,
+    customerEmail: data.customerEmail?.trim() || undefined,
+    customerTaxId: data.customerTaxId?.trim() || undefined,
+    customerPhone: data.customerPhone?.trim() || undefined,
+    customerAddress: data.customerAddress?.trim() || undefined,
+    notes: data.notes?.trim() || undefined,
+    paymentNotes: data.paymentNotes?.trim() || undefined,
+    items: data.items.map((item, index) => {
+      const hasValidUuid = typeof item.id === 'string' && UUID_REGEX.test(item.id);
+      return {
+        ...(hasValidUuid ? { id: item.id } : {}),
+        productId: item.productId,
+        description: item.description?.trim(),
+        productType: item.productType || undefined,
+        quantity: Number(item.quantity) || 1,
+        unitPrice: Number(item.unitPrice) || 0,
+        unitCost: item.unitCost !== undefined ? Number(item.unitCost) : undefined,
+        discountRate: Number(item.discountRate) || 0,
+        isTaxable: item.isTaxable !== false,
+        taxRate: item.isTaxable !== false ? Number(item.taxRate) || 16.0 : 0,
+        sortOrder: item.sortOrder !== undefined ? item.sortOrder : index,
+        unitPriceLocal: item.unitPriceLocal !== undefined ? Number(item.unitPriceLocal) : undefined,
+        subtotalLocal: item.subtotalLocal !== undefined ? Number(item.subtotalLocal) : undefined,
+        totalLocal: item.totalLocal !== undefined ? Number(item.totalLocal) : undefined,
+      };
+    }),
+  };
+}
+
 export const salesService = {
   /**
    * Obtiene la lista de ventas y cotizaciones con filtros aplicados
@@ -60,14 +94,16 @@ export const salesService = {
    * Registra una nueva venta o cotización
    */
   async create(data: SaleFormData): Promise<Sale> {
-    return ApiClient.post<Sale>('/sales', data);
+    const payload = sanitizeSalePayload(data);
+    return ApiClient.post<Sale>('/sales', payload);
   },
 
   /**
    * Actualiza una venta o cotización existente
    */
   async update(id: string, data: SaleFormData): Promise<Sale> {
-    return ApiClient.put<Sale>(`/sales/${id}`, data);
+    const payload = sanitizeSalePayload(data);
+    return ApiClient.put<Sale>(`/sales/${id}`, payload);
   },
 
   /**

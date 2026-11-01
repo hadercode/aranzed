@@ -1,9 +1,9 @@
 import { ShoppingBag, FileText, CheckCircle2, DollarSign } from 'lucide-react';
 import { StatCard } from '@/shared/components/ui/StatCard';
-import { useSalesContext } from '../../context';
+import { useSalesPage } from '../../hooks';
 
 export function SalesStatsCards() {
-  const { stats } = useSalesContext();
+  const { stats } = useSalesPage();
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">

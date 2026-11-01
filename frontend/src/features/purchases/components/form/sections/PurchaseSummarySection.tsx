@@ -1,20 +1,22 @@
-import { usePurchaseFormContext } from "../../../context";
+import type { UseFormReturn } from "react-hook-form";
+import type { PurchaseFormData } from "../../../schemas/purchase.schema";
+import type { PurchaseBreakdown } from "../../../types";
 import {
   DocumentSummarySection,
   type DocumentSummarySectionProps,
 } from "@/shared/components/ui";
 
 export interface PurchaseSummarySectionProps
-  extends Partial<DocumentSummarySectionProps> {}
+  extends Partial<DocumentSummarySectionProps> {
+  form: UseFormReturn<PurchaseFormData>;
+  breakdown: PurchaseBreakdown;
+}
 
-/**
- * Sección de Liquidación y Resumen Financiero para Compras.
- * Consume reactivamente usePurchaseFormContext y delega la renderización
- * al componente global compartido DocumentSummarySection.
- */
-export function PurchaseSummarySection(props: PurchaseSummarySectionProps = {}) {
-  const { breakdown, form } = usePurchaseFormContext();
-
+export function PurchaseSummarySection({
+  form,
+  breakdown,
+  ...props
+}: PurchaseSummarySectionProps) {
   const currentStatus = form.watch("status");
   const exchangeRate =
     props.exchangeRate ??
@@ -25,24 +27,26 @@ export function PurchaseSummarySection(props: PurchaseSummarySectionProps = {}) 
     form.watch("documentCurrency") || breakdown.documentCurrency;
 
   return (
-    <DocumentSummarySection
-      functionalBreakdown={props.functionalBreakdown ?? breakdown.functional}
-      localBreakdown={props.localBreakdown ?? breakdown.local}
-      exchangeRate={exchangeRate}
-      documentCurrency={props.documentCurrency ?? documentCurrency}
-      functionalCurrency={props.functionalCurrency ?? activeFunctional}
-      localCurrency={props.localCurrency ?? activeLocal}
-      itemsCount={props.itemsCount ?? breakdown.itemsCount}
-      totalUnits={props.totalUnits ?? breakdown.totalUnits}
-      inventory={{
-        moduleType: "purchase",
-        status: currentStatus,
-        ...props.inventory,
-      }}
-      className={props.className}
-    >
-      {props.children}
-    </DocumentSummarySection>
+    <div id="tour-purchase-summary">
+      <DocumentSummarySection
+        functionalBreakdown={props.functionalBreakdown ?? breakdown.functional}
+        localBreakdown={props.localBreakdown ?? breakdown.local}
+        exchangeRate={exchangeRate}
+        documentCurrency={props.documentCurrency ?? documentCurrency}
+        functionalCurrency={props.functionalCurrency ?? activeFunctional}
+        localCurrency={props.localCurrency ?? activeLocal}
+        itemsCount={props.itemsCount ?? breakdown.itemsCount}
+        totalUnits={props.totalUnits ?? breakdown.totalUnits}
+        inventory={{
+          moduleType: "purchase",
+          status: currentStatus,
+          ...props.inventory,
+        }}
+        className={props.className}
+      >
+        {props.children}
+      </DocumentSummarySection>
+    </div>
   );
 }
 

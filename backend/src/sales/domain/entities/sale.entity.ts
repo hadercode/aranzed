@@ -47,6 +47,10 @@ export class Sale extends BaseEntity {
   paidAmount: number;
   paidAmountLocal: number;
 
+  // Saldo Pendiente Actual (persistido en BD)
+  balance: number;
+  balanceLocal: number;
+
   warehouseId?: string | null;
   convertedFromQuotationId?: string | null;
   createdById?: string | null;
@@ -77,6 +81,9 @@ export class Sale extends BaseEntity {
 
     this.paidAmount = Number(partial.paidAmount || 0);
     this.paidAmountLocal = Number(partial.paidAmountLocal || 0);
+    this.balance = partial.balance !== undefined ? Number(partial.balance) : 0;
+    this.balanceLocal =
+      partial.balanceLocal !== undefined ? Number(partial.balanceLocal) : 0;
 
     const rate = this.exchangeRate > 0 ? this.exchangeRate : 1.0;
 
@@ -118,6 +125,30 @@ export class Sale extends BaseEntity {
     this.taxAmountLocal = Number(taxLocal.toFixed(4));
     this.totalLocal = Number(
       (this.subtotalLocal + this.taxAmountLocal).toFixed(4),
+    );
+
+    if (
+      this.paidStatus === SalePaidStatus.PAGADO &&
+      this.paidAmount === 0 &&
+      this.total > 0
+    ) {
+      this.paidAmount = this.total;
+      this.paidAmountLocal = this.totalLocal;
+    }
+
+    this.calculateBalance();
+  }
+
+  calculateBalance(): void {
+    if (this.paidStatus === SalePaidStatus.PAGADO) {
+      this.balance = 0;
+      this.balanceLocal = 0;
+      return;
+    }
+    this.balance = Math.max(0, Number((this.total - this.paidAmount).toFixed(4)));
+    this.balanceLocal = Math.max(
+      0,
+      Number((this.totalLocal - this.paidAmountLocal).toFixed(4)),
     );
   }
 
@@ -281,12 +312,8 @@ export class Sale extends BaseEntity {
   }
 
   getBalance(): { balance: number; balanceLocal: number } {
-    const bal = Math.max(0, Number((this.total - this.paidAmount).toFixed(4)));
-    const balLocal = Math.max(
-      0,
-      Number((this.totalLocal - this.paidAmountLocal).toFixed(4)),
-    );
-    return { balance: bal, balanceLocal: balLocal };
+    this.calculateBalance();
+    return { balance: this.balance, balanceLocal: this.balanceLocal };
   }
 
   applyPaymentAllocation(
@@ -314,6 +341,8 @@ export class Sale extends BaseEntity {
     } else {
       this.paidStatus = SalePaidStatus.PENDIENTE;
     }
+
+    this.calculateBalance();
   }
 
   closeManually(differenceAdjustment: number, reason?: string): void {
@@ -323,6 +352,8 @@ export class Sale extends BaseEntity {
     const diff = Number(differenceAdjustment.toFixed(4));
     this.paidAmount = this.total;
     this.paidAmountLocal = this.totalLocal;
+    this.balance = 0;
+    this.balanceLocal = 0;
     this.paidStatus = SalePaidStatus.PAGADO;
     const note = `[CIERRE MANUAL]: Ajuste de diferencia de $${diff.toFixed(2)}${reason ? ` - Motivo: ${reason.trim()}` : ''}`;
     this.notes = this.notes ? `${this.notes} | ${note}` : note;
@@ -351,6 +382,8 @@ export class Sale extends BaseEntity {
     } else {
       this.paidStatus = SalePaidStatus.PENDIENTE;
     }
+
+    this.calculateBalance();
   }
 
   updateDetails(params: UpdateSaleDetailsParams): void {

@@ -1,11 +1,21 @@
 import { ShoppingBag } from 'lucide-react';
-import { useSalesFormContext } from '../../../context';
 import { FormHeader } from '@/shared/components/ui/FormHeader';
+import type { SaleType } from '../../../types';
+import { SaleTourLauncher } from '../../tour';
 
-export function SaleFormHeader() {
-  const { isEditMode, handleCancel, isSaving, form } = useSalesFormContext();
-  const saleType = form.watch('saleType');
+export interface SaleFormHeaderProps {
+  isEditMode: boolean;
+  handleCancel: () => void;
+  isSaving: boolean;
+  saleType: SaleType;
+}
 
+export function SaleFormHeader({
+  isEditMode,
+  handleCancel,
+  isSaving,
+  saleType,
+}: SaleFormHeaderProps) {
   const title = isEditMode
     ? 'Editar Documento Comercial'
     : saleType === 'QUOTATION'
@@ -28,6 +38,11 @@ export function SaleFormHeader() {
       cancelDisabled={isSaving}
       submitText={isEditMode ? 'Actualizar Documento' : 'Guardar y Procesar'}
       isSubmitting={isSaving}
+      actions={
+        <div className="flex items-center gap-2">
+          <SaleTourLauncher variant="button" />
+        </div>
+      }
     />
   );
 }

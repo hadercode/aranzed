@@ -7,3 +7,4 @@ export * from './context';
 export * from './hooks/queries/useCompanyQuery';
 export * from './hooks/mutations/useCompanyMutations';
 export * from './hooks/logic/useCompanyPage';
+export * from './services';

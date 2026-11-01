@@ -1,5 +1,5 @@
 import { Filter } from "lucide-react";
-import { usePurchasesContext } from "../../context";
+import { usePurchasesPage } from "../../hooks";
 import type { PurchaseStatus } from "../../types";
 import { SearchInput, Select } from "@/shared/components/ui";
 
@@ -9,7 +9,7 @@ export function PurchasesFilterBar() {
     handleSearchChange,
     statusFilter,
     handleStatusFilterChange,
-  } = usePurchasesContext();
+  } = usePurchasesPage();
 
   const statusTabs: Array<{ id: PurchaseStatus | "ALL"; label: string }> = [
     { id: "ALL", label: "Todas" },

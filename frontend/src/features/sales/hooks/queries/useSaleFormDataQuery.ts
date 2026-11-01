@@ -33,13 +33,9 @@ export function useSaleFormDataQuery(saleId?: string): UseSaleFormDataQueryResul
   });
 
   const allProducts = Array.isArray(productsQuery.data) ? productsQuery.data : [];
-  // Priorizar productos comercializables activos (TRADITIONAL, FINISHED_GOOD, SERVICE)
+  // Filtrar productos comercializables activos (isActive !== false && isForSale !== false)
   const sellableProducts = allProducts.filter(
-    (p) =>
-      p.isActive !== false &&
-      (p.type === 'TRADITIONAL' ||
-        p.type === 'FINISHED_GOOD' ||
-        p.type === 'SERVICE'),
+    (p) => p.isActive !== false && p.isForSale !== false,
   );
 
   const loadingInitial =
@@ -61,7 +57,7 @@ export function useSaleFormDataQuery(saleId?: string): UseSaleFormDataQueryResul
 
   return {
     sale: saleQuery.data || null,
-    sellableProducts: sellableProducts.length > 0 ? sellableProducts : allProducts,
+    sellableProducts,
     allProducts,
     loadingInitial,
     loadError,

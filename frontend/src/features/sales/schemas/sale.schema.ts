@@ -40,7 +40,19 @@ export const saleFormSchema = z
     customerAddress: z.string().max(500).optional(),
     notes: z.string().max(1000).optional(),
     paymentMethod: z
-      .enum(['CASH', 'TRANSFER', 'CARD', 'CREDIT', 'OTHER'])
+      .enum([
+        'CASH',
+        'CASH_USD',
+        'CASH_VES',
+        'TRANSFER',
+        'MOBILE_PAY',
+        'POS',
+        'ZELLE',
+        'CARD',
+        'CREDIT',
+        'ADJUSTMENT',
+        'OTHER',
+      ])
       .optional(),
     paymentNotes: z.string().max(500).optional(),
     saleDate: z.string().min(1, 'La fecha de emisión es obligatoria'),

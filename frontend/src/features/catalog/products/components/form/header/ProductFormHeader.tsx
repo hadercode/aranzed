@@ -1,6 +1,6 @@
 import { Package } from 'lucide-react';
 import { FormHeader } from '@/shared/components/ui';
-import { useProductFormContext } from '../../../context';
+import { ProductTourLauncher } from '../../tour';
 
 export interface ProductFormHeaderProps {
   isEditing?: boolean;
@@ -10,19 +10,11 @@ export interface ProductFormHeaderProps {
 }
 
 export function ProductFormHeader({
-  isEditing: propIsEditing,
-  productName: propProductName,
-  isMutating: propIsMutating,
-  onCancel: propOnCancel,
+  isEditing = false,
+  productName = '',
+  isMutating = false,
+  onCancel,
 }: ProductFormHeaderProps) {
-  const context = useProductFormContext();
-
-  const isEditing = propIsEditing ?? context.isEditing;
-  const productName =
-    propProductName ?? context.product?.name ?? context.productNameValue ?? '';
-  const isMutating = propIsMutating ?? context.isMutating;
-  const onCancel = propOnCancel ?? context.handleCancel;
-
   return (
     <FormHeader
       backText="Volver al Catálogo de Productos"
@@ -39,6 +31,11 @@ export function ProductFormHeader({
       submitText={isEditing ? 'Guardar Cambios' : 'Crear Producto'}
       isSubmitting={isMutating}
       submitFormId="product-form-page"
+      actions={
+        <div className="flex items-center gap-2">
+          <ProductTourLauncher variant="button" />
+        </div>
+      }
     />
   );
 }

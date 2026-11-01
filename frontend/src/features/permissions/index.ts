@@ -5,4 +5,5 @@ export * from "./components";
 export * from "./context";
 export * from "./hooks/queries/usePermissionsQuery";
 export * from "./hooks/mutations/useRolePermissionsMutations";
-export * from "./hooks/logic/useRolePermissionsPage";
+export * from "./hooks/logic";
+export * from "./services";

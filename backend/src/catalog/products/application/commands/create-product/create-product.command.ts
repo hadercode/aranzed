@@ -12,6 +12,8 @@ export class CreateProductCommand {
     public readonly lastCost?: number,
     public readonly lastSalePrice?: number,
     public readonly isActive?: boolean,
+    public readonly isForSale?: boolean,
+    public readonly isForInternalUse?: boolean,
     public readonly manageInventory?: boolean,
     public readonly createdById?: string,
   ) {}

@@ -1,6 +1,6 @@
 import { Save } from 'lucide-react';
 import { Button, Modal } from '@/shared/components/ui';
-import { useCategoriesContext } from '../../context';
+import { useCategoriesPage } from '../../hooks';
 
 export function CategoryFormModal() {
   const {
@@ -14,7 +14,7 @@ export function CategoryFormModal() {
     handleCloseForm,
     handleFormChange,
     handleFormSubmit,
-  } = useCategoriesContext();
+  } = useCategoriesPage();
 
   return (
     <Modal

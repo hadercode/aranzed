@@ -5,3 +5,4 @@ export * from './table/PurchasesStatusBadge';
 export * from '../hooks/logic/usePurchasesTableColumns';
 export * from './modal/PurchasesDialogs';
 export * from './form';
+export * from './tour';

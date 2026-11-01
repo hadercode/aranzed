@@ -9,3 +9,4 @@ export * from './components/UserForm';
 export * from './components/UserFormModal';
 export * from './types/user';
 export * from './schemas/user.schema';
+export * from './services';

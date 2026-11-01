@@ -1,5 +1,5 @@
 import { ConfirmDialog, SuccessDialog } from '@/shared/components/ui';
-import { useUnitsOfMeasureContext } from '../../context';
+import { useUnitsOfMeasurePage } from '../../hooks';
 
 export function UnitsOfMeasureDialogs() {
   const {
@@ -11,7 +11,7 @@ export function UnitsOfMeasureDialogs() {
     isSuccessOpen,
     successMessage,
     handleCloseSuccess,
-  } = useUnitsOfMeasureContext();
+  } = useUnitsOfMeasurePage();
 
   return (
     <>

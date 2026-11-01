@@ -1,4 +1,5 @@
 import { Activity, RefreshCw } from 'lucide-react';
+import { DashboardActivityRow } from './DashboardActivityRow';
 
 export interface ActivityLogItem {
   user: string;
@@ -59,96 +60,30 @@ export function DashboardActivityTable({
               <th className="px-4 py-3 font-medium text-right">Estado</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[var(--color-border)]">
+          <tbody>
             {loading && logs.length === 0 ? (
-              Array.from({ length: 4 }).map((_, idx) => (
-                <tr key={idx} className="animate-pulse">
-                  <td className="px-4 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                      <div className="w-24 h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="w-48 h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="w-20 h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                  </td>
-                  <td className="px-4 py-4 text-right">
-                    <div className="w-16 h-6 bg-gray-200 dark:bg-gray-700 rounded-full ml-auto"></div>
-                  </td>
-                </tr>
-              ))
+              <tr>
+                <td colSpan={4} className="text-center py-8 text-[var(--color-text-secondary)]">
+                  <div className="flex items-center justify-center gap-2">
+                    <RefreshCw className="w-4 h-4 animate-spin text-[var(--color-sage-500)]" />
+                    <span>Cargando operaciones recientes...</span>
+                  </div>
+                </td>
+              </tr>
             ) : logs.length === 0 ? (
               <tr>
-                <td
-                  colSpan={4}
-                  className="px-4 py-10 text-center text-sm text-[var(--color-text-secondary)]"
-                >
-                  <div className="flex flex-col items-center justify-center">
-                    <Activity className="w-10 h-10 text-[var(--color-text-muted)] mb-2.5 opacity-40" />
-                    <p className="font-semibold text-sm text-[var(--color-text-primary)]">
-                      Aún no hay operaciones registradas
-                    </p>
-                    <p className="text-xs text-[var(--color-text-secondary)] mt-1 max-w-sm">
-                      Al crear o actualizar ventas, compras, recetas o ajustes de inventario, se reflejarán aquí automáticamente.
+                <td colSpan={4} className="text-center py-8 text-[var(--color-text-secondary)]">
+                  <div className="flex flex-col items-center justify-center gap-1">
+                    <Activity className="w-8 h-8 text-[var(--color-text-muted)] opacity-40 mb-1" />
+                    <p className="font-medium text-sm">No hay actividades de escritura recientes</p>
+                    <p className="text-xs text-[var(--color-text-muted)]">
+                      Las acciones de creación y actualización aparecerán aquí automáticamente.
                     </p>
                   </div>
                 </td>
               </tr>
             ) : (
-              logs.map((item, idx) => (
-                <tr
-                  key={idx}
-                  className="hover:bg-[var(--color-surface-hover)] transition-colors group"
-                >
-                  <td className="px-4 py-3.5 whitespace-nowrap">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 bg-gradient-to-tr from-cyan-500/20 to-fuchsia-500/20 text-[var(--color-text-primary)] font-bold text-xs rounded-full flex items-center justify-center shrink-0 border border-cyan-500/30">
-                        {item.user.charAt(0).toUpperCase()}
-                      </div>
-                      <span className="font-medium text-xs text-[var(--color-text-primary)] group-hover:text-[var(--color-sage-500)] transition-colors">
-                        {item.user}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3.5 text-xs text-[var(--color-text-secondary)] font-medium max-w-sm">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      {item.operationType === 'CREATE' ? (
-                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
-                          + Registro
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 shrink-0">
-                          ↻ Edición
-                        </span>
-                      )}
-                      <span className="truncate">{item.action}</span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3.5 whitespace-nowrap text-xs text-[var(--color-text-secondary)]">
-                    {item.date}
-                  </td>
-                  <td className="px-4 py-3.5 whitespace-nowrap text-right">
-                    <span
-                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold ${
-                        item.status === 'Success'
-                          ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
-                          : item.status === 'Failed'
-                          ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20'
-                          : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
-                      }`}
-                    >
-                      {item.status === 'Success'
-                        ? 'Completado'
-                        : item.status === 'Failed'
-                        ? 'Fallido'
-                        : 'Pendiente'}
-                    </span>
-                  </td>
-                </tr>
-              ))
+              logs.map((log, index) => <DashboardActivityRow key={index} log={log} />)
             )}
           </tbody>
         </table>
@@ -156,3 +91,5 @@ export function DashboardActivityTable({
     </div>
   );
 }
+
+export default DashboardActivityTable;

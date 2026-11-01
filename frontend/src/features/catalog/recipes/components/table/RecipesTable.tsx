@@ -1,5 +1,5 @@
 import { ScrollText } from 'lucide-react';
-import { useRecipesContext } from '../../context';
+import { useRecipesPage } from '../../hooks';
 import { useRecipesTableColumns } from '../../hooks/logic/useRecipesTableColumns';
 import { DataTable, Button } from '@/shared/components/ui';
 
@@ -18,7 +18,7 @@ export function RecipesTable() {
     sortOrder,
     handleSortChange,
     handleCreateNew,
-  } = useRecipesContext();
+  } = useRecipesPage();
 
   const columns = useRecipesTableColumns();
 

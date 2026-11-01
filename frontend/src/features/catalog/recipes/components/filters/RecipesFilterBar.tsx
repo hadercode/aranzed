@@ -1,5 +1,5 @@
 import { Search, X, RotateCcw, Filter } from 'lucide-react';
-import { useRecipesContext } from '../../context';
+import { useRecipesPage } from '../../hooks';
 import type { RecipeStatus } from '../../types';
 
 export function RecipesFilterBar() {
@@ -11,7 +11,7 @@ export function RecipesFilterBar() {
     totalRecipes,
     rawRecipesCount,
     setCurrentPage,
-  } = useRecipesContext();
+  } = useRecipesPage();
 
   const isFiltered = searchTerm !== '' || statusFilter !== 'ALL';
 

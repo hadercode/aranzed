@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
+import { useCategoriesStore } from '../../store/useCategoriesStore';
 import type { Category } from '../../types';
 
 export interface UseCategoriesDialogsProps {
@@ -6,53 +7,51 @@ export interface UseCategoriesDialogsProps {
 }
 
 export function useCategoriesDialogs({ deleteCategory }: UseCategoriesDialogsProps) {
-  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
-  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
+  const store = useCategoriesStore();
 
-  const [isSuccessOpen, setIsSuccessOpen] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
-
-  const showSuccess = useCallback((message: string) => {
-    setSuccessMessage(message);
-    setIsSuccessOpen(true);
-  }, []);
+  const showSuccess = useCallback(
+    (message: string) => {
+      store.showSuccess(message);
+    },
+    [store]
+  );
 
   const handleCloseSuccess = useCallback(() => {
-    setIsSuccessOpen(false);
-    setSuccessMessage('');
-  }, []);
+    store.closeSuccessDialog();
+  }, [store]);
 
-  const handleOpenDelete = useCallback((category: Category) => {
-    setCategoryToDelete(category);
-    setIsDeleteConfirmOpen(true);
-  }, []);
+  const handleOpenDelete = useCallback(
+    (category: Category) => {
+      store.openDeleteConfirm(category);
+    },
+    [store]
+  );
 
   const handleCloseDelete = useCallback(() => {
-    setIsDeleteConfirmOpen(false);
-    setCategoryToDelete(null);
-  }, []);
+    store.closeDeleteConfirm();
+  }, [store]);
 
   const handleConfirmDelete = useCallback(async () => {
-    if (!categoryToDelete) return;
+    if (!store.categoryToDelete) return;
     try {
-      await deleteCategory(categoryToDelete.id);
-      setIsDeleteConfirmOpen(false);
-      showSuccess(`Categoría "${categoryToDelete.name}" eliminada correctamente.`);
-      setCategoryToDelete(null);
+      const catName = store.categoryToDelete.name;
+      await deleteCategory(store.categoryToDelete.id);
+      store.closeDeleteConfirm();
+      store.showSuccess(`Categoría "${catName}" eliminada correctamente.`);
     } catch {
       // Handled in mutation hook
     }
-  }, [categoryToDelete, deleteCategory, showSuccess]);
+  }, [store, deleteCategory]);
 
   return {
-    isDeleteConfirmOpen,
-    categoryToDelete,
-    isSuccessOpen,
-    successMessage,
+    isDeleteConfirmOpen: store.isDeleteConfirmOpen,
+    categoryToDelete: store.categoryToDelete,
+    isSuccessOpen: store.isSuccessOpen,
+    successMessage: store.successMessage,
     showSuccess,
+    handleCloseSuccess,
     handleOpenDelete,
     handleCloseDelete,
     handleConfirmDelete,
-    handleCloseSuccess,
   };
 }

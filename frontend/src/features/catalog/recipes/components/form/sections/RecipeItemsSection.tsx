@@ -1,10 +1,14 @@
 import { Boxes, Plus, AlertCircle } from 'lucide-react';
-import { useRecipeFormContext } from '../../../context';
+import type { UseRecipeFormPageReturn } from '../../../hooks/logic/useRecipeFormPage';
 import { SectionHeader } from '@/shared/components/ui';
 import { RecipeItemsEmptyState, RecipeItemsTable } from './items';
 
-export function RecipeItemsSection() {
-  const { form, itemFields, handleAddNewItem } = useRecipeFormContext();
+export interface RecipeItemsSectionProps {
+  formPage: UseRecipeFormPageReturn;
+}
+
+export function RecipeItemsSection({ formPage }: RecipeItemsSectionProps) {
+  const { form, itemFields, handleAddNewItem } = formPage;
   const { formState: { errors } } = form;
 
   const itemsErrorMessage =
@@ -39,9 +43,9 @@ export function RecipeItemsSection() {
 
       {/* Subcomponents: Empty State vs Items Table */}
       {itemFields.length === 0 ? (
-        <RecipeItemsEmptyState />
+        <RecipeItemsEmptyState onAddNewItem={handleAddNewItem} />
       ) : (
-        <RecipeItemsTable />
+        <RecipeItemsTable formPage={formPage} />
       )}
     </div>
   );

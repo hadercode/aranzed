@@ -69,15 +69,30 @@ export const salesPaymentsService = {
   },
 
   /**
-   * Sube una imagen o documento de comprobante de pago
+   * Sube una imagen de comprobante de pago directamente a Neon S3 en la carpeta 'payments' mediante /storage/upload
    */
-  async uploadReceipt(file: File): Promise<{ url: string; filename: string }> {
+  async uploadReceipt(file: File): Promise<{ url: string; filename: string; key?: string }> {
     const formData = new FormData();
     formData.append('file', file);
-    return ApiClient.post<{ url: string; filename: string }>(
-      '/sales/payments/upload-receipt',
-      formData,
-    );
+    formData.append('folder', 'payments');
+
+    const response = await ApiClient.post<{
+      id: string;
+      key: string;
+      fileName: string;
+      originalName: string;
+      url: string;
+    }>('/storage/upload', formData);
+
+    const viewUrl = response.key
+      ? `/storage/view?key=${encodeURIComponent(response.key)}`
+      : response.url;
+
+    return {
+      url: viewUrl,
+      key: response.key,
+      filename: response.fileName || response.originalName,
+    };
   },
 
   /**

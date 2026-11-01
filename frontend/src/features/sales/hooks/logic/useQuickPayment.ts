@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useSalePaymentMutations } from '../mutations';
 import type { Sale, PaymentMethod, CreateSalePaymentPayload } from '../../types';
+import { useQuickPaymentReceipt } from './useQuickPaymentReceipt';
 
 interface UseQuickPaymentOptions {
   sale: Sale;
@@ -8,44 +9,26 @@ interface UseQuickPaymentOptions {
   onClose: () => void;
 }
 
-export function useQuickPayment({
-  sale,
-  onSuccess,
-  onClose,
-}: UseQuickPaymentOptions) {
+export function useQuickPayment({ sale, onSuccess, onClose }: UseQuickPaymentOptions) {
   const rate = sale.exchangeRate > 0 ? sale.exchangeRate : 1.0;
-  const pendingBalanceUsd = Math.max(
-    0,
-    Number((sale.total - (sale.paidAmount || 0)).toFixed(2)),
-  );
-  const pendingBalanceVes = Math.max(
-    0,
-    Number((sale.totalLocal - (sale.paidAmountLocal || 0)).toFixed(2)),
-  );
+  const pendingBalanceUsd = Math.max(0, Number((sale.total - (sale.paidAmount || 0)).toFixed(2)));
+  const pendingBalanceVes = Math.max(0, Number((sale.totalLocal - (sale.paidAmountLocal || 0)).toFixed(2)));
 
-  const [paymentDate, setPaymentDate] = useState<string>(
-    () => new Date().toISOString().split('T')[0],
-  );
+  const [paymentDate, setPaymentDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('TRANSFER');
   const [reference, setReference] = useState<string>('');
   const [currency, setCurrency] = useState<'USD' | 'VES'>('USD');
   const [amount, setAmount] = useState<number>(pendingBalanceUsd);
   const [exchangeRate, setExchangeRate] = useState<number>(rate);
   const [notes, setNotes] = useState<string>('');
-  const [receiptUrl, setReceiptUrl] = useState<string>('');
-  const [receiptFileName, setReceiptFileName] = useState<string>('');
-  const [closeIfSmallDifference, setCloseIfSmallDifference] =
-    useState<boolean>(true);
+  const [closeIfSmallDifference, setCloseIfSmallDifference] = useState<boolean>(true);
   const [localError, setLocalError] = useState<string | null>(null);
 
-  const {
-    createPayment,
-    uploadReceipt,
-    isCreating,
-    isUploading,
-    createError,
-    uploadError,
-  } = useSalePaymentMutations();
+  const { createPayment, uploadReceipt, isCreating, isUploading, createError, uploadError } =
+    useSalePaymentMutations();
+
+  const { receiptUrl, receiptFileName, receiptError, handleFileUpload, handleRemoveReceipt } =
+    useQuickPaymentReceipt(uploadReceipt);
 
   const amountUsd = useMemo(() => {
     if (currency === 'USD') return amount;
@@ -61,26 +44,6 @@ export function useQuickPayment({
     return Math.max(0, Number((pendingBalanceUsd - amountUsd).toFixed(2)));
   }, [pendingBalanceUsd, amountUsd]);
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      setLocalError(null);
-      const res = await uploadReceipt(file);
-      setReceiptUrl(res.url);
-      setReceiptFileName(file.name);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Error al subir el comprobante';
-      setLocalError(msg);
-    }
-  };
-
-  const handleRemoveReceipt = () => {
-    setReceiptUrl('');
-    setReceiptFileName('');
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLocalError(null);
@@ -92,9 +55,7 @@ export function useQuickPayment({
 
     try {
       const shouldClose =
-        closeIfSmallDifference &&
-        remainingAfterPayment > 0 &&
-        remainingAfterPayment <= 0.05;
+        closeIfSmallDifference && remainingAfterPayment > 0 && remainingAfterPayment <= 0.05;
 
       const payload: CreateSalePaymentPayload = {
         customerName: sale.customerName,
@@ -121,8 +82,7 @@ export function useQuickPayment({
       onSuccess();
       onClose();
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Error al registrar el cobro';
-      setLocalError(msg);
+      setLocalError(err instanceof Error ? err.message : 'Error al registrar el cobro');
     }
   };
 
@@ -154,7 +114,11 @@ export function useQuickPayment({
     remainingAfterPayment,
     isSubmitting: isCreating,
     isUploading,
-    error: localError || (createError instanceof Error ? createError.message : null) || (uploadError instanceof Error ? uploadError.message : null),
+    error:
+      localError ||
+      receiptError ||
+      (createError instanceof Error ? createError.message : null) ||
+      (uploadError instanceof Error ? uploadError.message : null),
     handleSubmit,
   };
 }

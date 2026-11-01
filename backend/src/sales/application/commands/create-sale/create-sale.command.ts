@@ -5,14 +5,20 @@ import { SalePaymentTerm } from '@/sales/domain/enums/sale-payment-term.enum';
 import { SalePaidStatus } from '@/sales/domain/enums/sale-paid-status.enum';
 
 export interface CreateSaleItemDtoInput {
+  id?: string;
   productId: string;
   description?: string;
+  productType?: string;
   quantity: number;
   unitPrice: number;
+  unitCost?: number;
   discountRate?: number;
   isTaxable?: boolean;
   taxRate?: number;
   sortOrder?: number;
+  unitPriceLocal?: number;
+  subtotalLocal?: number;
+  totalLocal?: number;
 }
 
 export type CreateSaleCommandInput = Omit<

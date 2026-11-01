@@ -1,6 +1,6 @@
 import { FolderTree, Plus, RefreshCw } from 'lucide-react';
 import { Button, PageHeader } from '@/shared/components/ui';
-import { useCategoriesContext } from '../../context';
+import { useCategoriesPage } from '../../hooks';
 
 export interface CategoriesPageHeaderProps {
   onNewCategory?: () => void;
@@ -13,10 +13,10 @@ export function CategoriesPageHeader({
   onRefresh: propOnRefresh,
   loading: propLoading,
 }: CategoriesPageHeaderProps) {
-  const context = useCategoriesContext();
-  const onNewCategory = propOnNewCategory ?? context.handleOpenCreate;
-  const onRefresh = propOnRefresh ?? context.refetch;
-  const loading = propLoading ?? context.loading;
+  const page = useCategoriesPage();
+  const onNewCategory = propOnNewCategory ?? page.handleOpenCreate;
+  const onRefresh = propOnRefresh ?? page.refetch;
+  const loading = propLoading ?? page.loading;
 
   return (
     <PageHeader

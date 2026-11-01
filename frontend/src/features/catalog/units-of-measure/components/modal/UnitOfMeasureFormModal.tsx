@@ -1,6 +1,6 @@
 import { Save } from 'lucide-react';
 import { Button, Modal } from '@/shared/components/ui';
-import { useUnitsOfMeasureContext } from '../../context';
+import { useUnitsOfMeasurePage } from '../../hooks';
 
 export function UnitOfMeasureFormModal() {
   const {
@@ -13,7 +13,7 @@ export function UnitOfMeasureFormModal() {
     handleCloseForm,
     handleFormChange,
     handleFormSubmit,
-  } = useUnitsOfMeasureContext();
+  } = useUnitsOfMeasurePage();
 
   return (
     <Modal

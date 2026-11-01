@@ -1,5 +1,6 @@
-import { useState, useCallback, useEffect } from 'react';
-import { ApiClient } from '@/lib/api-client';
+import { useQuery } from '@tanstack/react-query';
+import { recipesService } from '../../services';
+import { productsService } from '@/features/catalog/products/services';
 import type { Recipe } from '../../types';
 import type { Product } from '@/features/catalog/products/types';
 
@@ -12,96 +13,38 @@ export interface UseRecipeFormDataQueryResult {
 }
 
 export function useRecipeFormDataQuery(recipeId?: string): UseRecipeFormDataQueryResult {
-  const [recipe, setRecipe] = useState<Recipe | null>(null);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loadingInitial, setLoadingInitial] = useState(true);
-  const [loadError, setLoadError] = useState('');
+  const productsQuery = useQuery<Product[], Error>({
+    queryKey: ['catalog', 'products'],
+    queryFn: () => productsService.getAll(),
+    staleTime: 1000 * 60 * 5,
+  });
 
-  const loadData = useCallback(
-    async (isManualRefresh = false) => {
-      if (isManualRefresh) {
-        setLoadingInitial(true);
-        setLoadError('');
-      }
+  const recipeQuery = useQuery<Recipe | null, Error>({
+    queryKey: ['catalog', 'recipes', recipeId],
+    queryFn: () => (recipeId ? recipesService.getById(recipeId) : Promise.resolve(null)),
+    enabled: Boolean(recipeId),
+    staleTime: 1000 * 60 * 5,
+  });
 
-      try {
-        const promises: [Promise<Product[]>, Promise<Recipe | null>] = [
-          ApiClient.get<Product[]>('/catalog/products').catch(() => []),
-          recipeId
-            ? ApiClient.get<Recipe>(`/catalog/recipes/${recipeId}`)
-            : Promise.resolve(null),
-        ];
+  const loadingInitial = productsQuery.isLoading || (Boolean(recipeId) && recipeQuery.isLoading);
 
-        const [productsRes, recipeRes] = await Promise.all(promises);
+  const errorObj = productsQuery.error || recipeQuery.error;
+  const loadError = errorObj
+    ? errorObj.message || 'Error al cargar los datos de la receta'
+    : '';
 
-        setProducts(productsRes || []);
-        setRecipe(recipeRes);
-        setLoadError('');
-      } catch (err: unknown) {
-        const msg =
-          err instanceof Error
-            ? err.message
-            : typeof err === 'string'
-            ? err
-            : 'Error al cargar los datos de la receta';
-        setLoadError(msg);
-      } finally {
-        setLoadingInitial(false);
-      }
-    },
-    [recipeId]
-  );
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function initialFetch() {
-      try {
-        setLoadingInitial(true);
-        setLoadError('');
-
-        const promises: [Promise<Product[]>, Promise<Recipe | null>] = [
-          ApiClient.get<Product[]>('/catalog/products').catch(() => []),
-          recipeId
-            ? ApiClient.get<Recipe>(`/catalog/recipes/${recipeId}`)
-            : Promise.resolve(null),
-        ];
-
-        const [productsRes, recipeRes] = await Promise.all(promises);
-
-        if (isMounted) {
-          setProducts(productsRes || []);
-          setRecipe(recipeRes);
-        }
-      } catch (err: unknown) {
-        if (isMounted) {
-          const msg =
-            err instanceof Error
-              ? err.message
-              : typeof err === 'string'
-              ? err
-              : 'Error al cargar los datos de la receta';
-          setLoadError(msg);
-        }
-      } finally {
-        if (isMounted) {
-          setLoadingInitial(false);
-        }
-      }
-    }
-
-    initialFetch();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [recipeId]);
+  const refetchInitial = async () => {
+    await Promise.all([
+      productsQuery.refetch(),
+      recipeId ? recipeQuery.refetch() : Promise.resolve(),
+    ]);
+  };
 
   return {
-    recipe,
-    products,
+    recipe: recipeQuery.data ?? null,
+    products: productsQuery.data ?? [],
     loadingInitial,
     loadError,
-    refetchInitial: () => loadData(true),
+    refetchInitial,
   };
 }

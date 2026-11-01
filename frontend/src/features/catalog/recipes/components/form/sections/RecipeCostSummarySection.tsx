@@ -4,14 +4,18 @@ import {
   Hammer,
   Layers,
 } from 'lucide-react';
-import { useRecipeFormContext } from '../../../context';
+import type { UseRecipeFormPageReturn } from '../../../hooks/logic/useRecipeFormPage';
+
+export interface RecipeCostSummarySectionProps {
+  formPage: UseRecipeFormPageReturn;
+}
 
 /**
  * Seccion de Desglose de Costos de Fabricacion.
  * Diseñada para ancho completo (full-width) con metricas financieras en 4 columnas.
  */
-export function RecipeCostSummarySection() {
-  const { form, costBreakdown, selectedParentProduct } = useRecipeFormContext();
+export function RecipeCostSummarySection({ formPage }: RecipeCostSummarySectionProps) {
+  const { form, costBreakdown, selectedParentProduct } = formPage;
   const { watch } = form;
 
   const yieldQty = Number(watch('yieldQuantity')) || 1;

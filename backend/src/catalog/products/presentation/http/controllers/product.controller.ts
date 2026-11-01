@@ -101,6 +101,8 @@ export class ProductController {
         dto.lastCost,
         dto.lastSalePrice,
         dto.isActive,
+        dto.isForSale,
+        dto.isForInternalUse,
         dto.manageInventory,
         userId,
       ),

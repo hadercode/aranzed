@@ -1,10 +1,10 @@
 import { ShoppingBag, CheckCircle2, Clock, DollarSign } from "lucide-react";
-import { usePurchasesContext } from "../../context";
+import { usePurchasesPage } from "../../hooks";
 import { useCurrencyStore } from "@/shared/hooks/store";
 import { StatCard } from "@/shared/components/ui";
 
 export function PurchasesStatsCards() {
-  const { stats } = usePurchasesContext();
+  const { stats } = usePurchasesPage();
   const { functionalSymbol } = useCurrencyStore();
 
   return (

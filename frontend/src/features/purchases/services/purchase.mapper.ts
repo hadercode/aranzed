@@ -41,6 +41,9 @@ export interface PurchasePayload {
  * al payload que requiere el endpoint de compras de la API (`PurchasePayload`),
  * resolviendo normalizaciones de texto, fechas ISO y conversiones bimonetarias.
  */
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 export function toPurchasePayload(
   data: PurchaseFormData,
   currencies: PurchaseCurrencyContext
@@ -66,9 +69,10 @@ export function toPurchasePayload(
       const cost = Number(item.unitCost) || 0;
       const costFunctional = isDocLocal ? Number((cost / rate).toFixed(4)) : cost;
       const costLocal = isDocLocal ? cost : Number((cost * rate).toFixed(4));
+      const hasValidUuid = typeof item.id === 'string' && UUID_REGEX.test(item.id);
 
       return {
-        id: item.id,
+        ...(hasValidUuid ? { id: item.id } : {}),
         materialId: item.materialId,
         description: item.description.trim(),
         quantity: Number(item.quantity),

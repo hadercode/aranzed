@@ -1,4 +1,3 @@
-import { ProductsProvider } from '../context';
 import {
   ProductsPageHeader,
   ProductsStatsCards,
@@ -6,7 +5,8 @@ import {
   ProductsErrorBanner,
   ProductsTable,
   ProductsDialogs,
-} from '../components';
+  ProductTourIntroModal,
+} from "../components";
 
 function ProductsPageContent() {
   return (
@@ -28,16 +28,15 @@ function ProductsPageContent() {
 
       {/* Confirm & Success Feedback Dialogs */}
       <ProductsDialogs />
+
+      {/* Tour Intro Modal */}
+      <ProductTourIntroModal />
     </div>
   );
 }
 
 export function ProductsPage() {
-  return (
-    <ProductsProvider>
-      <ProductsPageContent />
-    </ProductsProvider>
-  );
+  return <ProductsPageContent />;
 }
 
 export default ProductsPage;
