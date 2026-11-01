@@ -8,27 +8,38 @@ export function PaymentEquivalenceBanner({
   totalAmountVes: number;
 }) {
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between p-3.5 rounded-xl bg-sage-500/5 border border-sage-500/10 gap-3">
-      <div className="flex items-center gap-2">
-        <ArrowRightLeft className="w-4 h-4 text-sage-600" />
-        <span className="text-xs text-[var(--color-text-secondary)]">Equivalencia de Cobro:</span>
-      </div>
-      <div className="flex items-center gap-4 text-xs">
-        <div>
-          <span className="text-[var(--color-text-muted)] mr-1">USD:</span>
-          <strong className="text-sm text-emerald-600 dark:text-emerald-400 font-bold">
-            ${totalAmountUsd.toFixed(2)}
-          </strong>
+    <div className="flex flex-col sm:flex-row items-center justify-between p-3.5 sm:p-4 rounded-xl bg-gradient-to-r from-emerald-500/5 via-blue-500/5 to-transparent border border-[var(--color-border)] gap-3">
+      <div className="flex items-center gap-2.5">
+        <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+          <ArrowRightLeft className="w-4 h-4" />
         </div>
-        <div className="h-4 w-px bg-[var(--color-border)]" />
         <div>
-          <span className="text-[var(--color-text-muted)] mr-1">VES:</span>
-          <strong className="text-sm text-blue-600 dark:text-blue-400 font-bold">
+          <span className="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider block">
+            Equivalencia de Cobro
+          </span>
+          <span className="text-[11px] text-[var(--color-text-muted)]">
+            Cálculo simultáneo en divisas y moneda nacional
+          </span>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-4 sm:gap-6">
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-xs font-medium text-[var(--color-text-muted)]">USD:</span>
+          <span className="text-base sm:text-lg font-extrabold text-emerald-600 dark:text-emerald-400">
+            ${totalAmountUsd.toFixed(2)}
+          </span>
+        </div>
+
+        <div className="h-6 w-px bg-[var(--color-border)]" />
+
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-xs font-medium text-[var(--color-text-muted)]">VES:</span>
+          <span className="text-base sm:text-lg font-extrabold text-blue-600 dark:text-blue-400">
             Bs. {totalAmountVes.toFixed(2)}
-          </strong>
+          </span>
         </div>
       </div>
     </div>
   );
 }
-

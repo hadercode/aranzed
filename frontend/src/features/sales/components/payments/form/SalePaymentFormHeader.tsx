@@ -1,5 +1,5 @@
-import { ArrowLeft, Save, X } from 'lucide-react';
-import { Button } from '@/shared/components/ui/Button';
+import { ArrowLeft, Save, X } from "lucide-react";
+import { Button } from "@/shared/components/ui/Button";
 
 export interface SalePaymentFormHeaderProps {
   onCancel: () => void;
@@ -35,7 +35,8 @@ export function SalePaymentFormHeader({
             Registrar Cobro y Cruzar con Ventas
           </h1>
           <p className="text-xs text-[var(--color-text-secondary)]">
-            Aplica un pago único o transferencia bancaria contra una o múltiples facturas pendientes del cliente.
+            Aplica un pago único o transferencia bancaria contra una o múltiples
+            facturas pendientes del cliente.
           </p>
         </div>
       </div>
@@ -44,7 +45,7 @@ export function SalePaymentFormHeader({
         <Button
           type="button"
           variant="outline"
-          size="sm"
+          size="lg"
           onClick={onCancel}
           leftIcon={<X className="w-4 h-4" />}
         >
@@ -53,7 +54,7 @@ export function SalePaymentFormHeader({
         <Button
           type="button"
           variant="primary"
-          size="sm"
+          size="lg"
           onClick={onSubmit}
           loading={isSubmitting}
           leftIcon={<Save className="w-4 h-4" />}

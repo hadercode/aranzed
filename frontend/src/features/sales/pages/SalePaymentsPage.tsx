@@ -1,14 +1,14 @@
-import { useNavigate } from 'react-router-dom';
-import { CreditCard, Plus, ArrowLeft } from 'lucide-react';
-import { PageHeader } from '@/shared/components/ui/PageHeader';
-import { Button } from '@/shared/components/ui/Button';
-import { useSalePaymentsPage } from '../hooks/logic/useSalePaymentsPage';
+import { useNavigate } from "react-router-dom";
+import { CreditCard, Plus, ArrowLeft } from "lucide-react";
+import { PageHeader } from "@/shared/components/ui/PageHeader";
+import { Button } from "@/shared/components/ui/Button";
+import { useSalePaymentsPage } from "../hooks/logic/useSalePaymentsPage";
 import {
   SalePaymentsStatsCards,
   SalePaymentsFilterBar,
   SalePaymentsTable,
   SalePaymentsDialogs,
-} from '../components/payments/list';
+} from "../components/payments/list";
 
 export function SalePaymentsPage() {
   const navigate = useNavigate();
@@ -25,16 +25,16 @@ export function SalePaymentsPage() {
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
-            size="sm"
-            onClick={() => navigate('/sales')}
+            size="lg"
+            onClick={() => navigate("/sales")}
             leftIcon={<ArrowLeft className="w-4 h-4" />}
           >
             Volver a Ventas
           </Button>
           <Button
             variant="primary"
-            size="sm"
-            onClick={() => navigate('/sales/payments/new')}
+            size="lg"
+            onClick={() => navigate("/sales/payments/new")}
             leftIcon={<Plus className="w-4 h-4" />}
           >
             Nuevo Cobro Cruzado
