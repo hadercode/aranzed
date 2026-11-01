@@ -1,28 +1,49 @@
-import { useState, useCallback, useEffect } from "react";
-import { ApiClient } from "@/lib/api-client";
-import type { User } from "../../types/user";
+import { useQuery } from '@tanstack/react-query';
+import { usersService } from '../../services';
+import type { User } from '../../types/user';
+
+export const USERS_QUERY_KEY = ['users'] as const;
 
 export function useUsersQuery() {
-  const [data, setData] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const {
+    data = [],
+    isLoading,
+    isFetching,
+    error: queryError,
+    refetch,
+  } = useQuery<User[], Error>({
+    queryKey: USERS_QUERY_KEY,
+    queryFn: () => usersService.getAll(),
+    staleTime: 1000 * 60 * 5,
+  });
 
-  const refetch = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await ApiClient.get<User[]>("/users");
-      setData(res);
-      setError("");
-    } catch (err: any) {
-      setError(err || "Error al cargar los usuarios");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const error = queryError
+    ? queryError instanceof Error
+      ? queryError.message
+      : typeof queryError === 'string'
+      ? queryError
+      : 'Error al cargar los usuarios'
+    : '';
 
-  useEffect(() => {
-    refetch();
-  }, [refetch]);
+  return {
+    data,
+    loading: isLoading,
+    isFetching,
+    error,
+    refetch: async () => {
+      await refetch();
+    },
+  };
+}
 
-  return { data, loading, error, refetch, setData };
+export function useUserQuery(id?: string) {
+  return useQuery<User, Error>({
+    queryKey: [...USERS_QUERY_KEY, id],
+    queryFn: () => {
+      if (!id) throw new Error('ID de usuario requerido');
+      return usersService.getById(id);
+    },
+    enabled: Boolean(id),
+    staleTime: 1000 * 60 * 5,
+  });
 }

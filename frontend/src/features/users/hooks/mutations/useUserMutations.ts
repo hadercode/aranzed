@@ -1,52 +1,58 @@
-import { useState } from "react";
-import { ApiClient } from "@/lib/api-client";
-import type { User } from "../../types/user";
+import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { usersService, type CreateUserData, type UpdateUserData } from '../../services';
+import { USERS_QUERY_KEY } from '../queries/useUsersQuery';
+import type { User } from '../../types/user';
 
-interface CreateUserData {
-  email: string;
-  password?: string;
-  roles?: string[];
-}
+export type { CreateUserData, UpdateUserData };
 
-interface UpdateUserData {
-  email?: string;
-  password?: string;
-  roles?: string[];
-}
-
-interface UseUserMutationsOptions {
+export interface UseUserMutationsOptions {
   onSuccess?: () => void;
 }
 
 export function useUserMutations(options?: UseUserMutationsOptions) {
-  const [isMutating, setIsMutating] = useState(false);
-  const [mutationError, setMutationError] = useState("");
+  const queryClient = useQueryClient();
+  const [mutationError, setMutationError] = useState('');
 
-  const execute = async <T>(action: () => Promise<T>): Promise<T> => {
-    setIsMutating(true);
-    setMutationError("");
-    try {
-      const res = await action();
-      if (options?.onSuccess) {
-        options.onSuccess();
-      }
-      return res;
-    } catch (err: any) {
-      setMutationError(err || "Error en la operación de usuario");
-      throw err;
-    } finally {
-      setIsMutating(false);
-    }
+  const invalidateUsers = () => {
+    queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEY });
+    options?.onSuccess?.();
   };
 
-  const createUser = (data: CreateUserData) =>
-    execute(() => ApiClient.post<User>("/users", data));
+  const createMutation = useMutation<User, Error, CreateUserData>({
+    mutationFn: (data) => usersService.create(data),
+    onSuccess: invalidateUsers,
+    onError: (err) => setMutationError(err.message || 'Error al crear usuario'),
+  });
 
-  const updateUser = (id: string, data: UpdateUserData) =>
-    execute(() => ApiClient.put<User>(`/users/${id}`, data));
+  const updateMutation = useMutation<User, Error, { id: string; data: UpdateUserData }>({
+    mutationFn: ({ id, data }) => usersService.update(id, data),
+    onSuccess: invalidateUsers,
+    onError: (err) => setMutationError(err.message || 'Error al actualizar usuario'),
+  });
 
-  const deleteUser = (id: string) =>
-    execute(() => ApiClient.delete(`/users/${id}`));
+  const deleteMutation = useMutation<void, Error, string>({
+    mutationFn: (id) => usersService.delete(id),
+    onSuccess: invalidateUsers,
+    onError: (err) => setMutationError(err.message || 'Error al eliminar usuario'),
+  });
+
+  const isMutating = createMutation.isPending || updateMutation.isPending || deleteMutation.isPending;
+
+  const createUser = (data: CreateUserData) => {
+    setMutationError('');
+    return createMutation.mutateAsync(data);
+  };
+
+  const updateUser = (id: string, data: UpdateUserData) => {
+    setMutationError('');
+    return updateMutation.mutateAsync({ id, data });
+  };
+
+  const deleteUser = (id: string) => {
+    setMutationError('');
+    return deleteMutation.mutateAsync(id);
+  };
 
   return {
     createUser,
@@ -55,5 +61,8 @@ export function useUserMutations(options?: UseUserMutationsOptions) {
     isMutating,
     mutationError,
     setMutationError,
+    createMutation,
+    updateMutation,
+    deleteMutation,
   };
 }

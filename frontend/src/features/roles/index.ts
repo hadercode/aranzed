@@ -8,3 +8,4 @@ export * from './hooks/logic/useRolesPage';
 export * from './hooks/logic/useRolesTable';
 export * from './hooks/logic/useRoleForm';
 export * from './schemas/role.schema';
+export * from './services';
