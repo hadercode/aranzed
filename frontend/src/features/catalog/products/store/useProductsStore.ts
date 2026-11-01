@@ -1,82 +1,10 @@
 import { create } from 'zustand';
-import type {
-  Product,
-  ProductTypeFilter,
-  ProductStatusFilter,
-} from '../types';
+import { initialProductsState, type ProductsState } from './productsStore.types';
 
-export interface ProductsState {
-  // Filters & Search
-  searchTerm: string;
-  typeFilter: ProductTypeFilter;
-  statusFilter: ProductStatusFilter;
-  categoryFilter: string;
-  uomFilter: string;
-
-  // Sorting & Pagination
-  currentPage: number;
-  itemsPerPage: number;
-  sortBy: string | null;
-  sortOrder: 'asc' | 'desc' | null;
-
-  // Modals & Action Targets
-  isFormModalOpen: boolean;
-  editingProduct: Product | null;
-  isBulkImportOpen: boolean;
-  isDeleteConfirmOpen: boolean;
-  productToDelete: Product | null;
-
-  // Feedback Dialog
-  isSuccessOpen: boolean;
-  successMessage: string;
-
-  // Actions
-  setSearchTerm: (term: string) => void;
-  setTypeFilter: (type: ProductTypeFilter) => void;
-  setStatusFilter: (status: ProductStatusFilter) => void;
-  setCategoryFilter: (categoryId: string) => void;
-  setUomFilter: (uomId: string) => void;
-  setCurrentPage: (page: number | ((prev: number) => number)) => void;
-  setItemsPerPage: (itemsPerPage: number) => void;
-  setSort: (sortBy: string | null, sortOrder: 'asc' | 'desc' | null) => void;
-  resetFilters: () => void;
-
-  openCreateModal: () => void;
-  openEditModal: (product: Product) => void;
-  closeFormModal: () => void;
-
-  openBulkImportModal: () => void;
-  closeBulkImportModal: () => void;
-
-  openDeleteConfirm: (product: Product) => void;
-  closeDeleteConfirm: () => void;
-
-  showSuccess: (message: string) => void;
-  closeSuccessDialog: () => void;
-
-  resetUIState: () => void;
-}
+export type { ProductsState } from './productsStore.types';
 
 export const useProductsStore = create<ProductsState>((set) => ({
-  searchTerm: '',
-  typeFilter: 'all',
-  statusFilter: 'all',
-  categoryFilter: 'all',
-  uomFilter: 'all',
-
-  currentPage: 1,
-  itemsPerPage: 10,
-  sortBy: null,
-  sortOrder: null,
-
-  isFormModalOpen: false,
-  editingProduct: null,
-  isBulkImportOpen: false,
-  isDeleteConfirmOpen: false,
-  productToDelete: null,
-
-  isSuccessOpen: false,
-  successMessage: '',
+  ...initialProductsState,
 
   setSearchTerm: (searchTerm) => set({ searchTerm, currentPage: 1 }),
   setTypeFilter: (typeFilter) => set({ typeFilter, currentPage: 1 }),
@@ -150,22 +78,6 @@ export const useProductsStore = create<ProductsState>((set) => ({
 
   resetUIState: () =>
     set({
-      searchTerm: '',
-      typeFilter: 'all',
-      statusFilter: 'all',
-      categoryFilter: 'all',
-      uomFilter: 'all',
-      currentPage: 1,
-      itemsPerPage: 10,
-      sortBy: null,
-      sortOrder: null,
-      isFormModalOpen: false,
-      editingProduct: null,
-      isBulkImportOpen: false,
-      isDeleteConfirmOpen: false,
-      productToDelete: null,
-      isSuccessOpen: false,
-      successMessage: '',
+      ...initialProductsState,
     }),
 }));
-

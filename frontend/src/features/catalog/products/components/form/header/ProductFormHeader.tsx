@@ -1,5 +1,6 @@
 import { Package } from 'lucide-react';
 import { FormHeader } from '@/shared/components/ui';
+import { ProductTourLauncher } from '../../tour';
 
 export interface ProductFormHeaderProps {
   isEditing?: boolean;
@@ -30,6 +31,11 @@ export function ProductFormHeader({
       submitText={isEditing ? 'Guardar Cambios' : 'Crear Producto'}
       isSubmitting={isMutating}
       submitFormId="product-form-page"
+      actions={
+        <div className="flex items-center gap-2">
+          <ProductTourLauncher variant="button" />
+        </div>
+      }
     />
   );
 }

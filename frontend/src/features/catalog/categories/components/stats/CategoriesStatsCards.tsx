@@ -1,5 +1,5 @@
 import { FolderTree, CheckCircle2, XCircle, Folder, Layers } from 'lucide-react';
-import { useCategoriesContext } from '../../context';
+import { useCategoriesPage } from '../../hooks';
 import type { CategoryStats } from '../../types';
 
 export interface CategoriesStatsCardsProps {
@@ -7,8 +7,8 @@ export interface CategoriesStatsCardsProps {
 }
 
 export function CategoriesStatsCards({ stats: propStats }: CategoriesStatsCardsProps) {
-  const context = useCategoriesContext();
-  const stats = propStats ?? context.stats;
+  const page = useCategoriesPage();
+  const stats = propStats ?? page.stats;
 
   const cards = [
     {

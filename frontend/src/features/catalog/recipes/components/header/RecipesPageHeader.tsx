@@ -1,8 +1,9 @@
 import { Plus, ScrollText } from 'lucide-react';
-import { useRecipesContext } from '../../context';
+import { useRecipesPage } from '../../hooks';
+import { RecipeTourLauncher } from '../tour';
 
 export function RecipesPageHeader() {
-  const { handleCreateNew } = useRecipesContext();
+  const { handleCreateNew } = useRecipesPage();
 
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[var(--color-border)]">
@@ -21,6 +22,7 @@ export function RecipesPageHeader() {
       </div>
 
       <div className="flex items-center gap-3">
+        <RecipeTourLauncher variant="badge" />
         <button
           type="button"
           onClick={handleCreateNew}

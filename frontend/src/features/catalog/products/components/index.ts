@@ -6,3 +6,5 @@ export * from './modal';
 export * from './feedback/ProductsErrorBanner';
 export * from './feedback/ProductsDialogs';
 export * from './form';
+export * from './tour';
+

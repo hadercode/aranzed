@@ -1,8 +1,8 @@
 import { ScrollText, CheckCircle2, FileEdit, Archive, DollarSign } from 'lucide-react';
-import { useRecipesContext } from '../../context';
+import { useRecipesPage } from '../../hooks';
 
 export function RecipesStatsCards() {
-  const { stats, loading } = useRecipesContext();
+  const { stats, loading } = useRecipesPage();
 
   const cards = [
     {

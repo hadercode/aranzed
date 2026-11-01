@@ -1,5 +1,5 @@
 import { Scale, CheckCircle2, XCircle, Binary, Box } from 'lucide-react';
-import { useUnitsOfMeasureContext } from '../../context';
+import { useUnitsOfMeasurePage } from '../../hooks';
 import type { UomStats } from '../../types';
 
 export interface UnitsOfMeasureStatsCardsProps {
@@ -7,8 +7,8 @@ export interface UnitsOfMeasureStatsCardsProps {
 }
 
 export function UnitsOfMeasureStatsCards({ stats: propStats }: UnitsOfMeasureStatsCardsProps) {
-  const context = useUnitsOfMeasureContext();
-  const stats = propStats ?? context.stats;
+  const page = useUnitsOfMeasurePage();
+  const stats = propStats ?? page.stats;
 
   const cards = [
     {

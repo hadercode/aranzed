@@ -15,3 +15,5 @@ export * from './form/sections/RecipeCostSummarySection';
 export * from './form/actions/RecipeFormStickyBar';
 export * from './form/feedback/RecipeFormFeedback';
 export * from './form/states/RecipeFormStates';
+export * from './tour';
+

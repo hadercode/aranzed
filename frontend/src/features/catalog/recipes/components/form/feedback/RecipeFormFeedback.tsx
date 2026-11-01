@@ -1,15 +1,19 @@
 import { AlertCircle } from 'lucide-react';
 import { SuccessDialog } from '@/shared/components/ui';
-import { useRecipeFormContext } from '../../../context';
+import type { UseRecipeFormPageReturn } from '../../../hooks/logic/useRecipeFormPage';
 
-export function RecipeFormFeedback() {
+interface RecipeFormFeedbackProps {
+  formPage: UseRecipeFormPageReturn;
+}
+
+export function RecipeFormFeedback({ formPage }: RecipeFormFeedbackProps) {
   const {
     mutationError,
     clearMutationError,
     isSuccessOpen,
     successMessage,
     handleSuccessClose,
-  } = useRecipeFormContext();
+  } = formPage;
 
   return (
     <>
@@ -44,4 +48,3 @@ export function RecipeFormFeedback() {
 }
 
 export default RecipeFormFeedback;
-

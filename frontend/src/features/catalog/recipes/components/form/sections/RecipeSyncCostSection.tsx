@@ -1,12 +1,16 @@
 import { RefreshCw, Info, Sparkles } from 'lucide-react';
-import { useRecipeFormContext } from '../../../context';
+import type { UseRecipeFormPageReturn } from '../../../hooks/logic/useRecipeFormPage';
+
+export interface RecipeSyncCostSectionProps {
+  formPage: UseRecipeFormPageReturn;
+}
 
 /**
  * Seccion de Sincronizacion de Costos en la ficha del producto fabricado.
  * Ubicada inmediatamente debajo de los datos basicos del formulario.
  */
-export function RecipeSyncCostSection() {
-  const { form, costBreakdown, selectedParentProduct } = useRecipeFormContext();
+export function RecipeSyncCostSection({ formPage }: RecipeSyncCostSectionProps) {
+  const { form, costBreakdown, selectedParentProduct } = formPage;
   const { register, watch } = form;
 
   const isSyncActive = watch('syncProductCost');

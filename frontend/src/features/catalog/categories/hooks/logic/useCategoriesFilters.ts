@@ -1,4 +1,5 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useMemo, useCallback } from 'react';
+import { useCategoriesStore } from '../../store/useCategoriesStore';
 import type { Category, CategoryStatusFilter } from '../../types';
 
 export interface UseCategoriesFiltersProps {
@@ -6,87 +7,87 @@ export interface UseCategoriesFiltersProps {
 }
 
 export function useCategoriesFilters({ categories }: UseCategoriesFiltersProps) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<CategoryStatusFilter>('all');
-  const [parentFilter, setParentFilter] = useState<string>('all');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const store = useCategoriesStore();
 
   const filteredCategories = useMemo(() => {
     return categories.filter((cat) => {
       // Search filter
-      if (searchTerm.trim()) {
-        const query = searchTerm.toLowerCase().trim();
+      if (store.searchTerm.trim()) {
+        const query = store.searchTerm.toLowerCase().trim();
         const matchesName = cat.name.toLowerCase().includes(query);
         const matchesPath = cat.path ? cat.path.toLowerCase().includes(query) : false;
         if (!matchesName && !matchesPath) return false;
       }
 
       // Status filter
-      if (statusFilter === 'active' && !cat.isActive) return false;
-      if (statusFilter === 'inactive' && cat.isActive) return false;
+      if (store.statusFilter === 'active' && !cat.isActive) return false;
+      if (store.statusFilter === 'inactive' && cat.isActive) return false;
 
       // Parent filter
-      if (parentFilter === 'root' && cat.parentId) return false;
-      if (parentFilter !== 'all' && parentFilter !== 'root' && cat.parentId !== parentFilter) {
+      if (store.parentFilter === 'root' && cat.parentId) return false;
+      if (store.parentFilter !== 'all' && store.parentFilter !== 'root' && cat.parentId !== store.parentFilter) {
         return false;
       }
 
       return true;
     });
-  }, [categories, searchTerm, statusFilter, parentFilter]);
+  }, [categories, store.searchTerm, store.statusFilter, store.parentFilter]);
 
   const paginatedCategories = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return filteredCategories.slice(startIndex, startIndex + itemsPerPage);
-  }, [filteredCategories, currentPage, itemsPerPage]);
+    const startIndex = (store.currentPage - 1) * store.itemsPerPage;
+    return filteredCategories.slice(startIndex, startIndex + store.itemsPerPage);
+  }, [filteredCategories, store.currentPage, store.itemsPerPage]);
 
   const totalPages = useMemo(() => {
-    return Math.max(1, Math.ceil(filteredCategories.length / itemsPerPage));
-  }, [filteredCategories.length, itemsPerPage]);
+    return Math.max(1, Math.ceil(filteredCategories.length / store.itemsPerPage));
+  }, [filteredCategories.length, store.itemsPerPage]);
 
-  const handleSearchChange = useCallback((value: string) => {
-    setSearchTerm(value);
-    setCurrentPage(1);
-  }, []);
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      store.setSearchTerm(value);
+    },
+    [store]
+  );
 
-  const handleStatusFilterChange = useCallback((value: CategoryStatusFilter) => {
-    setStatusFilter(value);
-    setCurrentPage(1);
-  }, []);
+  const handleStatusFilterChange = useCallback(
+    (value: CategoryStatusFilter) => {
+      store.setStatusFilter(value);
+    },
+    [store]
+  );
 
-  const handleParentFilterChange = useCallback((value: string) => {
-    setParentFilter(value);
-    setCurrentPage(1);
-  }, []);
+  const handleParentFilterChange = useCallback(
+    (value: string) => {
+      store.setParentFilter(value);
+    },
+    [store]
+  );
 
-  const handleItemsPerPageChange = useCallback((value: number) => {
-    setItemsPerPage(value);
-    setCurrentPage(1);
-  }, []);
+  const handleItemsPerPageChange = useCallback(
+    (value: number) => {
+      store.setItemsPerPage(value);
+    },
+    [store]
+  );
 
   const handleResetFilters = useCallback(() => {
-    setSearchTerm('');
-    setStatusFilter('all');
-    setParentFilter('all');
-    setCurrentPage(1);
-  }, []);
+    store.resetFilters();
+  }, [store]);
 
   return {
-    searchTerm,
-    statusFilter,
-    parentFilter,
-    currentPage,
-    itemsPerPage,
-    totalPages,
+    searchTerm: store.searchTerm,
+    statusFilter: store.statusFilter,
+    parentFilter: store.parentFilter,
+    currentPage: store.currentPage,
+    itemsPerPage: store.itemsPerPage,
     filteredCategories,
     paginatedCategories,
+    totalPages,
     handleSearchChange,
     handleStatusFilterChange,
     handleParentFilterChange,
     handleItemsPerPageChange,
     handleResetFilters,
-    setCurrentPage,
-    setItemsPerPage,
+    setCurrentPage: store.setCurrentPage,
   };
 }

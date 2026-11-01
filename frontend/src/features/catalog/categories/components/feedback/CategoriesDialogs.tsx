@@ -1,5 +1,5 @@
 import { ConfirmDialog, SuccessDialog } from '@/shared/components/ui';
-import { useCategoriesContext } from '../../context';
+import { useCategoriesPage } from '../../hooks';
 
 export function CategoriesDialogs() {
   const {
@@ -11,7 +11,7 @@ export function CategoriesDialogs() {
     isSuccessOpen,
     successMessage,
     handleCloseSuccess,
-  } = useCategoriesContext();
+  } = useCategoriesPage();
 
   return (
     <>

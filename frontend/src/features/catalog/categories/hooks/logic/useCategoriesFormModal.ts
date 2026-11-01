@@ -1,4 +1,7 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useCallback } from 'react';
+import { useCategoriesStore } from '../../store/useCategoriesStore';
+import { categorySchema } from '../../schemas/category.schema';
+import { useEligibleParentCategories } from './useEligibleParentCategories';
 import type {
   Category,
   CategoryFormData,
@@ -27,47 +30,23 @@ export function useCategoriesFormModal({
   clearMutationError,
   onSuccess,
 }: UseCategoriesFormModalProps) {
-  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const store = useCategoriesStore();
   const [formData, setFormData] = useState<CategoryFormData>(INITIAL_FORM_DATA);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
-  // Eligible Parent Options when editing to avoid circular parenting
-  const eligibleParentOptions = useMemo(() => {
-    if (!editingCategory) {
-      return categories.filter((c) => c.isActive);
-    }
-
-    // Exclude the category itself and any descendants
-    const excludedIds = new Set<string>([editingCategory.id]);
-
-    // Find all descendants recursively
-    let added = true;
-    while (added) {
-      added = false;
-      for (const cat of categories) {
-        if (cat.parentId && excludedIds.has(cat.parentId) && !excludedIds.has(cat.id)) {
-          excludedIds.add(cat.id);
-          added = true;
-        }
-      }
-    }
-
-    return categories.filter((c) => !excludedIds.has(c.id));
-  }, [categories, editingCategory]);
+  const eligibleParentOptions = useEligibleParentCategories(categories, store.editingCategory);
 
   const handleOpenCreate = useCallback(() => {
     clearMutationError();
-    setEditingCategory(null);
+    store.openCreateModal();
     setFormData(INITIAL_FORM_DATA);
     setFormErrors({});
-    setIsFormModalOpen(true);
-  }, [clearMutationError]);
+  }, [clearMutationError, store]);
 
   const handleOpenEdit = useCallback(
     (category: Category) => {
       clearMutationError();
-      setEditingCategory(category);
+      store.openEditModal(category);
       setFormData({
         id: category.id,
         name: category.name,
@@ -75,17 +54,15 @@ export function useCategoriesFormModal({
         isActive: category.isActive,
       });
       setFormErrors({});
-      setIsFormModalOpen(true);
     },
-    [clearMutationError]
+    [clearMutationError, store]
   );
 
   const handleCloseForm = useCallback(() => {
-    setIsFormModalOpen(false);
-    setEditingCategory(null);
+    store.closeFormModal();
     setFormData(INITIAL_FORM_DATA);
     setFormErrors({});
-  }, []);
+  }, [store]);
 
   const handleFormChange = useCallback(
     (field: keyof CategoryFormData, value: string | boolean) => {
@@ -104,48 +81,46 @@ export function useCategoriesFormModal({
   const handleFormSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-
-      // Validation
-      const errors: Record<string, string> = {};
-      if (!formData.name.trim()) {
-        errors.name = 'El nombre de la categoría es obligatorio';
-      } else if (formData.name.length > 100) {
-        errors.name = 'El nombre no puede exceder 100 caracteres';
-      }
-
-      if (Object.keys(errors).length > 0) {
+      const result = categorySchema.safeParse(formData);
+      if (!result.success) {
+        const errors: Record<string, string> = {};
+        result.error.issues.forEach((err) => {
+          if (err.path[0]) errors[String(err.path[0])] = err.message;
+        });
         setFormErrors(errors);
         return;
       }
 
       try {
-        if (editingCategory) {
-          await updateCategory(editingCategory.id, {
-            name: formData.name.trim(),
-            parentId: formData.parentId ? formData.parentId : null,
-            isActive: formData.isActive,
+        const trimmedName = result.data.name;
+        const payloadParentId = result.data.parentId || undefined;
+
+        if (store.editingCategory) {
+          await updateCategory(store.editingCategory.id, {
+            name: trimmedName,
+            parentId: payloadParentId,
+            isActive: result.data.isActive,
           });
-          onSuccess(`Categoría "${formData.name.trim()}" actualizada con éxito.`);
+          onSuccess(`Categoría "${trimmedName}" actualizada.`);
         } else {
           await createCategory({
-            name: formData.name.trim(),
-            parentId: formData.parentId ? formData.parentId : undefined,
-            isActive: formData.isActive,
+            name: trimmedName,
+            parentId: payloadParentId,
+            isActive: result.data.isActive,
           });
-          onSuccess(`Categoría "${formData.name.trim()}" creada con éxito.`);
+          onSuccess(`Categoría "${trimmedName}" creada con éxito.`);
         }
-
-        setIsFormModalOpen(false);
+        store.closeFormModal();
       } catch {
         // Handled in mutation hook
       }
     },
-    [formData, editingCategory, updateCategory, createCategory, onSuccess]
+    [formData, store, updateCategory, createCategory, onSuccess]
   );
 
   return {
-    isFormModalOpen,
-    editingCategory,
+    isFormModalOpen: store.isFormModalOpen,
+    editingCategory: store.editingCategory,
     formData,
     formErrors,
     eligibleParentOptions,

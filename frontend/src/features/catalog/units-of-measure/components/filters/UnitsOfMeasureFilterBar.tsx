@@ -1,5 +1,5 @@
 import { Search, X, RotateCcw, Filter, Binary } from 'lucide-react';
-import { useUnitsOfMeasureContext } from '../../context';
+import { useUnitsOfMeasurePage } from '../../hooks';
 import type { UomStatusFilter, UomDecimalsFilter } from '../../types';
 
 export interface UnitsOfMeasureFilterBarProps {
@@ -21,18 +21,18 @@ export function UnitsOfMeasureFilterBar({
   onDecimalsFilterChange: propOnDecimalsFilterChange,
   onResetFilters: propOnResetFilters,
 }: UnitsOfMeasureFilterBarProps) {
-  const context = useUnitsOfMeasureContext();
+  const page = useUnitsOfMeasurePage();
 
-  const searchTerm = propSearchTerm ?? context.searchTerm;
-  const onSearchChange = propOnSearchChange ?? context.handleSearchChange;
+  const searchTerm = propSearchTerm ?? page.searchTerm;
+  const onSearchChange = propOnSearchChange ?? page.handleSearchChange;
 
-  const statusFilter = propStatusFilter ?? context.statusFilter;
-  const onStatusFilterChange = propOnStatusFilterChange ?? context.handleStatusFilterChange;
+  const statusFilter = propStatusFilter ?? page.statusFilter;
+  const onStatusFilterChange = propOnStatusFilterChange ?? page.handleStatusFilterChange;
 
-  const decimalsFilter = propDecimalsFilter ?? context.decimalsFilter;
-  const onDecimalsFilterChange = propOnDecimalsFilterChange ?? context.handleDecimalsFilterChange;
+  const decimalsFilter = propDecimalsFilter ?? page.decimalsFilter;
+  const onDecimalsFilterChange = propOnDecimalsFilterChange ?? page.handleDecimalsFilterChange;
 
-  const onResetFilters = propOnResetFilters ?? context.handleResetFilters;
+  const onResetFilters = propOnResetFilters ?? page.handleResetFilters;
 
   const isFiltered = searchTerm !== '' || statusFilter !== 'all' || decimalsFilter !== 'all';
 
@@ -109,8 +109,8 @@ export function UnitsOfMeasureFilterBar({
       {/* Filter Result Counter */}
       <div className="flex items-center justify-between text-xs text-[var(--color-text-secondary)] pt-1 border-t border-[var(--color-border)]/50">
         <span>
-          Mostrando <strong className="text-[var(--color-text-primary)]">{context.filteredUoms.length}</strong> de{' '}
-          <strong className="text-[var(--color-text-primary)]">{context.uoms.length}</strong> unidades
+          Mostrando <strong className="text-[var(--color-text-primary)]">{page.filteredUoms.length}</strong> de{' '}
+          <strong className="text-[var(--color-text-primary)]">{page.uoms.length}</strong> unidades
         </span>
         {isFiltered && (
           <span className="italic text-[var(--color-sage-600)] dark:text-[var(--color-sage-400)]">

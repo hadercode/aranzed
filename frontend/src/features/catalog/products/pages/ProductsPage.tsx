@@ -5,6 +5,7 @@ import {
   ProductsErrorBanner,
   ProductsTable,
   ProductsDialogs,
+  ProductTourIntroModal,
 } from "../components";
 
 function ProductsPageContent() {
@@ -27,6 +28,9 @@ function ProductsPageContent() {
 
       {/* Confirm & Success Feedback Dialogs */}
       <ProductsDialogs />
+
+      {/* Tour Intro Modal */}
+      <ProductTourIntroModal />
     </div>
   );
 }

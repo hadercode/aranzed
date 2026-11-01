@@ -1,6 +1,5 @@
 import { RefreshCw, AlertCircle, ArrowLeft, ScrollText } from 'lucide-react';
 import { Button } from '@/shared/components/ui';
-import { useRecipeFormContext } from '../../../context';
 
 export function RecipeFormLoadingState() {
   return (
@@ -20,9 +19,17 @@ export function RecipeFormLoadingState() {
   );
 }
 
-export function RecipeFormErrorState() {
-  const { loadError, refetchInitial, handleCancel } = useRecipeFormContext();
+export interface RecipeFormErrorStateProps {
+  loadError?: string | null;
+  refetchInitial?: () => void;
+  handleCancel?: () => void;
+}
 
+export function RecipeFormErrorState({
+  loadError,
+  refetchInitial,
+  handleCancel,
+}: RecipeFormErrorStateProps) {
   return (
     <div className="max-w-xl mx-auto py-16 px-4 text-center space-y-4">
       <div className="w-14 h-14 rounded-2xl bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto">
@@ -35,22 +42,26 @@ export function RecipeFormErrorState() {
         {loadError || 'No se pudieron recuperar los datos necesarios del servidor.'}
       </p>
       <div className="flex items-center justify-center gap-3 pt-2">
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={handleCancel}
-          leftIcon={<ArrowLeft className="w-4 h-4" />}
-        >
-          Volver
-        </Button>
-        <Button
-          type="button"
-          variant="primary"
-          onClick={() => void refetchInitial()}
-          leftIcon={<RefreshCw className="w-4 h-4" />}
-        >
-          Reintentar
-        </Button>
+        {handleCancel && (
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={handleCancel}
+            leftIcon={<ArrowLeft className="w-4 h-4" />}
+          >
+            Volver
+          </Button>
+        )}
+        {refetchInitial && (
+          <Button
+            type="button"
+            variant="primary"
+            onClick={() => void refetchInitial()}
+            leftIcon={<RefreshCw className="w-4 h-4" />}
+          >
+            Reintentar
+          </Button>
+        )}
       </div>
     </div>
   );

@@ -1,13 +1,13 @@
-import { RecipesProvider } from '../context';
 import {
   RecipesPageHeader,
   RecipesStatsCards,
   RecipesFilterBar,
   RecipesTable,
   RecipesDialogs,
+  RecipeTourIntroModal,
 } from '../components';
 
-function RecipesPageContent() {
+export function RecipesPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-300 pb-16">
       <RecipesPageHeader />
@@ -15,15 +15,8 @@ function RecipesPageContent() {
       <RecipesFilterBar />
       <RecipesTable />
       <RecipesDialogs />
+      <RecipeTourIntroModal />
     </div>
-  );
-}
-
-export function RecipesPage() {
-  return (
-    <RecipesProvider>
-      <RecipesPageContent />
-    </RecipesProvider>
   );
 }
 

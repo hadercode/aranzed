@@ -1,9 +1,9 @@
 import { AlertCircle, RefreshCw } from 'lucide-react';
-import { useCategoriesContext } from '../../context';
+import { useCategoriesPage } from '../../hooks';
 import { Button } from '@/shared/components/ui';
 
 export function CategoriesErrorBanner() {
-  const { fetchError, refetch, loading } = useCategoriesContext();
+  const { fetchError, refetch, loading } = useCategoriesPage();
 
   if (!fetchError) return null;
 

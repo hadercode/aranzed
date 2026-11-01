@@ -1,6 +1,6 @@
 import { Scale, Plus, RefreshCw } from 'lucide-react';
 import { Button, PageHeader } from '@/shared/components/ui';
-import { useUnitsOfMeasureContext } from '../../context';
+import { useUnitsOfMeasurePage } from '../../hooks';
 
 export interface UnitsOfMeasurePageHeaderProps {
   onNewUom?: () => void;
@@ -13,10 +13,10 @@ export function UnitsOfMeasurePageHeader({
   onRefresh: propOnRefresh,
   loading: propLoading,
 }: UnitsOfMeasurePageHeaderProps) {
-  const context = useUnitsOfMeasureContext();
-  const onNewUom = propOnNewUom ?? context.handleOpenCreate;
-  const onRefresh = propOnRefresh ?? context.refetch;
-  const loading = propLoading ?? context.loading;
+  const page = useUnitsOfMeasurePage();
+  const onNewUom = propOnNewUom ?? page.handleOpenCreate;
+  const onRefresh = propOnRefresh ?? page.refetch;
+  const loading = propLoading ?? page.loading;
 
   return (
     <PageHeader

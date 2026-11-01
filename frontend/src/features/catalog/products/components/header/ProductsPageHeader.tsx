@@ -3,6 +3,7 @@ import { Package, Plus, RefreshCw, UploadCloud } from 'lucide-react';
 import { Button, PageHeader } from '@/shared/components/ui';
 import { useProductsStore } from '../../store';
 import { useProductsQuery } from '../../hooks';
+import { ProductTourLauncher } from '../tour';
 
 export interface ProductsPageHeaderProps {
   onNewProduct?: () => void;
@@ -32,6 +33,8 @@ export function ProductsPageHeader({
       description="Gestiona tus productos comerciales, manufacturados y servicios, asociando unidades de medida, costos y márgenes de ganancia."
       icon={<Package className="w-6 h-6" />}
     >
+      <ProductTourLauncher variant="badge" />
+
       <Button
         type="button"
         variant="secondary"

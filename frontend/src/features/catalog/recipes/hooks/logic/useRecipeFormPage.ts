@@ -4,6 +4,10 @@ import { useRecipeFormDataQuery } from '../queries/useRecipeFormDataQuery';
 import { useRecipesMutations } from '../mutations/useRecipesMutations';
 import { useRecipeForm } from './useRecipeForm';
 import type { RecipeFormData } from '../../schemas/recipe.schema';
+import type { Product } from '@/features/catalog/products/types';
+
+export type ParentProductOption = Product;
+export type ComponentProductOption = Product;
 
 export function useRecipeFormPage(recipeId?: string) {
   const navigate = useNavigate();

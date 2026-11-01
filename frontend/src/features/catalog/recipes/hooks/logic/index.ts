@@ -7,3 +7,5 @@ export * from './useRecipeStats';
 export * from './useRecipeActions';
 export * from './useRecipesPage';
 export * from './useRecipesTableColumns';
+export * from './useRecipeTour';
+

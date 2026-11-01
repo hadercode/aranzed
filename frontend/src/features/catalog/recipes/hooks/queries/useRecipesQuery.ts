@@ -1,77 +1,40 @@
-import { useState, useCallback, useEffect } from 'react';
-import { ApiClient } from '@/lib/api-client';
+import { useQuery } from '@tanstack/react-query';
+import { recipesService } from '../../services';
 import type { Recipe } from '../../types';
 
-interface RecipesApiResponse {
-  recipes: Recipe[];
-  total: number;
-}
+export const RECIPES_QUERY_KEY = ['catalog', 'recipes'] as const;
 
 export function useRecipesQuery() {
-  const [data, setData] = useState<Recipe[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const query = useQuery<Recipe[], Error>({
+    queryKey: RECIPES_QUERY_KEY,
+    queryFn: () => recipesService.getAll(),
+    staleTime: 1000 * 60 * 5,
+  });
 
-  const refetch = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError('');
-      const res = await ApiClient.get<RecipesApiResponse | Recipe[]>('/catalog/recipes');
-      const list = Array.isArray(res) ? res : res?.recipes || [];
-      setData(list);
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : typeof err === 'string'
-          ? err
-          : 'Error al cargar las recetas';
-      setError(message);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function load() {
-      try {
-        setLoading(true);
-        setError('');
-        const res = await ApiClient.get<RecipesApiResponse | Recipe[]>('/catalog/recipes');
-        if (isMounted) {
-          const list = Array.isArray(res) ? res : res?.recipes || [];
-          setData(list);
-        }
-      } catch (err: unknown) {
-        if (isMounted) {
-          const message =
-            err instanceof Error
-              ? err.message
-              : typeof err === 'string'
-              ? err
-              : 'Error al cargar las recetas';
-          setError(message);
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    }
-
-    load();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  const error = query.error
+    ? query.error.message || 'Error al cargar las recetas'
+    : '';
 
   return {
-    data,
-    loading,
+    data: query.data ?? [],
+    loading: query.isLoading,
     error,
-    refetch,
+    refetch: async () => {
+      await query.refetch();
+    },
+    isFetching: query.isFetching,
+    query,
   };
+}
+
+export function useRecipeQuery(id?: string) {
+  return useQuery<Recipe, Error>({
+    queryKey: [...RECIPES_QUERY_KEY, id],
+    queryFn: () => {
+      if (!id) throw new Error('ID de receta requerido');
+      return recipesService.getById(id);
+    },
+    enabled: Boolean(id),
+    staleTime: 1000 * 60 * 5,
+  });
 }
