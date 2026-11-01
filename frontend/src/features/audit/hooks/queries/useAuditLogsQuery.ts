@@ -1,71 +1,54 @@
-import { useState, useCallback } from 'react';
-import { ApiClient } from '@/lib/api-client';
-import type { AuditLog, AuditStats, AuditApiResponse } from '../../types/audit';
+import { useQuery } from '@tanstack/react-query';
+import { auditService, type AuditQueryParams } from '../../services';
+import type { AuditApiResponse } from '../../types/audit';
 
-interface UseAuditLogsQueryParams {
-  currentPage: number;
-  itemsPerPage: number;
-  searchTerm?: string;
-  selectedModel?: string;
-  selectedAction?: string;
-  selectedStatus?: string;
-  startDate?: string;
-  endDate?: string;
-}
+export type { AuditQueryParams };
 
-export function useAuditLogsQuery() {
-  const [logs, setLogs] = useState<AuditLog[]>([]);
-  const [stats, setStats] = useState<AuditStats>({
-    total: 0,
-    todayCount: 0,
-    creates: 0,
-    updates: 0,
-    deletes: 0,
-    failed: 0,
+export const AUDIT_QUERY_KEY = ['audit', 'logs'] as const;
+
+export function useAuditLogsQuery(params?: AuditQueryParams) {
+  const queryParams: AuditQueryParams = params ?? {
+    currentPage: 1,
+    itemsPerPage: 20,
+  };
+
+  const {
+    data,
+    isLoading,
+    isFetching,
+    error: queryError,
+    refetch,
+  } = useQuery<AuditApiResponse, Error>({
+    queryKey: [...AUDIT_QUERY_KEY, queryParams],
+    queryFn: () => auditService.getAuditLogs(queryParams),
+    staleTime: 1000 * 30,
   });
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  const fetchLogs = useCallback(async (params: UseAuditLogsQueryParams) => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const searchParams = new URLSearchParams();
-      searchParams.append('page', params.currentPage.toString());
-      searchParams.append('limit', params.itemsPerPage.toString());
-
-      if (params.searchTerm?.trim()) searchParams.append('search', params.searchTerm.trim());
-      if (params.selectedModel) searchParams.append('model', params.selectedModel);
-      if (params.selectedAction) searchParams.append('action', params.selectedAction);
-      if (params.selectedStatus) searchParams.append('status', params.selectedStatus);
-      if (params.startDate) searchParams.append('startDate', params.startDate);
-      if (params.endDate) searchParams.append('endDate', params.endDate);
-
-      const response = await ApiClient.get<AuditApiResponse>(`/audit?${searchParams.toString()}`);
-      setLogs(response.items || []);
-      setTotalItems(response.total || 0);
-      setTotalPages(response.totalPages || 1);
-
-      if (response.stats) {
-        setStats(response.stats);
-      }
-    } catch (err: any) {
-      setError(err?.toString() || 'Error al cargar los registros de auditoría');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const error = queryError
+    ? queryError instanceof Error
+      ? queryError.message
+      : typeof queryError === 'string'
+      ? queryError
+      : 'Error al cargar los registros de auditoría'
+    : null;
 
   return {
-    logs,
-    stats,
-    totalPages,
-    totalItems,
-    loading,
+    logs: data?.items || [],
+    stats: data?.stats || {
+      total: 0,
+      todayCount: 0,
+      creates: 0,
+      updates: 0,
+      deletes: 0,
+      failed: 0,
+    },
+    totalPages: data?.totalPages || 1,
+    totalItems: data?.total || 0,
+    loading: isLoading,
+    isFetching,
     error,
-    fetchLogs,
+    refetch: async () => {
+      await refetch();
+    },
   };
 }

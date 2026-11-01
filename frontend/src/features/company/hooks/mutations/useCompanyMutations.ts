@@ -1,56 +1,54 @@
 import { useState } from 'react';
-import { ApiClient } from '@/lib/api-client';
-import type { Company } from '../queries/useCompanyQuery';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { companyService, type Company } from '../../services';
+import { COMPANY_QUERY_KEY } from '../queries/useCompanyQuery';
 
 interface UseCompanyMutationsOptions {
   onSuccess?: (updated: Company) => void;
 }
 
 export function useCompanyMutations(options?: UseCompanyMutationsOptions) {
-  const [isMutating, setIsMutating] = useState(false);
+  const queryClient = useQueryClient();
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
-  const execute = async <T>(action: () => Promise<T>): Promise<T> => {
-    setIsMutating(true);
-    setError('');
-    setSuccessMessage('');
-    try {
-      const res = await action();
-      return res;
-    } catch (err: any) {
-      setError(err || 'Error en la operación');
-      throw err;
-    } finally {
-      setIsMutating(false);
-    }
+  const invalidateCompany = () => {
+    queryClient.invalidateQueries({ queryKey: COMPANY_QUERY_KEY });
   };
 
-  const updateCompany = async (data: Partial<Company>): Promise<Company> => {
-    return execute(async () => {
-      const updated = await ApiClient.put<Company>('/company', data);
+  const updateMutation = useMutation({
+    mutationFn: (data: Partial<Company>) => companyService.updateCompany(data),
+    onSuccess: (updated) => {
       setSuccessMessage('Datos de la empresa actualizados exitosamente');
-      if (options?.onSuccess) {
-        options.onSuccess(updated);
+      invalidateCompany();
+      options?.onSuccess?.(updated);
+    },
+    onError: (err: any) => setError(err.message || 'Error al actualizar empresa'),
+  });
+
+  const uploadLogoMutation = useMutation({
+    mutationFn: (file: File) => companyService.uploadLogo(file),
+    onSuccess: (res) => {
+      setSuccessMessage('Logotipo subido y actualizado exitosamente');
+      invalidateCompany();
+      if (res.company) {
+        options?.onSuccess?.(res.company);
       }
-      return updated;
-    });
+    },
+    onError: (err: any) => setError(err.message || 'Error al subir logotipo'),
+  });
+
+  const isMutating = updateMutation.isPending || uploadLogoMutation.isPending;
+
+  const updateCompany = async (data: Partial<Company>): Promise<Company> => {
+    setError('');
+    return updateMutation.mutateAsync(data);
   };
 
   const uploadLogo = async (file: File): Promise<string> => {
-    return execute(async () => {
-      const formData = new FormData();
-      formData.append('file', file);
-      const res = await ApiClient.post<{ message: string; logoUrl: string; company: Company }>(
-        '/company/logo',
-        formData,
-      );
-      setSuccessMessage('Logotipo subido y actualizado exitosamente');
-      if (options?.onSuccess && res.company) {
-        options.onSuccess(res.company);
-      }
-      return res.logoUrl;
-    });
+    setError('');
+    const res = await uploadLogoMutation.mutateAsync(file);
+    return res.logoUrl;
   };
 
   const clearMessages = () => {

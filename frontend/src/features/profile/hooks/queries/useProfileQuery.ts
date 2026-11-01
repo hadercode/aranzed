@@ -1,45 +1,48 @@
-import { useState, useCallback, useEffect } from 'react';
-import { ApiClient } from '@/lib/api-client';
+import { useQuery } from '@tanstack/react-query';
+import { profileService, type UserProfile } from '../../services';
 import { useAuthStore } from '@/shared/hooks/store/useAuthStore';
 
-export interface UserProfile {
-  id: string;
-  email: string;
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
-  avatarUrl?: string | null;
-  jobTitle?: string;
-  bio?: string;
-  roles?: string[];
-  permissions?: string[];
-  createdAt?: string;
-  updatedAt?: string;
-}
+export type { UserProfile };
+
+export const PROFILE_QUERY_KEY = ['profile'] as const;
 
 export function useProfileQuery() {
-  const [data, setData] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const updateUser = useAuthStore((state) => state.updateUser);
 
-  const refetch = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError('');
-      const profile = await ApiClient.get<UserProfile>('/profile');
-      setData(profile);
+  const {
+    data = null,
+    isLoading,
+    isFetching,
+    error: queryError,
+    refetch,
+  } = useQuery<UserProfile, Error>({
+    queryKey: PROFILE_QUERY_KEY,
+    queryFn: async () => {
+      const profile = await profileService.getProfile();
       updateUser(profile);
-    } catch (err: any) {
-      setError(err || 'Error al cargar el perfil del usuario');
-    } finally {
-      setLoading(false);
-    }
-  }, [updateUser]);
+      return profile;
+    },
+    staleTime: 1000 * 60 * 5,
+  });
 
-  useEffect(() => {
-    refetch();
-  }, [refetch]);
+  const error = queryError
+    ? queryError instanceof Error
+      ? queryError.message
+      : typeof queryError === 'string'
+      ? queryError
+      : 'Error al cargar el perfil del usuario'
+    : '';
 
-  return { data, loading, error, refetch, setData };
+  return {
+    data,
+    loading: isLoading,
+    isFetching,
+    error,
+    refetch: async () => {
+      await refetch();
+    },
+    setData: (updated: UserProfile | null) => {
+      if (updated) updateUser(updated);
+    },
+  };
 }

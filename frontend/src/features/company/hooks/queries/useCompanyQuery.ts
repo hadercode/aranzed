@@ -1,61 +1,39 @@
-import { useState, useCallback } from 'react';
-import { ApiClient } from '@/lib/api-client';
+import { useQuery } from '@tanstack/react-query';
+import { companyService, type Company } from '../../services';
 
-export interface Company {
-  id: string;
-  identificationNumber: string;
-  legalName: string;
-  tradeName?: string;
-  slogan?: string;
-  phone?: string;
-  secondaryPhone?: string;
-  email?: string;
-  website?: string;
-  address?: string;
-  addressLine2?: string;
-  city?: string;
-  state?: string;
-  zipCode?: string;
-  country?: string;
-  currencyCode: string;
-  currencySymbol: string;
-  currencyPosition: string;
-  decimalPlaces: number;
-  timezone: string;
-  dateFormat: string;
-  smtpHost?: string;
-  smtpPort?: number;
-  smtpUser?: string;
-  smtpPassword?: string;
-  smtpSecure?: boolean;
-  smtpFromName?: string;
-  smtpFromEmail?: string;
-  logoUrl?: string;
-  logoDarkUrl?: string;
-  faviconUrl?: string;
-  taxRegime?: string;
-  footerNotes?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
+export type { Company };
+
+export const COMPANY_QUERY_KEY = ['company'] as const;
 
 export function useCompanyQuery() {
-  const [data, setData] = useState<Company | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const {
+    data = null,
+    isLoading,
+    isFetching,
+    error: queryError,
+    refetch,
+  } = useQuery<Company, Error>({
+    queryKey: COMPANY_QUERY_KEY,
+    queryFn: () => companyService.getCompany(),
+    staleTime: 1000 * 60 * 10,
+  });
 
-  const refetch = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError('');
-      const companyData = await ApiClient.get<Company>('/company');
-      setData(companyData);
-    } catch (err: any) {
-      setError(err?.message || err || 'Error al cargar los datos de la empresa');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const error = queryError
+    ? queryError instanceof Error
+      ? queryError.message
+      : typeof queryError === 'string'
+      ? queryError
+      : 'Error al cargar los datos de la empresa'
+    : '';
 
-  return { data, loading, error, refetch, setData };
+  return {
+    data,
+    loading: isLoading,
+    isFetching,
+    error,
+    refetch: async () => {
+      await refetch();
+    },
+    setData: (_val: Company | null) => {},
+  };
 }

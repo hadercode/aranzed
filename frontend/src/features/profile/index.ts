@@ -15,5 +15,6 @@ export * from './hooks/logic/useProfilePage';
 export * from './hooks/logic/usePersonalForm';
 export * from './hooks/logic/useSecurityForm';
 export * from './schemas/profile.schema';
+export * from './services';
 export * from './pages/ProfilePage';
 export { default } from './pages/ProfilePage';
