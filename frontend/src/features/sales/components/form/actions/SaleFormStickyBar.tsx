@@ -1,9 +1,20 @@
 import { DollarSign } from 'lucide-react';
 import { StickyBar } from '@/shared/components/ui/StickyBar';
-import { useSalesFormContext } from '../../../context';
+import type { UseSaleFormReturn } from '../../../hooks/logic/useSaleForm';
 
-export function SaleFormStickyBar() {
-  const { isEditMode, isSaving, handleCancel, form } = useSalesFormContext();
+export interface SaleFormStickyBarProps {
+  isEditMode: boolean;
+  isSaving: boolean;
+  handleCancel: () => void;
+  form: UseSaleFormReturn;
+}
+
+export function SaleFormStickyBar({
+  isEditMode,
+  isSaving,
+  handleCancel,
+  form,
+}: SaleFormStickyBarProps) {
   const { watch, financials } = form;
 
   const customerName = watch('customerName') || 'Consumidor Final';

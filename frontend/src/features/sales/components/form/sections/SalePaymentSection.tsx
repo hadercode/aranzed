@@ -1,9 +1,12 @@
 import { CreditCard, FileText } from 'lucide-react';
 import { SectionHeader } from '@/shared/components/ui/SectionHeader';
-import { useSalesFormContext } from '../../../context';
+import type { UseSaleFormReturn } from '../../../hooks/logic/useSaleForm';
 
-export function SalePaymentSection() {
-  const { form } = useSalesFormContext();
+export interface SalePaymentSectionProps {
+  form: UseSaleFormReturn;
+}
+
+export function SalePaymentSection({ form }: SalePaymentSectionProps) {
   const { register } = form;
 
   return (

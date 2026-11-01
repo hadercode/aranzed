@@ -1,5 +1,5 @@
 import { ConfirmDialog } from "@/shared/components/ui/ConfirmDialog";
-import { useSalesContext } from "../../../context";
+import { useSalesPage } from "../../../hooks";
 import { SalePreviewModal } from "./SalePreviewModal";
 import { QuickPaymentModal } from "./QuickPaymentModal";
 import { CloseSaleManualModal } from "./CloseSaleManualModal";
@@ -39,7 +39,7 @@ export function SalesDialogs() {
     whatsAppSaleTarget,
     setWhatsAppSaleTarget,
     handlePaymentSuccess,
-  } = useSalesContext();
+  } = useSalesPage();
 
   return (
     <>

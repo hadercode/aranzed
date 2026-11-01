@@ -8,12 +8,16 @@ import {
   DollarSign,
   Coins,
 } from "lucide-react";
-import { usePurchaseFormContext } from "../../../context";
+import type { UseFormReturn } from "react-hook-form";
+import type { PurchaseFormData } from "../../../schemas/purchase.schema";
 import { TextInput, Textarea, FormGroup } from "@/shared/components/ui";
 import { useCurrencyStore } from "@/shared/hooks/store";
 
-export function PurchaseHeaderSection() {
-  const { form } = usePurchaseFormContext();
+export interface PurchaseHeaderSectionProps {
+  form: UseFormReturn<PurchaseFormData>;
+}
+
+export function PurchaseHeaderSection({ form }: PurchaseHeaderSectionProps) {
   const {
     register,
     watch,

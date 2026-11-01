@@ -1,20 +1,22 @@
-import { usePurchaseFormContext } from "../../../context";
+import type { UseFormReturn } from "react-hook-form";
+import type { PurchaseFormData } from "../../../schemas/purchase.schema";
+import type { PurchaseBreakdown } from "../../../types";
 import {
   DocumentSummarySection,
   type DocumentSummarySectionProps,
 } from "@/shared/components/ui";
 
 export interface PurchaseSummarySectionProps
-  extends Partial<DocumentSummarySectionProps> {}
+  extends Partial<DocumentSummarySectionProps> {
+  form: UseFormReturn<PurchaseFormData>;
+  breakdown: PurchaseBreakdown;
+}
 
-/**
- * Sección de Liquidación y Resumen Financiero para Compras.
- * Consume reactivamente usePurchaseFormContext y delega la renderización
- * al componente global compartido DocumentSummarySection.
- */
-export function PurchaseSummarySection(props: PurchaseSummarySectionProps = {}) {
-  const { breakdown, form } = usePurchaseFormContext();
-
+export function PurchaseSummarySection({
+  form,
+  breakdown,
+  ...props
+}: PurchaseSummarySectionProps) {
   const currentStatus = form.watch("status");
   const exchangeRate =
     props.exchangeRate ??

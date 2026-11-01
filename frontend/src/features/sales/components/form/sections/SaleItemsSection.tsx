@@ -1,11 +1,21 @@
 import { ShoppingBag, Plus, AlertCircle } from 'lucide-react';
 import { SectionHeader } from '@/shared/components/ui/SectionHeader';
 import { Button } from '@/shared/components/ui/Button';
-import { useSalesFormContext } from '../../../context';
+import type { UseSaleFormReturn } from '../../../hooks/logic/useSaleForm';
+import type { Product } from '@/features/catalog/products/types';
 import { SaleItemsEmptyState, SaleItemsTable } from './items';
 
-export function SaleItemsSection() {
-  const { form } = useSalesFormContext();
+export interface SaleItemsSectionProps {
+  form: UseSaleFormReturn;
+  sellableProducts: Product[];
+  allProducts: Product[];
+}
+
+export function SaleItemsSection({
+  form,
+  sellableProducts,
+  allProducts,
+}: SaleItemsSectionProps) {
   const {
     itemsFields,
     appendItem,
@@ -43,7 +53,11 @@ export function SaleItemsSection() {
         <SaleItemsEmptyState onAddItem={() => appendItem()} />
       ) : (
         <div className="space-y-3">
-          <SaleItemsTable />
+          <SaleItemsTable
+            form={form}
+            sellableProducts={sellableProducts}
+            allProducts={allProducts}
+          />
           <div className="flex items-center justify-between pt-1">
             <span className="text-xs text-[var(--color-text-muted)]">
               {itemsFields.length} {itemsFields.length === 1 ? 'artículo en detalle' : 'artículos en detalle'}

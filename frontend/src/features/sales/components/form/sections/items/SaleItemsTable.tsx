@@ -1,8 +1,18 @@
-import { useSalesFormContext } from '../../../../context';
+import type { UseSaleFormReturn } from '../../../../hooks/logic/useSaleForm';
+import type { Product } from '@/features/catalog/products/types';
 import { SaleItemRow } from './SaleItemRow';
 
-export function SaleItemsTable() {
-  const { form } = useSalesFormContext();
+export interface SaleItemsTableProps {
+  form: UseSaleFormReturn;
+  sellableProducts: Product[];
+  allProducts: Product[];
+}
+
+export function SaleItemsTable({
+  form,
+  sellableProducts,
+  allProducts,
+}: SaleItemsTableProps) {
   const { itemsFields, removeItem } = form;
 
   return (
@@ -27,6 +37,9 @@ export function SaleItemsTable() {
               key={field.id}
               index={index}
               onRemove={removeItem}
+              form={form}
+              sellableProducts={sellableProducts}
+              allProducts={allProducts}
             />
           ))}
         </tbody>

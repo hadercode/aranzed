@@ -4,7 +4,7 @@ import { Eye, CheckCircle, Trash2, Calendar, FileText } from "lucide-react";
 import { PurchasesStatusBadge } from "../../components/table/PurchasesStatusBadge";
 import { type DataTableColumn } from "@/shared/components/ui";
 import { useCurrencyStore } from "@/shared/hooks/store";
-import { usePurchasesContext } from "../../context";
+import { usePurchasesStore } from "../../store";
 import type { Purchase } from "../../types";
 
 export interface UsePurchasesTableColumnsOptions {
@@ -16,11 +16,11 @@ export function usePurchasesTableColumns(
   options?: UsePurchasesTableColumnsOptions,
 ) {
   const navigate = useNavigate();
-  const context = usePurchasesContext();
+  const storeOpenComplete = usePurchasesStore((s) => s.openCompleteModal);
+  const storeOpenDelete = usePurchasesStore((s) => s.openDeleteModal);
 
-  const openCompleteModal =
-    options?.openCompleteModal ?? context.openCompleteModal;
-  const openDeleteModal = options?.openDeleteModal ?? context.openDeleteModal;
+  const openCompleteModal = options?.openCompleteModal ?? storeOpenComplete;
+  const openDeleteModal = options?.openDeleteModal ?? storeOpenDelete;
 
   const { functionalCurrency, functionalSymbol, localCurrency, localSymbol } =
     useCurrencyStore();

@@ -9,12 +9,15 @@ import {
   Coins,
   ShoppingBag,
 } from "lucide-react";
-import { useSalesFormContext } from "../../../context";
+import type { UseSaleFormReturn } from "../../../hooks/logic/useSaleForm";
 import { TextInput, Textarea, FormGroup } from "@/shared/components/ui";
 import { useCurrencyStore } from "@/shared/hooks/store";
 
-export function SaleHeaderSection() {
-  const { form } = useSalesFormContext();
+export interface SaleHeaderSectionProps {
+  form: UseSaleFormReturn;
+}
+
+export function SaleHeaderSection({ form }: SaleHeaderSectionProps) {
   const {
     register,
     watch,

@@ -1,6 +1,11 @@
 import { AlertTriangle, RotateCcw, ArrowLeft } from 'lucide-react';
 import { Button } from '@/shared/components/ui';
-import { usePurchaseFormContext } from '../../../context';
+
+export interface PurchaseFormErrorStateProps {
+  loadError?: string | null;
+  onRetry?: () => void;
+  onCancel?: () => void;
+}
 
 export function PurchaseFormLoadingState() {
   return (
@@ -16,9 +21,11 @@ export function PurchaseFormLoadingState() {
   );
 }
 
-export function PurchaseFormErrorState() {
-  const { loadError, refetchInitial, handleCancel } = usePurchaseFormContext();
-
+export function PurchaseFormErrorState({
+  loadError,
+  onRetry,
+  onCancel,
+}: PurchaseFormErrorStateProps) {
   return (
     <div className="max-w-md mx-auto py-20 text-center">
       <div className="w-14 h-14 rounded-2xl bg-rose-500/10 text-rose-500 flex items-center justify-center mx-auto mb-4">
@@ -31,20 +38,24 @@ export function PurchaseFormErrorState() {
         {loadError || 'Ocurrió un error inesperado al conectar con el servidor.'}
       </p>
       <div className="flex items-center justify-center gap-3">
-        <Button
-          variant="outline"
-          onClick={handleCancel}
-          leftIcon={<ArrowLeft className="w-4 h-4" />}
-        >
-          Volver
-        </Button>
-        <Button
-          variant="primary"
-          onClick={refetchInitial}
-          leftIcon={<RotateCcw className="w-4 h-4" />}
-        >
-          Reintentar
-        </Button>
+        {onCancel && (
+          <Button
+            variant="outline"
+            onClick={onCancel}
+            leftIcon={<ArrowLeft className="w-4 h-4" />}
+          >
+            Volver
+          </Button>
+        )}
+        {onRetry && (
+          <Button
+            variant="primary"
+            onClick={onRetry}
+            leftIcon={<RotateCcw className="w-4 h-4" />}
+          >
+            Reintentar
+          </Button>
+        )}
       </div>
     </div>
   );

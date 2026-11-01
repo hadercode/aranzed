@@ -1,15 +1,24 @@
 import { useWatch } from 'react-hook-form';
 import { Trash2 } from 'lucide-react';
 import { TextInput, Select } from '@/shared/components/ui';
-import { useSalesFormContext } from '../../../../context';
+import type { UseSaleFormReturn } from '../../../../hooks/logic/useSaleForm';
+import type { Product } from '@/features/catalog/products/types';
 
 export interface SaleItemRowProps {
   index: number;
   onRemove: (index: number) => void;
+  form: UseSaleFormReturn;
+  sellableProducts: Product[];
+  allProducts: Product[];
 }
 
-export function SaleItemRow({ index, onRemove }: SaleItemRowProps) {
-  const { form, sellableProducts, allProducts } = useSalesFormContext();
+export function SaleItemRow({
+  index,
+  onRemove,
+  form,
+  sellableProducts,
+  allProducts,
+}: SaleItemRowProps) {
   const {
     register,
     control,

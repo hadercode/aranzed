@@ -1,11 +1,20 @@
 import { ShoppingBag } from 'lucide-react';
-import { useSalesFormContext } from '../../../context';
 import { FormHeader } from '@/shared/components/ui/FormHeader';
+import type { SaleType } from '../../../types';
 
-export function SaleFormHeader() {
-  const { isEditMode, handleCancel, isSaving, form } = useSalesFormContext();
-  const saleType = form.watch('saleType');
+export interface SaleFormHeaderProps {
+  isEditMode: boolean;
+  handleCancel: () => void;
+  isSaving: boolean;
+  saleType: SaleType;
+}
 
+export function SaleFormHeader({
+  isEditMode,
+  handleCancel,
+  isSaving,
+  saleType,
+}: SaleFormHeaderProps) {
   const title = isEditMode
     ? 'Editar Documento Comercial'
     : saleType === 'QUOTATION'

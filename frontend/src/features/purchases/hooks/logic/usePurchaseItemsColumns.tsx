@@ -1,6 +1,9 @@
 import { useMemo } from "react";
 import { Trash2 } from "lucide-react";
-import { usePurchaseFormContext } from "../../context";
+import type { UseFormReturn } from "react-hook-form";
+import type { PurchaseFormData } from "../../schemas/purchase.schema";
+import type { usePurchaseFormItems } from "./usePurchaseFormItems";
+import type { Product } from "@/features/catalog/products/types";
 import {
   PurchaseItemUnitCostCell,
   PurchaseItemSubtotalCell,
@@ -10,8 +13,17 @@ import {
 import type { Column } from "@/shared/components/ui";
 import { useCurrencyStore } from "@/shared/hooks/store";
 
-export function usePurchaseItemsColumns() {
-  const { form, formItems, rawMaterials } = usePurchaseFormContext();
+export interface UsePurchaseItemsColumnsOptions {
+  form: UseFormReturn<PurchaseFormData>;
+  formItems: ReturnType<typeof usePurchaseFormItems>;
+  rawMaterials: Product[];
+}
+
+export function usePurchaseItemsColumns({
+  form,
+  formItems,
+  rawMaterials,
+}: UsePurchaseItemsColumnsOptions) {
 
   const { functionalCurrency, functionalSymbol, localCurrency, localSymbol } =
     useCurrencyStore();

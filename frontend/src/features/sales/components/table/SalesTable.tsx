@@ -1,4 +1,4 @@
-import { useSalesContext } from "../../context";
+import { useSalesPage } from "../../hooks";
 import { useSalesTableColumns } from "../../hooks/logic/useSalesTableColumns";
 import type { Sale } from "../../types";
 import { DataTable } from "@/shared/components/ui";
@@ -18,7 +18,7 @@ export function SalesTable() {
     setCloseManualTarget,
     setPaymentsHistoryTarget,
     setWhatsAppSaleTarget,
-  } = useSalesContext();
+  } = useSalesPage();
 
   const columns = useSalesTableColumns({
     onPreview: (sale: Sale) => setPreviewSaleTarget(sale),

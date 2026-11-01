@@ -1,5 +1,5 @@
 import { Search, X, RotateCcw } from 'lucide-react';
-import { useSalesContext } from '../../context';
+import { useSalesStore } from '../../store';
 import type { SalePaidStatus, SalePaymentTerm, SaleStatus, SaleType } from '../../types';
 
 export function SalesFilterBar() {
@@ -18,7 +18,7 @@ export function SalesFilterBar() {
     setStartDate,
     endDate,
     setEndDate,
-  } = useSalesContext();
+  } = useSalesStore();
 
   const hasActiveFilters =
     Boolean(searchTerm) ||

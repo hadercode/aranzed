@@ -1,21 +1,21 @@
 import { TrendingUp, AlertTriangle } from 'lucide-react';
-import { useSalesFormContext } from '../../../context';
+import type { UseSaleFormReturn } from '../../../hooks/logic/useSaleForm';
 import {
   DocumentSummarySection,
   type DocumentSummarySectionProps,
 } from '@/shared/components/ui';
 
 export interface SaleSummarySectionProps
-  extends Partial<DocumentSummarySectionProps> {}
+  extends Partial<DocumentSummarySectionProps> {
+  form: UseSaleFormReturn;
+}
 
 /**
  * Sección de Liquidación y Resumen Financiero para Ventas.
- * Consume reactivamente useSalesFormContext y delega la presentación
- * al componente global compartido DocumentSummarySection, incorporando
- * un widget contextual de Análisis de Rentabilidad Comercial y Margen Bruto.
+ * Delega la presentación al componente global compartido DocumentSummarySection,
+ * incorporando un widget contextual de Análisis de Rentabilidad Comercial y Margen Bruto.
  */
-export function SaleSummarySection(props: SaleSummarySectionProps = {}) {
-  const { form } = useSalesFormContext();
+export function SaleSummarySection({ form, ...props }: SaleSummarySectionProps) {
   const { financials, watchedRate, watch } = form;
 
   const currentStatus = watch('status');

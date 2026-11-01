@@ -1,10 +1,22 @@
-import { usePurchaseFormContext } from "../../../context";
+import type { UseFormReturn } from "react-hook-form";
+import type { PurchaseFormData } from "../../../schemas/purchase.schema";
+import type { PurchaseBreakdown } from "../../../types";
 import { StickyBar } from "@/shared/components/ui";
 import { useCurrencyStore } from "@/shared/hooks/store";
 
-export function PurchaseFormStickyBar() {
-  const { form, breakdown, isMutating, handleCancel } =
-    usePurchaseFormContext();
+export interface PurchaseFormStickyBarProps {
+  form: UseFormReturn<PurchaseFormData>;
+  breakdown: PurchaseBreakdown;
+  isMutating?: boolean;
+  onCancel?: () => void;
+}
+
+export function PurchaseFormStickyBar({
+  form,
+  breakdown,
+  isMutating = false,
+  onCancel,
+}: PurchaseFormStickyBarProps) {
   const { functionalSymbol, localSymbol } = useCurrencyStore();
   const supplierName = form.watch("supplierName");
   const invoiceNumber = form.watch("invoiceNumber");
@@ -41,7 +53,7 @@ export function PurchaseFormStickyBar() {
           </div>
         </div>
       }
-      onCancel={handleCancel}
+      onCancel={onCancel}
       cancelDisabled={isMutating}
       submitText="Guardar Compra"
       isSubmitting={isMutating}

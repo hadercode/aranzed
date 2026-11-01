@@ -1,6 +1,5 @@
 import { AlertTriangle, RotateCcw, ArrowLeft } from 'lucide-react';
 import { Button } from '@/shared/components/ui/Button';
-import { useSalesFormContext } from '../../../context';
 
 export function SaleFormLoadingState() {
   return (
@@ -16,9 +15,17 @@ export function SaleFormLoadingState() {
   );
 }
 
-export function SaleFormErrorState() {
-  const { loadError, refetchInitial, handleCancel } = useSalesFormContext();
+export interface SaleFormErrorStateProps {
+  loadError?: string | null;
+  handleCancel: () => void;
+  refetchInitial: () => void;
+}
 
+export function SaleFormErrorState({
+  loadError,
+  handleCancel,
+  refetchInitial,
+}: SaleFormErrorStateProps) {
   return (
     <div className="max-w-md mx-auto py-20 text-center">
       <div className="w-14 h-14 rounded-2xl bg-rose-500/10 text-rose-500 flex items-center justify-center mx-auto mb-4">

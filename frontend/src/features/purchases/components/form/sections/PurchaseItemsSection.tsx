@@ -1,10 +1,22 @@
 import { Layers, Plus, AlertCircle } from "lucide-react";
-import { usePurchaseFormContext } from "../../../context";
+import type { UseFormReturn } from "react-hook-form";
+import type { PurchaseFormData } from "../../../schemas/purchase.schema";
+import type { usePurchaseFormItems } from "../../../hooks/logic/usePurchaseFormItems";
+import type { Product } from "@/features/catalog/products/types";
 import { SectionHeader } from "@/shared/components/ui";
 import { PurchaseItemsEmptyState, PurchaseItemsTable } from "./items";
 
-export function PurchaseItemsSection() {
-  const { form, formItems } = usePurchaseFormContext();
+export interface PurchaseItemsSectionProps {
+  form: UseFormReturn<PurchaseFormData>;
+  formItems: ReturnType<typeof usePurchaseFormItems>;
+  rawMaterials: Product[];
+}
+
+export function PurchaseItemsSection({
+  form,
+  formItems,
+  rawMaterials,
+}: PurchaseItemsSectionProps) {
   const {
     formState: { errors },
   } = form;
@@ -41,9 +53,13 @@ export function PurchaseItemsSection() {
 
       {/* Subcomponents: Empty State vs Items Table */}
       {itemFields.length === 0 ? (
-        <PurchaseItemsEmptyState />
+        <PurchaseItemsEmptyState onAddNewItem={handleAddNewItem} />
       ) : (
-        <PurchaseItemsTable />
+        <PurchaseItemsTable
+          form={form}
+          formItems={formItems}
+          rawMaterials={rawMaterials}
+        />
       )}
     </div>
   );

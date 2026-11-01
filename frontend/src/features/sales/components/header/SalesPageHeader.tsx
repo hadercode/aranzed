@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { PageHeader } from '@/shared/components/ui/PageHeader';
 import { Button } from '@/shared/components/ui/Button';
-import { useSalesContext } from '../../context';
+import { useSalesPage } from '../../hooks';
 
 export function SalesPageHeader() {
   const {
@@ -17,7 +17,7 @@ export function SalesPageHeader() {
     handleExportPdf,
     handleGoToPayments,
     handleGoToNewPayment,
-  } = useSalesContext();
+  } = useSalesPage();
 
   return (
     <PageHeader

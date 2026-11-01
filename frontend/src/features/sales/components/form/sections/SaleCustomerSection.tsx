@@ -1,10 +1,13 @@
 import { User, Mail, Phone, MapPin, CreditCard } from 'lucide-react';
 import { SectionHeader } from '@/shared/components/ui/SectionHeader';
 import { TextInput } from '@/shared/components/ui';
-import { useSalesFormContext } from '../../../context';
+import type { UseSaleFormReturn } from '../../../hooks/logic/useSaleForm';
 
-export function SaleCustomerSection() {
-  const { form } = useSalesFormContext();
+export interface SaleCustomerSectionProps {
+  form: UseSaleFormReturn;
+}
+
+export function SaleCustomerSection({ form }: SaleCustomerSectionProps) {
   const {
     register,
     formState: { errors },

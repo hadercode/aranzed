@@ -1,11 +1,19 @@
 import { AlertCircle } from 'lucide-react';
 import { SuccessDialog } from '@/shared/components/ui/SuccessDialog';
-import { useSalesFormContext } from '../../../context';
 
-export function SaleFormFeedback() {
-  const { isSuccessOpen, successMessage, handleCloseSuccess, mutationError } =
-    useSalesFormContext();
+export interface SaleFormFeedbackProps {
+  isSuccessOpen: boolean;
+  successMessage: string;
+  handleCloseSuccess: () => void;
+  mutationError: string | null;
+}
 
+export function SaleFormFeedback({
+  isSuccessOpen,
+  successMessage,
+  handleCloseSuccess,
+  mutationError,
+}: SaleFormFeedbackProps) {
   return (
     <>
       {/* Alerta de Error de Mutación */}
