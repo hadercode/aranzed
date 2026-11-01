@@ -102,12 +102,32 @@ export class CreateProductDto {
   @ApiPropertyOptional({
     example: true,
     description:
-      'Indica si el producto está activo para la venta y operaciones',
+      'Indica si el producto está activo en el catálogo general',
     default: true,
   })
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
+
+  @ApiPropertyOptional({
+    example: true,
+    description:
+      'Indica si el producto está habilitado para ser vendido en el POS y cotizaciones',
+    default: true,
+  })
+  @IsOptional()
+  @IsBoolean()
+  isForSale?: boolean;
+
+  @ApiPropertyOptional({
+    example: false,
+    description:
+      'Indica si el producto puede usarse internamente (insumo de producción/recetas o consumo)',
+    default: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  isForInternalUse?: boolean;
 
   @ApiPropertyOptional({
     example: true,

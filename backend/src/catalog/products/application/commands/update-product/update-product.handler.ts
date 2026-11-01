@@ -82,6 +82,12 @@ export class UpdateProductHandler implements ICommandHandler<UpdateProductComman
     if (payload.isActive !== undefined) {
       product.isActive = payload.isActive;
     }
+    if (payload.isForSale !== undefined) {
+      product.isForSale = payload.isForSale;
+    }
+    if (payload.isForInternalUse !== undefined) {
+      product.isForInternalUse = payload.isForInternalUse;
+    }
     if (payload.manageInventory !== undefined) {
       product.manageInventory = payload.manageInventory;
     }

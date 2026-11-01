@@ -46,6 +46,30 @@ export class ProductFiltersDto {
   isActive?: boolean;
 
   @ApiPropertyOptional({
+    description: 'Filtrar por si está disponible para venta',
+  })
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === 'true' || value === true) return true;
+    if (value === 'false' || value === false) return false;
+    return undefined;
+  })
+  @IsBoolean()
+  isForSale?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Filtrar por si puede usarse internamente en recetas o consumo',
+  })
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === 'true' || value === true) return true;
+    if (value === 'false' || value === false) return false;
+    return undefined;
+  })
+  @IsBoolean()
+  isForInternalUse?: boolean;
+
+  @ApiPropertyOptional({
     description: 'Buscar por texto en nombre o descripción',
   })
   @IsOptional()

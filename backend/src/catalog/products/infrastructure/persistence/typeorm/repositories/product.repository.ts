@@ -59,6 +59,18 @@ export class ProductRepository implements IProductRepository {
       });
     }
 
+    if (filters?.isForSale !== undefined) {
+      qb.andWhere('p.isForSale = :isForSale', {
+        isForSale: filters.isForSale,
+      });
+    }
+
+    if (filters?.isForInternalUse !== undefined) {
+      qb.andWhere('p.isForInternalUse = :isForInternalUse', {
+        isForInternalUse: filters.isForInternalUse,
+      });
+    }
+
     if (filters?.search && filters.search.trim().length > 0) {
       const term = `%${filters.search.trim().toLowerCase()}%`;
       qb.andWhere(
@@ -104,6 +116,8 @@ export class ProductRepository implements IProductRepository {
       lastCost: orm.lastCost,
       lastSalePrice: orm.lastSalePrice,
       isActive: orm.isActive,
+      isForSale: orm.isForSale !== undefined ? orm.isForSale : orm.type !== ProductType.RAW_MATERIAL,
+      isForInternalUse: orm.isForInternalUse !== undefined ? orm.isForInternalUse : (orm.type === ProductType.RAW_MATERIAL || orm.type === ProductType.SERVICE),
       manageInventory:
         orm.manageInventory !== undefined
           ? orm.manageInventory
@@ -142,6 +156,8 @@ export class ProductRepository implements IProductRepository {
     orm.lastCost = Number(domain.lastCost) || 0;
     orm.lastSalePrice = Number(domain.lastSalePrice) || 0;
     orm.isActive = domain.isActive;
+    orm.isForSale = domain.isForSale !== undefined ? domain.isForSale : domain.type !== ProductType.RAW_MATERIAL;
+    orm.isForInternalUse = domain.isForInternalUse !== undefined ? domain.isForInternalUse : (domain.type === ProductType.RAW_MATERIAL || domain.type === ProductType.SERVICE);
     orm.manageInventory =
       domain.manageInventory !== undefined
         ? domain.manageInventory

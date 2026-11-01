@@ -48,6 +48,8 @@ export const productSchema = z.object({
     .number()
     .min(0, 'El precio de venta no puede ser negativo'),
   isActive: z.boolean(),
+  isForSale: z.boolean(),
+  isForInternalUse: z.boolean(),
   manageInventory: z.boolean(),
 });
 

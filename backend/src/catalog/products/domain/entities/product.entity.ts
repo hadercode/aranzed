@@ -24,6 +24,8 @@ export class Product extends BaseEntity {
   lastCost: number;
   lastSalePrice: number;
   isActive: boolean;
+  isForSale: boolean;
+  isForInternalUse: boolean;
   manageInventory: boolean;
   createdById?: string | null;
   deletedAt?: Date | null;
@@ -36,6 +38,15 @@ export class Product extends BaseEntity {
     super();
     Object.assign(this, partial);
     this.isActive = partial.isActive !== undefined ? partial.isActive : true;
+    this.isForSale =
+      partial.isForSale !== undefined
+        ? Boolean(partial.isForSale)
+        : partial.type !== ProductType.RAW_MATERIAL;
+    this.isForInternalUse =
+      partial.isForInternalUse !== undefined
+        ? Boolean(partial.isForInternalUse)
+        : partial.type === ProductType.RAW_MATERIAL ||
+          partial.type === ProductType.SERVICE;
     this.manageInventory =
       partial.manageInventory !== undefined
         ? Boolean(partial.manageInventory)

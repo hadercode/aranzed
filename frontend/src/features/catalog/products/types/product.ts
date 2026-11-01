@@ -23,6 +23,8 @@ export interface Product {
   lastCost: number;
   lastSalePrice: number;
   isActive: boolean;
+  isForSale?: boolean;
+  isForInternalUse?: boolean;
   manageInventory?: boolean;
   createdById?: string | null;
   createdAt: string;
@@ -43,6 +45,8 @@ export interface CreateProductDto {
   lastCost?: number;
   lastSalePrice?: number;
   isActive?: boolean;
+  isForSale?: boolean;
+  isForInternalUse?: boolean;
   manageInventory?: boolean;
 }
 
@@ -57,6 +61,8 @@ export interface UpdateProductDto {
   lastCost?: number;
   lastSalePrice?: number;
   isActive?: boolean;
+  isForSale?: boolean;
+  isForInternalUse?: boolean;
   manageInventory?: boolean;
 }
 
@@ -72,6 +78,6 @@ export interface ProductStats {
 
 export type ProductTypeFilter = 'all' | ProductType;
 export type ProductStatusFilter = 'all' | 'active' | 'inactive';
+export type ProductPurposeFilter = 'all' | 'for_sale' | 'internal_use' | 'with_stock';
 
 export type { ProductFormData } from '../schemas/product.schema';
-

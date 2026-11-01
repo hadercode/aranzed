@@ -30,6 +30,8 @@ export interface BulkImportItemValidation {
   lastSalePrice: number;
   manageInventory: boolean;
   isActive: boolean;
+  isForSale?: boolean;
+  isForInternalUse?: boolean;
   status: ImportRowStatus;
   errors: string[];
   warnings?: string[];

@@ -8,6 +8,8 @@ export interface ProductFilters {
   categoryId?: string;
   uomId?: string;
   isActive?: boolean;
+  isForSale?: boolean;
+  isForInternalUse?: boolean;
   search?: string;
 }
 

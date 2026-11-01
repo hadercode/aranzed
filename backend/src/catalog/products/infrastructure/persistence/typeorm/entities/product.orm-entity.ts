@@ -91,6 +91,12 @@ export class ProductOrmEntity {
   @Column({ name: 'is_active', type: 'boolean', default: true })
   isActive: boolean;
 
+  @Column({ name: 'is_for_sale', type: 'boolean', default: true })
+  isForSale: boolean;
+
+  @Column({ name: 'is_for_internal_use', type: 'boolean', default: false })
+  isForInternalUse: boolean;
+
   @Column({ name: 'manage_inventory', type: 'boolean', default: true })
   manageInventory: boolean;
 

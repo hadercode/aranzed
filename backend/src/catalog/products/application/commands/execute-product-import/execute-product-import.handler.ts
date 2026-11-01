@@ -52,6 +52,8 @@ export class ExecuteProductImportHandler
           lastSalePrice: item.lastSalePrice ?? 0,
           manageInventory: item.manageInventory,
           isActive: item.isActive !== undefined ? item.isActive : true,
+          isForSale: item.isForSale,
+          isForInternalUse: item.isForInternalUse,
           createdById: command.userId || null,
         });
 

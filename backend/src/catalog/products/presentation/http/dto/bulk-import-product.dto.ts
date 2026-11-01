@@ -74,6 +74,16 @@ export class BulkImportItemValidationDto implements BulkImportItemValidation {
   @IsBoolean()
   isActive: boolean;
 
+  @ApiPropertyOptional({ example: true, description: 'Indica si está habilitado para la venta' })
+  @IsOptional()
+  @IsBoolean()
+  isForSale?: boolean;
+
+  @ApiPropertyOptional({ example: false, description: 'Indica si puede usarse internamente' })
+  @IsOptional()
+  @IsBoolean()
+  isForInternalUse?: boolean;
+
   @ApiProperty({
     enum: ['VALID', 'INVALID', 'DUPLICATE'],
     example: 'VALID',

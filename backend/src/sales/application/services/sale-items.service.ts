@@ -197,7 +197,13 @@ export class SaleItemsService {
 
       if (!product.isActive) {
         throw new BusinessRuleException(
-          `El producto "${product.name}" está inactivo y no puede ser comercializado`,
+          `El producto "${product.name}" está inactivo en el catálogo y no puede ser comercializado`,
+        );
+      }
+
+      if (product.isForSale === false) {
+        throw new BusinessRuleException(
+          `El producto "${product.name}" no está habilitado para la venta comercial`,
         );
       }
 

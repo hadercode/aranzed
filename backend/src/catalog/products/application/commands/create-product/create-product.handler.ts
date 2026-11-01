@@ -60,6 +60,8 @@ export class CreateProductHandler implements ICommandHandler<CreateProductComman
       lastCost: command.lastCost ?? 0,
       lastSalePrice: command.lastSalePrice ?? 0,
       isActive: command.isActive !== undefined ? command.isActive : true,
+      isForSale: command.isForSale,
+      isForInternalUse: command.isForInternalUse,
       manageInventory: command.manageInventory,
       createdById: command.createdById,
     });
