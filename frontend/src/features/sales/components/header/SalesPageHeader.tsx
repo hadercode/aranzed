@@ -4,16 +4,15 @@ import {
   FileSpreadsheet,
   FileText,
   CreditCard,
-} from 'lucide-react';
-import { PageHeader } from '@/shared/components/ui/PageHeader';
-import { Button } from '@/shared/components/ui/Button';
-import { useSalesPage } from '../../hooks';
-import { SaleTourLauncher } from '../tour';
+} from "lucide-react";
+import { PageHeader } from "@/shared/components/ui/PageHeader";
+import { Button } from "@/shared/components/ui/Button";
+import { useSalesPage } from "../../hooks";
+import { SaleTourLauncher } from "../tour";
 
 export function SalesPageHeader() {
   const {
     handleCreateSale,
-    handleCreateQuotation,
     handleExportExcel,
     handleExportPdf,
     handleGoToPayments,
@@ -33,7 +32,7 @@ export function SalesPageHeader() {
         {/* Ir a Cobros y Pagos */}
         <Button
           variant="outline"
-          size="sm"
+          size="lg"
           onClick={handleGoToPayments}
           leftIcon={<CreditCard className="w-4 h-4 text-[#22B2B8]" />}
         >
@@ -43,7 +42,7 @@ export function SalesPageHeader() {
         {/* Registrar Cobro General */}
         <Button
           variant="secondary"
-          size="sm"
+          size="lg"
           onClick={handleGoToNewPayment}
           leftIcon={<Plus className="w-4 h-4 text-[#F43F5E]" />}
         >
@@ -53,7 +52,7 @@ export function SalesPageHeader() {
         {/* Exportar Excel */}
         <Button
           variant="outline"
-          size="sm"
+          size="lg"
           onClick={handleExportExcel}
           leftIcon={<FileSpreadsheet className="w-4 h-4 text-[#22B2B8]" />}
         >
@@ -63,27 +62,17 @@ export function SalesPageHeader() {
         {/* Reporte PDF */}
         <Button
           variant="outline"
-          size="sm"
+          size="lg"
           onClick={handleExportPdf}
           leftIcon={<FileText className="w-4 h-4 text-[#F43F5E]" />}
         >
           PDF
         </Button>
 
-        {/* Nueva Cotización */}
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={handleCreateQuotation}
-          leftIcon={<Plus className="w-4 h-4" />}
-        >
-          Cotización
-        </Button>
-
         {/* Nueva Venta Directa */}
         <Button
           variant="primary"
-          size="sm"
+          size="lg"
           onClick={handleCreateSale}
           leftIcon={<Plus className="w-4 h-4" />}
         >
