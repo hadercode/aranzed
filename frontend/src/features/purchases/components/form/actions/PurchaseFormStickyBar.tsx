@@ -22,42 +22,44 @@ export function PurchaseFormStickyBar({
   const invoiceNumber = form.watch("invoiceNumber");
 
   return (
-    <StickyBar
-      subtitle="Comprobante:"
-      title={
-        <>
-          {supplierName ? `${supplierName}` : "Nuevo Registro"}{" "}
-          {invoiceNumber ? `(${invoiceNumber})` : ""}
-        </>
-      }
-      leftContent={
-        <div className="border-l border-[var(--color-border)] pl-3 sm:pl-4">
-          <span className="text-xs text-[var(--color-text-muted)] block">
-            Total Liquidación:
-          </span>
-          <div className="flex items-baseline gap-2">
-            <span className="text-base sm:text-lg font-bold font-mono text-emerald-600 dark:text-emerald-400">
-              {functionalSymbol}{" "}
-              {breakdown.functional.total.toLocaleString("en-US", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
+    <div id="tour-purchase-sticky-bar">
+      <StickyBar
+        subtitle="Comprobante:"
+        title={
+          <>
+            {supplierName ? `${supplierName}` : "Nuevo Registro"}{" "}
+            {invoiceNumber ? `(${invoiceNumber})` : ""}
+          </>
+        }
+        leftContent={
+          <div className="border-l border-[var(--color-border)] pl-3 sm:pl-4">
+            <span className="text-xs text-[var(--color-text-muted)] block">
+              Total Liquidación:
             </span>
-            <span className="text-xs sm:text-sm font-semibold font-mono text-blue-600 dark:text-blue-400">
-              / {localSymbol}{" "}
-              {breakdown.local.total.toLocaleString("es-VE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-            </span>
+            <div className="flex items-baseline gap-2">
+              <span className="text-base sm:text-lg font-bold font-mono text-emerald-600 dark:text-emerald-400">
+                {functionalSymbol}{" "}
+                {breakdown.functional.total.toLocaleString("en-US", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </span>
+              <span className="text-xs sm:text-sm font-semibold font-mono text-blue-600 dark:text-blue-400">
+                / {localSymbol}{" "}
+                {breakdown.local.total.toLocaleString("es-VE", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </span>
+            </div>
           </div>
-        </div>
-      }
-      onCancel={onCancel}
-      cancelDisabled={isMutating}
-      submitText="Guardar Compra"
-      isSubmitting={isMutating}
-    />
+        }
+        onCancel={onCancel}
+        cancelDisabled={isMutating}
+        submitText="Guardar Compra"
+        isSubmitting={isMutating}
+      />
+    </div>
   );
 }
 

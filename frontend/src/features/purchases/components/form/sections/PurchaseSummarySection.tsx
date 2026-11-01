@@ -27,24 +27,26 @@ export function PurchaseSummarySection({
     form.watch("documentCurrency") || breakdown.documentCurrency;
 
   return (
-    <DocumentSummarySection
-      functionalBreakdown={props.functionalBreakdown ?? breakdown.functional}
-      localBreakdown={props.localBreakdown ?? breakdown.local}
-      exchangeRate={exchangeRate}
-      documentCurrency={props.documentCurrency ?? documentCurrency}
-      functionalCurrency={props.functionalCurrency ?? activeFunctional}
-      localCurrency={props.localCurrency ?? activeLocal}
-      itemsCount={props.itemsCount ?? breakdown.itemsCount}
-      totalUnits={props.totalUnits ?? breakdown.totalUnits}
-      inventory={{
-        moduleType: "purchase",
-        status: currentStatus,
-        ...props.inventory,
-      }}
-      className={props.className}
-    >
-      {props.children}
-    </DocumentSummarySection>
+    <div id="tour-purchase-summary">
+      <DocumentSummarySection
+        functionalBreakdown={props.functionalBreakdown ?? breakdown.functional}
+        localBreakdown={props.localBreakdown ?? breakdown.local}
+        exchangeRate={exchangeRate}
+        documentCurrency={props.documentCurrency ?? documentCurrency}
+        functionalCurrency={props.functionalCurrency ?? activeFunctional}
+        localCurrency={props.localCurrency ?? activeLocal}
+        itemsCount={props.itemsCount ?? breakdown.itemsCount}
+        totalUnits={props.totalUnits ?? breakdown.totalUnits}
+        inventory={{
+          moduleType: "purchase",
+          status: currentStatus,
+          ...props.inventory,
+        }}
+        className={props.className}
+      >
+        {props.children}
+      </DocumentSummarySection>
+    </div>
   );
 }
 

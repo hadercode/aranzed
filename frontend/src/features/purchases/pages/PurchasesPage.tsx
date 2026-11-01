@@ -6,6 +6,8 @@ import {
   PurchasesFilterBar,
   PurchasesTable,
   PurchasesDialogs,
+  PurchaseTourLauncher,
+  PurchaseTourIntroModal,
 } from "../components";
 
 export function PurchasesPage() {
@@ -18,19 +20,23 @@ export function PurchasesPage() {
         description="Registro y control de compras de materias primas e insumos. Emite eventos desacoplados para actualización de stock."
         icon={<ShoppingCart className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />}
       >
-        <Button
-          variant="primary"
-          onClick={() => navigate('/purchases/new')}
-          leftIcon={<Plus className="w-4 h-4" />}
-        >
-          Registrar Compra
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <PurchaseTourLauncher variant="badge" />
+          <Button
+            variant="primary"
+            onClick={() => navigate('/purchases/new')}
+            leftIcon={<Plus className="w-4 h-4" />}
+          >
+            Registrar Compra
+          </Button>
+        </div>
       </PageHeader>
 
       <PurchasesStatsCards />
       <PurchasesFilterBar />
       <PurchasesTable />
       <PurchasesDialogs />
+      <PurchaseTourIntroModal />
     </div>
   );
 }

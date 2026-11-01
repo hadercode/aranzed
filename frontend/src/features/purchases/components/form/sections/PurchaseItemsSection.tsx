@@ -28,7 +28,10 @@ export function PurchaseItemsSection({
       : null;
 
   return (
-    <div className="bg-[var(--color-surface-card)] p-6 rounded-2xl border border-[var(--color-border)] shadow-sm space-y-6">
+    <div
+      id="tour-purchase-items"
+      className="bg-[var(--color-surface-card)] p-6 rounded-2xl border border-[var(--color-border)] shadow-sm space-y-6"
+    >
       {/* Header & Actions */}
       <SectionHeader
         icon={<Layers className="w-4 h-4" />}

@@ -1,5 +1,6 @@
 import { Receipt } from 'lucide-react';
 import { FormHeader } from '@/shared/components/ui';
+import { PurchaseTourLauncher } from '../../tour';
 
 export interface PurchaseFormHeaderProps {
   isEditMode?: boolean;
@@ -24,6 +25,11 @@ export function PurchaseFormHeader({
       cancelVariant="outline"
       submitText="Guardar Compra"
       isSubmitting={isMutating}
+      actions={
+        <div className="flex items-center gap-2">
+          <PurchaseTourLauncher variant="button" />
+        </div>
+      }
     />
   );
 }

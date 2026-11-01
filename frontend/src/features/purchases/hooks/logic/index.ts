@@ -6,3 +6,4 @@ export * from './usePurchasesFilters';
 export * from './usePurchasesStats';
 export * from './usePurchasesActions';
 export * from './usePurchasesPage';
+export * from './usePurchaseTour';
