@@ -1,5 +1,5 @@
 import { Package, ShoppingBag, Boxes, Layers, Wrench, CheckCircle2 } from 'lucide-react';
-import { useProductsContext } from '../../context';
+import { useProductsQuery, useProductsStats } from '../../hooks';
 import type { ProductStats } from '../../types';
 
 export interface ProductsStatsCardsProps {
@@ -7,8 +7,9 @@ export interface ProductsStatsCardsProps {
 }
 
 export function ProductsStatsCards({ stats: propStats }: ProductsStatsCardsProps) {
-  const context = useProductsContext();
-  const stats = propStats ?? context.stats;
+  const { data: products } = useProductsQuery();
+  const { stats: queryStats } = useProductsStats({ products });
+  const stats = propStats ?? queryStats;
 
   const cards = [
     {
@@ -42,37 +43,39 @@ export function ProductsStatsCards({ stats: propStats }: ProductsStatsCardsProps
     {
       title: 'Servicios',
       value: stats.service,
-      description: 'Intangibles y mano de obra',
+      description: 'Sin inventario físico',
       icon: <Wrench className="w-5 h-5" />,
       colorClass: 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20',
     },
     {
       title: 'Activos',
       value: stats.active,
-      description: 'Disponibles para venta',
+      description: `${stats.inactive} inactivos en catálogo`,
       icon: <CheckCircle2 className="w-5 h-5" />,
       colorClass: 'text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/20',
     },
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-      {cards.map((card) => (
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+      {cards.map((c, i) => (
         <div
-          key={card.title}
-          className="p-5 rounded-2xl bg-[var(--color-surface-card)] border border-[var(--color-border)] shadow-xs hover:border-[var(--color-border-hover,var(--color-border))] transition-all"
+          key={i}
+          className="p-3.5 rounded-2xl bg-[var(--color-surface-card)] border border-[var(--color-border)] shadow-xs flex flex-col justify-between hover:border-[var(--color-sage-500)]/30 transition-all duration-200"
         >
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider">
-              {card.title}
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-semibold text-[var(--color-text-muted)] tracking-wider uppercase">
+              {c.title}
             </span>
-            <div className={`p-2 rounded-xl ${card.colorClass}`}>{card.icon}</div>
+            <div className={`p-1.5 rounded-xl ${c.colorClass}`}>{c.icon}</div>
           </div>
-          <div className="text-2xl font-bold tracking-tight text-[var(--color-text-primary)]">
-            {card.value}
-          </div>
-          <div className="text-xs text-[var(--color-text-muted)] mt-1 truncate">
-            {card.description}
+          <div>
+            <div className="text-2xl font-black text-[var(--color-text-primary)] tracking-tight">
+              {c.value}
+            </div>
+            <div className="text-[11px] text-[var(--color-text-muted)] truncate mt-0.5">
+              {c.description}
+            </div>
           </div>
         </div>
       ))}

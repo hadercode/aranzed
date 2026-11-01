@@ -1,141 +1,119 @@
-import { useState, useCallback } from 'react';
-import { ApiClient } from '@/lib/api-client';
+import { useCallback } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { productsService } from '../../services';
 import type { Product, CreateProductDto, UpdateProductDto } from '../../types';
 
-interface UseProductsMutationsOptions {
+export const PRODUCTS_QUERY_KEY = ['catalog', 'products'] as const;
+
+export interface UseProductsMutationsOptions {
   onSuccess?: () => void;
 }
 
 export function useProductsMutations(
   options: UseProductsMutationsOptions = {}
 ) {
-  const [isMutating, setIsMutating] = useState(false);
-  const [error, setError] = useState('');
+  const queryClient = useQueryClient();
 
-  const clearError = useCallback(() => setError(''), []);
+  const invalidateProducts = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: PRODUCTS_QUERY_KEY });
+    queryClient.invalidateQueries({ queryKey: ['products'] });
+    options.onSuccess?.();
+  }, [queryClient, options]);
 
+  // 1. Create Mutation
+  const createMutation = useMutation<Product, Error, CreateProductDto>({
+    mutationFn: (dto: CreateProductDto) => productsService.create(dto),
+    onSuccess: invalidateProducts,
+  });
+
+  // 2. Update Mutation
+  const updateMutation = useMutation<
+    Product,
+    Error,
+    { id: string; dto: UpdateProductDto }
+  >({
+    mutationFn: ({ id, dto }) => productsService.update(id, dto),
+    onSuccess: invalidateProducts,
+  });
+
+  // 3. Delete Mutation
+  const deleteMutation = useMutation<void, Error, string>({
+    mutationFn: (id: string) => productsService.delete(id),
+    onSuccess: invalidateProducts,
+  });
+
+  // 4. Upload Image Mutation
+  const uploadImageMutation = useMutation<string, Error, File>({
+    mutationFn: (file: File) => productsService.uploadImage(file),
+  });
+
+  // Async wrappers ensuring backward compatibility with existing callers
   const createProduct = useCallback(
     async (dto: CreateProductDto): Promise<Product> => {
-      try {
-        setIsMutating(true);
-        setError('');
-        const result = await ApiClient.post<Product>('/catalog/products', dto);
-        options.onSuccess?.();
-        return result;
-      } catch (err: unknown) {
-        const message =
-          err instanceof Error
-            ? err.message
-            : typeof err === 'string'
-            ? err
-            : 'Error al crear el producto';
-        setError(message);
-        throw new Error(message);
-      } finally {
-        setIsMutating(false);
-      }
+      return createMutation.mutateAsync(dto);
     },
-    [options]
+    [createMutation]
   );
 
   const updateProduct = useCallback(
     async (id: string, dto: UpdateProductDto): Promise<Product> => {
-      try {
-        setIsMutating(true);
-        setError('');
-        const result = await ApiClient.put<Product>(`/catalog/products/${id}`, dto);
-        options.onSuccess?.();
-        return result;
-      } catch (err: unknown) {
-        const message =
-          err instanceof Error
-            ? err.message
-            : typeof err === 'string'
-            ? err
-            : 'Error al actualizar el producto';
-        setError(message);
-        throw new Error(message);
-      } finally {
-        setIsMutating(false);
-      }
+      return updateMutation.mutateAsync({ id, dto });
     },
-    [options]
+    [updateMutation]
   );
 
   const deleteProduct = useCallback(
     async (id: string): Promise<void> => {
-      try {
-        setIsMutating(true);
-        setError('');
-        await ApiClient.delete(`/catalog/products/${id}`);
-        options.onSuccess?.();
-      } catch (err: unknown) {
-        const message =
-          err instanceof Error
-            ? err.message
-            : typeof err === 'string'
-            ? err
-            : 'Error al eliminar el producto';
-        setError(message);
-        throw new Error(message);
-      } finally {
-        setIsMutating(false);
-      }
+      return deleteMutation.mutateAsync(id);
     },
-    [options]
+    [deleteMutation]
   );
-
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadError, setUploadError] = useState('');
-
-  const clearUploadError = useCallback(() => setUploadError(''), []);
 
   const uploadProductImage = useCallback(
     async (file: File): Promise<string> => {
-      try {
-        setIsUploading(true);
-        setUploadError('');
-
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('folder', 'products');
-        formData.append('type', 'products');
-
-        const storageRes = await ApiClient.post<{
-          id: string;
-          key: string;
-          bucket: string;
-          folder: string;
-          originalName: string;
-          fileName: string;
-          mimeType: string;
-          size: number;
-          url: string;
-          createdAt: string;
-        }>('/storage/upload', formData);
-
-        return `/storage/view?key=${encodeURIComponent(storageRes.key)}`;
-      } catch (err: unknown) {
-        const message =
-          err instanceof Error
-            ? err.message
-            : typeof err === 'string'
-            ? err
-            : 'Error al subir la imagen del producto';
-        setUploadError(message);
-        throw new Error(message);
-      } finally {
-        setIsUploading(false);
-      }
+      return uploadImageMutation.mutateAsync(file);
     },
-    []
+    [uploadImageMutation]
   );
+
+  // Computed states
+  const isMutating =
+    createMutation.isPending ||
+    updateMutation.isPending ||
+    deleteMutation.isPending;
+
+  const isUploading = uploadImageMutation.isPending;
+
+  const activeMutationError =
+    createMutation.error || updateMutation.error || deleteMutation.error;
+
+  const error = activeMutationError
+    ? activeMutationError.message || 'Error en la operación del producto'
+    : '';
+
+  const uploadError = uploadImageMutation.error
+    ? uploadImageMutation.error.message || 'Error al subir la imagen'
+    : '';
+
+  const clearError = useCallback(() => {
+    createMutation.reset();
+    updateMutation.reset();
+    deleteMutation.reset();
+  }, [createMutation, updateMutation, deleteMutation]);
+
+  const clearUploadError = useCallback(() => {
+    uploadImageMutation.reset();
+  }, [uploadImageMutation]);
 
   return {
     createProduct,
     updateProduct,
     deleteProduct,
     uploadProductImage,
+    createMutation,
+    updateMutation,
+    deleteMutation,
+    uploadImageMutation,
     isMutating,
     isUploading,
     error,

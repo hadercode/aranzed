@@ -9,21 +9,34 @@ import {
   AlertCircle,
   CheckCircle2,
 } from 'lucide-react';
+import type { UseFormRegister, FieldErrors, UseFormSetValue } from 'react-hook-form';
+import { TextInput } from '@/shared/components/ui/form';
 import { getAssetUrl } from '@/lib/api-client';
-import { useProductFormContext } from '../../../context';
+import type { ProductFormData } from '../../../schemas/product.schema';
 
-export function ProductMediaSection() {
-  const {
-    register,
-    errors,
-    setValue,
-    imageUrlValue,
-    productNameValue,
-    uploadProductImage,
-    isUploading,
-    uploadError,
-    clearUploadError,
-  } = useProductFormContext();
+export interface ProductMediaSectionProps {
+  register: UseFormRegister<ProductFormData>;
+  errors: FieldErrors<ProductFormData>;
+  setValue: UseFormSetValue<ProductFormData>;
+  imageUrlValue?: string;
+  productNameValue?: string;
+  uploadProductImage: (file: File) => Promise<string>;
+  isUploading: boolean;
+  uploadError: string;
+  clearUploadError: () => void;
+}
+
+export function ProductMediaSection({
+  register,
+  errors,
+  setValue,
+  imageUrlValue,
+  productNameValue,
+  uploadProductImage,
+  isUploading,
+  uploadError,
+  clearUploadError,
+}: ProductMediaSectionProps) {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -34,13 +47,11 @@ export function ProductMediaSection() {
     setLocalError(null);
     clearUploadError?.();
 
-    // Validar tipo de archivo
     if (!file.type.startsWith('image/')) {
       setLocalError('El archivo seleccionado debe ser una imagen (PNG, JPG, WEBP, GIF).');
       return;
     }
 
-    // Validar tamaño máximo (5MB)
     const MAX_SIZE_MB = 5;
     if (file.size > MAX_SIZE_MB * 1024 * 1024) {
       setLocalError(`La imagen supera el límite permitido de ${MAX_SIZE_MB}MB.`);
@@ -228,7 +239,7 @@ export function ProductMediaSection() {
         </div>
       )}
 
-      {/* Manual URL Input Option */}
+      {/* Manual URL Input Option using global TextInput */}
       <div className="pt-1">
         <div className="flex items-center justify-between mb-1.5">
           <button
@@ -242,24 +253,18 @@ export function ProductMediaSection() {
         </div>
 
         {showManualUrl && (
-          <div className="animate-in fade-in slide-in-from-top-1 duration-200 space-y-1.5 mt-2">
-            <input
-              type="text"
+          <div className="animate-in fade-in slide-in-from-top-1 duration-200 mt-2">
+            <TextInput
+              sizeVariant="sm"
               {...register('imageUrl')}
               placeholder="https://images.unsplash.com/photo-... o /storage/view?key=..."
-              className={`w-full px-3.5 py-2 rounded-xl text-xs font-mono border bg-[var(--color-surface-bg)] text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] focus:outline-none focus:ring-2 transition-all ${
-                errors.imageUrl
-                  ? 'border-rose-500 focus:ring-rose-500/30'
-                  : 'border-[var(--color-border)] focus:ring-[var(--color-sage-500)]/30'
-              }`}
+              error={errors.imageUrl?.message}
+              helperText={
+                !errors.imageUrl
+                  ? 'Ingresa una URL directa HTTP/HTTPS o una ruta relativa de almacenamiento.'
+                  : undefined
+              }
             />
-            {errors.imageUrl ? (
-              <p className="text-xs text-rose-500 font-medium">{errors.imageUrl.message}</p>
-            ) : (
-              <p className="text-[10px] text-[var(--color-text-muted)]">
-                Ingresa una URL directa HTTP/HTTPS o una ruta relativa de almacenamiento.
-              </p>
-            )}
           </div>
         )}
       </div>

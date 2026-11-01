@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { Package, Plus, RefreshCw, UploadCloud } from 'lucide-react';
 import { Button, PageHeader } from '@/shared/components/ui';
-import { useProductsContext } from '../../context';
+import { useProductsStore } from '../../store';
+import { useProductsQuery } from '../../hooks';
 
 export interface ProductsPageHeaderProps {
   onNewProduct?: () => void;
@@ -17,11 +18,13 @@ export function ProductsPageHeader({
   loading: propLoading,
 }: ProductsPageHeaderProps) {
   const navigate = useNavigate();
-  const context = useProductsContext();
+  const openBulkImportModal = useProductsStore((state) => state.openBulkImportModal);
+  const { loading: queryLoading, refetch } = useProductsQuery();
+
   const onNewProduct = propOnNewProduct ?? (() => navigate('/catalog/products/new'));
-  const onRefresh = propOnRefresh ?? context.refetch;
-  const onBulkImport = propOnBulkImport ?? context.openBulkImportModal;
-  const loading = propLoading ?? context.loading;
+  const onRefresh = propOnRefresh ?? refetch;
+  const onBulkImport = propOnBulkImport ?? openBulkImportModal;
+  const loading = propLoading ?? queryLoading;
 
   return (
     <PageHeader

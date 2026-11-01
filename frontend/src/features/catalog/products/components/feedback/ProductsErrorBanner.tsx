@@ -1,9 +1,9 @@
 import { AlertCircle, RefreshCw } from 'lucide-react';
-import { useProductsContext } from '../../context';
+import { useProductsQuery } from '../../hooks';
 import { Button } from '@/shared/components/ui';
 
 export function ProductsErrorBanner() {
-  const { fetchError, refetch, loading } = useProductsContext();
+  const { error: fetchError, refetch, loading } = useProductsQuery();
 
   if (!fetchError) return null;
 

@@ -1,21 +1,32 @@
 import { ConfirmDialog, SuccessDialog } from '@/shared/components/ui';
-import { useProductsContext } from '../../context';
+import { useProductsStore } from '../../store';
+import {
+  useProductsQuery,
+  useProductsMutations,
+  useProductsDialogs,
+} from '../../hooks';
 import { ProductsBulkImportModal } from '../modal/ProductsBulkImportModal';
 
 export function ProductsDialogs() {
   const {
     isDeleteConfirmOpen,
     productToDelete,
-    isMutating,
     closeDeleteConfirm,
-    handleDeleteProduct,
     isSuccessOpen,
     successMessage,
     closeSuccessDialog,
     isBulkImportOpen,
     closeBulkImportModal,
-    refetch,
-  } = useProductsContext();
+  } = useProductsStore();
+
+  const { refetch } = useProductsQuery();
+  const { deleteProduct, isMutating } = useProductsMutations({
+    onSuccess: () => {
+      void refetch();
+    },
+  });
+
+  const { handleDeleteProduct } = useProductsDialogs({ deleteProduct });
 
   return (
     <>
@@ -49,13 +60,12 @@ export function ProductsDialogs() {
         onClose={closeDeleteConfirm}
       />
 
-      {/* Success Dialog */}
+      {/* Generic Success Dialog */}
       <SuccessDialog
         isOpen={isSuccessOpen}
-        title="¡Operación Exitosa!"
+        title="Operación Exitosa"
         message={successMessage}
         buttonText="Entendido"
-        autoCloseMs={3500}
         onClose={closeSuccessDialog}
       />
     </>

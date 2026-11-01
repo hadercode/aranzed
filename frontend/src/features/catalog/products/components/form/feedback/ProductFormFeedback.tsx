@@ -1,16 +1,21 @@
 import { AlertCircle } from 'lucide-react';
 import { SuccessDialog } from '@/shared/components/ui';
-import { useProductFormContext } from '../../../context';
 
-export function ProductFormFeedback() {
-  const {
-    isSuccessOpen,
-    successMessage,
-    closeSuccessDialog,
-    mutationError,
-    clearMutationError,
-  } = useProductFormContext();
+export interface ProductFormFeedbackProps {
+  isSuccessOpen: boolean;
+  successMessage: string;
+  closeSuccessDialog: () => void;
+  mutationError?: string | null;
+  clearMutationError?: () => void;
+}
 
+export function ProductFormFeedback({
+  isSuccessOpen,
+  successMessage,
+  closeSuccessDialog,
+  mutationError,
+  clearMutationError,
+}: ProductFormFeedbackProps) {
   return (
     <>
       {/* Mutation Error Alert Banner */}
@@ -20,13 +25,15 @@ export function ProductFormFeedback() {
             <AlertCircle className="w-5 h-5 shrink-0" />
             <span>{mutationError}</span>
           </div>
-          <button
-            type="button"
-            onClick={clearMutationError}
-            className="text-xs font-semibold underline hover:no-underline cursor-pointer"
-          >
-            Descartar
-          </button>
+          {clearMutationError && (
+            <button
+              type="button"
+              onClick={clearMutationError}
+              className="text-xs font-semibold underline hover:no-underline cursor-pointer"
+            >
+              Descartar
+            </button>
+          )}
         </div>
       )}
 

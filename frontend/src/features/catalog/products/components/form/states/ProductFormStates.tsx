@@ -1,6 +1,11 @@
 import { ArrowLeft, Package, AlertCircle } from 'lucide-react';
 import { Button } from '@/shared/components/ui';
-import { useProductFormContext } from '../../../context';
+
+export interface ProductFormErrorStateProps {
+  loadError?: string | null;
+  onCancel?: () => void;
+  onRetry?: () => void;
+}
 
 export function ProductFormLoadingState() {
   return (
@@ -18,9 +23,11 @@ export function ProductFormLoadingState() {
   );
 }
 
-export function ProductFormErrorState() {
-  const { loadError, handleCancel, refetchInitial } = useProductFormContext();
-
+export function ProductFormErrorState({
+  loadError,
+  onCancel,
+  onRetry,
+}: ProductFormErrorStateProps) {
   return (
     <div className="max-w-xl mx-auto py-16 px-4 text-center space-y-4">
       <div className="w-14 h-14 rounded-2xl bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto">
@@ -33,21 +40,25 @@ export function ProductFormErrorState() {
         {loadError || 'Ocurrió un error inesperado al recuperar los datos del producto.'}
       </p>
       <div className="flex items-center justify-center gap-3 pt-2">
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={handleCancel}
-          leftIcon={<ArrowLeft className="w-4 h-4" />}
-        >
-          Volver al Catálogo
-        </Button>
-        <Button
-          type="button"
-          variant="primary"
-          onClick={() => void refetchInitial()}
-        >
-          Reintentar
-        </Button>
+        {onCancel && (
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={onCancel}
+            leftIcon={<ArrowLeft className="w-4 h-4" />}
+          >
+            Volver al Catálogo
+          </Button>
+        )}
+        {onRetry && (
+          <Button
+            type="button"
+            variant="primary"
+            onClick={onRetry}
+          >
+            Reintentar
+          </Button>
+        )}
       </div>
     </div>
   );

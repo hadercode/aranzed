@@ -1,10 +1,23 @@
 import { Link } from 'react-router-dom';
 import { FolderTree } from 'lucide-react';
-import { useProductFormContext } from '../../../context';
+import type { UseFormRegister, FieldErrors } from 'react-hook-form';
+import { Select } from '@/shared/components/ui/form';
+import type { ProductFormData } from '../../../schemas/product.schema';
+import type { ProductUom, ProductCategory } from '../../../types';
 
-export function ProductClassificationSection() {
-  const { register, errors, uoms, categories } = useProductFormContext();
+export interface ProductClassificationSectionProps {
+  register: UseFormRegister<ProductFormData>;
+  errors: FieldErrors<ProductFormData>;
+  uoms: ProductUom[];
+  categories: ProductCategory[];
+}
 
+export function ProductClassificationSection({
+  register,
+  errors,
+  uoms,
+  categories,
+}: ProductClassificationSectionProps) {
   return (
     <div className="p-6 rounded-3xl bg-[var(--color-surface-card)] border border-[var(--color-border)] shadow-xs space-y-4">
       <div className="flex items-center justify-between border-b border-[var(--color-border)] pb-3">
@@ -32,58 +45,40 @@ export function ProductClassificationSection() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Unit of Measure */}
-        <div>
-          <label className="block text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-1.5">
-            Unidad de Medida (UoM) <span className="text-rose-500">*</span>
-          </label>
-          <div className="relative">
-            <select
-              {...register('uomId')}
-              className={`w-full px-4 py-3 rounded-2xl text-sm border bg-[var(--color-surface-bg)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 transition-all cursor-pointer ${
-                errors.uomId
-                  ? 'border-rose-500 focus:ring-rose-500/30'
-                  : 'border-[var(--color-border)] focus:ring-[var(--color-sage-500)]/30'
-              }`}
-            >
-              <option value="">Seleccione una unidad de medida...</option>
-              {uoms.map((uom) => (
-                <option key={uom.id} value={uom.id}>
-                  {uom.code} — {uom.name}{' '}
-                  {uom.allowDecimals ? '(Permite decimales)' : ''}
-                </option>
-              ))}
-            </select>
-          </div>
-          {errors.uomId ? (
-            <p className="text-xs text-rose-500 mt-1.5 font-medium">{errors.uomId.message}</p>
-          ) : (
-            <p className="text-xs text-[var(--color-text-muted)] mt-1">
-              Magnitud utilizada para cuantificar y facturar el producto (ej. UND, KG, LT, M).
-            </p>
-          )}
-        </div>
+        {/* Unit of Measure Select */}
+        <Select
+          label="Unidad de Medida (UoM)"
+          required
+          {...register('uomId')}
+          error={errors.uomId?.message}
+          helperText={
+            !errors.uomId
+              ? 'Magnitud para cuantificar y facturar (ej. UND, KG, LT, M).'
+              : undefined
+          }
+        >
+          <option value="">Seleccione una unidad de medida...</option>
+          {uoms.map((uom) => (
+            <option key={uom.id} value={uom.id}>
+              {uom.name} ({uom.code})
+            </option>
+          ))}
+        </Select>
 
-        {/* Category */}
-        <div>
-          <label className="block text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-1.5">
-            Categoría del Catálogo
-          </label>
-          <select
-            {...register('categoryId')}
-            className="w-full px-4 py-3 rounded-2xl text-sm border border-[var(--color-border)] bg-[var(--color-surface-bg)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-sage-500)]/30 transition-all cursor-pointer"
-          >
-            <option value="">Sin categoría asignada</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
-          <p className="text-xs text-[var(--color-text-muted)] mt-1">
-            Permite agrupar este producto dentro de los filtros y reportes de la tienda.
-          </p>
-        </div>
+        {/* Category Select */}
+        <Select
+          label="Categoría del Producto"
+          {...register('categoryId')}
+          error={errors.categoryId?.message}
+          helperText="Organización interna para reportes, filtros y balances."
+        >
+          <option value="">Sin categoría asignada</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.name}
+            </option>
+          ))}
+        </Select>
       </div>
     </div>
   );

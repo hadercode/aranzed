@@ -1,4 +1,3 @@
-import { ProductsProvider } from '../context';
 import {
   ProductsPageHeader,
   ProductsStatsCards,
@@ -6,7 +5,7 @@ import {
   ProductsErrorBanner,
   ProductsTable,
   ProductsDialogs,
-} from '../components';
+} from "../components";
 
 function ProductsPageContent() {
   return (
@@ -33,11 +32,7 @@ function ProductsPageContent() {
 }
 
 export function ProductsPage() {
-  return (
-    <ProductsProvider>
-      <ProductsPageContent />
-    </ProductsProvider>
-  );
+  return <ProductsPageContent />;
 }
 
 export default ProductsPage;

@@ -1,5 +1,6 @@
 import { Search, X, RotateCcw, Filter, FolderTree, Scale } from 'lucide-react';
-import { useProductsContext } from '../../context';
+import { useProductsStore } from '../../store';
+import { useProductsQuery, useProductsFilters } from '../../hooks';
 import type { ProductTypeFilter, ProductStatusFilter } from '../../types';
 
 export function ProductsFilterBar() {
@@ -15,11 +16,10 @@ export function ProductsFilterBar() {
     uomFilter,
     setUomFilter,
     resetFilters,
-    filteredProducts,
-    products,
-    categories,
-    uoms,
-  } = useProductsContext();
+  } = useProductsStore();
+
+  const { data: products, categories, uoms } = useProductsQuery();
+  const { filteredProducts } = useProductsFilters({ products });
 
   const isFiltered =
     searchTerm !== '' ||
@@ -98,7 +98,7 @@ export function ProductsFilterBar() {
               <option value="all">Todas las unidades</option>
               {uoms.map((uom) => (
                 <option key={uom.id} value={uom.id}>
-                  {uom.code} - {uom.name}
+                  {uom.name} ({uom.code})
                 </option>
               ))}
             </select>
@@ -113,38 +113,41 @@ export function ProductsFilterBar() {
               className="px-3 py-2 rounded-xl text-sm border border-[var(--color-border)] bg-[var(--color-surface-bg)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-sage-500)]/30 transition-all cursor-pointer"
             >
               <option value="all">Todos los estados</option>
-              <option value="active">Activos</option>
-              <option value="inactive">Inactivos</option>
+              <option value="active">Solo Activos</option>
+              <option value="inactive">Solo Inactivos</option>
             </select>
           </div>
 
-          {/* Reset Filters Button */}
+          {/* Reset Filters */}
           {isFiltered && (
             <button
               type="button"
               onClick={resetFilters}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:bg-rose-100 dark:hover:bg-rose-900/30 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] bg-[var(--color-surface-bg)] border border-[var(--color-border)] hover:bg-[var(--color-surface-hover)] transition-all cursor-pointer"
               title="Restablecer filtros"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              <span>Limpiar</span>
+              <span className="hidden sm:inline">Limpiar</span>
             </button>
           )}
         </div>
       </div>
 
-      {/* Filter Result Counter */}
-      <div className="flex items-center justify-between text-xs text-[var(--color-text-secondary)] pt-1 border-t border-[var(--color-border)]/50">
-        <span>
-          Mostrando <strong className="text-[var(--color-text-primary)]">{filteredProducts.length}</strong> de{' '}
-          <strong className="text-[var(--color-text-primary)]">{products.length}</strong> productos y servicios
-        </span>
-        {isFiltered && (
-          <span className="italic text-[var(--color-sage-600)] dark:text-[var(--color-sage-400)]">
-            Filtros aplicados
+      {/* Filter result feedback */}
+      {isFiltered && (
+        <div className="flex items-center justify-between text-xs text-[var(--color-text-muted)] px-1 pt-1 border-t border-[var(--color-border)]/50">
+          <span>
+            Mostrando <strong>{filteredProducts.length}</strong> de <strong>{products.length}</strong> productos
           </span>
-        )}
-      </div>
+          <button
+            type="button"
+            onClick={resetFilters}
+            className="text-[var(--color-sage-600)] dark:text-[var(--color-sage-400)] hover:underline font-medium"
+          >
+            Quitar todos los filtros
+          </button>
+        </div>
+      )}
     </div>
   );
 }
