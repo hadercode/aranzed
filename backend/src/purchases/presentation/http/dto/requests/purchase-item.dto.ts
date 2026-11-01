@@ -12,6 +12,14 @@ import {
 } from 'class-validator';
 
 export class CreatePurchaseItemDto {
+  @ApiPropertyOptional({
+    description: 'UUID del renglón (opcional en caso de actualización o edición)',
+    example: 'c2e9b889-1c2a-4af8-8b6d-7cb9bd380a11',
+  })
+  @IsOptional()
+  @IsUUID('4', { message: 'El ID del ítem debe ser un UUID válido' })
+  id?: string;
+
   @ApiProperty({
     description: 'UUID del material (producto tipo RAW_MATERIAL) del catálogo',
     example: 'c2e9b889-1c2a-4af8-8b6d-7cb9bd380a11',

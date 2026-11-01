@@ -1,6 +1,7 @@
 import { PurchaseStatus } from '@/purchases/domain/enums/purchase-status.enum';
 
 export interface CreatePurchaseItemCommand {
+  id?: string;
   materialId: string;
   description: string;
   quantity: number;

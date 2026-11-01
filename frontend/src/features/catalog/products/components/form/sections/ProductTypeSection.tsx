@@ -83,7 +83,7 @@ export function ProductTypeSection({
             <button
               key={pt.type}
               type="button"
-              onClick={() => onSelectType(pt.type)}
+              onClick={() => onSelectType?.(pt.type)}
               className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between cursor-pointer group ${
                 isSelected
                   ? "border-[var(--color-sage-600)] bg-[var(--color-sage-50)]/70 dark:bg-[var(--color-sage-500)]/10 ring-2 ring-[var(--color-sage-500)]/30 shadow-xs"
