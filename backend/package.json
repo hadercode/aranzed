@@ -24,7 +24,9 @@
     "migration:run": "npm run typeorm -- migration:run -d ./data-source.ts",
     "migration:revert": "npm run typeorm -- migration:revert -d ./data-source.ts",
     "seed": "ts-node -r tsconfig-paths/register src/database/seeder.ts",
-    "seed:prod": "node dist/src/database/seeder.js"
+    "seed:prod": "node dist/src/database/seeder.js",
+    "db:clean": "ts-node -r tsconfig-paths/register src/database/clean-test-data.ts",
+    "db:clean:prod": "node dist/src/database/clean-test-data.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1158.0",
